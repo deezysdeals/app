@@ -5,7 +5,7 @@ services:
     env: node
     plan: free
     buildCommand: npm install && npm run build
-    startCommand: serve -s build
+    startCommand: serve -s dist
     routes:
       - src: /(.*)
         dest: /index.html
