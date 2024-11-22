@@ -18,9 +18,9 @@ export default function Show() {
     const [activeLink, setActiveLink] = useState('deliveries'); 
 
     const params = useParams(); 
-    const { user, getUser } = useUser(params?.username); 
+    const { retrievedUser, getUser } = useUser(params?.username); 
     
-    console.log(user); 
+    console.log(retrievedUser); 
 
     return (
         <Layout>

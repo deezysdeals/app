@@ -59,7 +59,10 @@ export function useUser(username = null) {
         setLoading(true); 
 
         return axiosInstance.get(`users/${username}`, { signal })
-            .then(response => setData(response?.data))
+            .then(response => {
+                console.log(response?.data?.data); 
+                setData(response?.data?.data); 
+            })
             .catch(error => setErrors(error?.response))
             .finally(() => setLoading(false));
     }

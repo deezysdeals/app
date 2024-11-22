@@ -17,12 +17,21 @@ export default function DashboardBoxes() {
                         </div>
             
                         <div className="d-flex flex-column justify-content-between align-items-end gap-2">
-                            <span className="menu cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            <span class="dropdown">
+                                <a class="text-decoration-none text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     className="bi bi-three-dots" viewBox="0 0 16 16">
-                                    <path
-                                        d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
-                                </svg>
+                                        <path
+                                            d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+                                    </svg> 
+                                </a>
+
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">This Week</a></li>
+                                    <li><a class="dropdown-item" href="#">This Month</a></li>
+                                    <li><a class="dropdown-item" href="#">This Year</a></li>
+                                    <li><a class="dropdown-item" href="#">All Time</a></li>
+                                </ul>
                             </span>
                             <span className="d-flex justify-content-end align-items-center gap-1 flex-wrap">
                                 <span className="badge rounded-pill text-bg-success">
@@ -48,12 +57,21 @@ export default function DashboardBoxes() {
                         </div>
             
                         <div className="d-flex flex-column justify-content-between align-items-end gap-2">
-                            <span className="menu cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            <span class="dropdown">
+                                <span class="text-decoration-none text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     className="bi bi-three-dots" viewBox="0 0 16 16">
-                                    <path
-                                        d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
-                                </svg>
+                                        <path
+                                            d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+                                    </svg> 
+                                </span>
+
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">This t Week</a></li>
+                                    <li><a class="dropdown-item" href="#">This t Month</a></li>
+                                    <li><a class="dropdown-item" href="#">This t Year</a></li>
+                                    <li><a class="dropdown-item" href="#">All t Time</a></li>
+                                </ul>
                             </span>
                             <span className="d-flex justify-content-end align-items-center gap-1 flex-wrap">
                                 <span className="badge rounded-pill text-bg-danger">

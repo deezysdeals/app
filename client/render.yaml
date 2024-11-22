@@ -1,0 +1,11 @@
+version: 1
+services:
+  - type: web
+    name: deezysdeals-client
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: serve -s build
+    routes:
+      - src: /(.*)
+        dest: /index.html
