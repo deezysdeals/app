@@ -17,8 +17,8 @@ export default function DashboardBoxes() {
                         </div>
             
                         <div className="d-flex flex-column justify-content-between align-items-end gap-2">
-                            <span class="dropdown">
-                                <a class="text-decoration-none text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span className="dropdown">
+                                <a className="text-decoration-none text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     className="bi bi-three-dots" viewBox="0 0 16 16">
                                         <path
@@ -26,11 +26,11 @@ export default function DashboardBoxes() {
                                     </svg> 
                                 </a>
 
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">This Week</a></li>
-                                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                                    <li><a class="dropdown-item" href="#">All Time</a></li>
+                                <ul className="dropdown-menu">
+                                    <li><a className="dropdown-item" href="#">This Week</a></li>
+                                    <li><a className="dropdown-item" href="#">This Month</a></li>
+                                    <li><a className="dropdown-item" href="#">This Year</a></li>
+                                    <li><a className="dropdown-item" href="#">All Time</a></li>
                                 </ul>
                             </span>
                             <span className="d-flex justify-content-end align-items-center gap-1 flex-wrap">
@@ -57,8 +57,8 @@ export default function DashboardBoxes() {
                         </div>
             
                         <div className="d-flex flex-column justify-content-between align-items-end gap-2">
-                            <span class="dropdown">
-                                <span class="text-decoration-none text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span className="dropdown">
+                                <span className="text-decoration-none text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     className="bi bi-three-dots" viewBox="0 0 16 16">
                                         <path
@@ -66,11 +66,11 @@ export default function DashboardBoxes() {
                                     </svg> 
                                 </span>
 
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">This t Week</a></li>
-                                    <li><a class="dropdown-item" href="#">This t Month</a></li>
-                                    <li><a class="dropdown-item" href="#">This t Year</a></li>
-                                    <li><a class="dropdown-item" href="#">All t Time</a></li>
+                                <ul className="dropdown-menu">
+                                    <li><a className="dropdown-item" href="#">This t Week</a></li>
+                                    <li><a className="dropdown-item" href="#">This t Month</a></li>
+                                    <li><a className="dropdown-item" href="#">This t Year</a></li>
+                                    <li><a className="dropdown-item" href="#">All t Time</a></li>
                                 </ul>
                             </span>
                             <span className="d-flex justify-content-end align-items-center gap-1 flex-wrap">

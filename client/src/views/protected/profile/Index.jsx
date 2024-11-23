@@ -291,14 +291,14 @@ export default function Index() {
                             </section> 
 
                             <section className="address-boxes pt-4">
-                                <div class="row"> 
+                                <div className="row"> 
                                     {(addresses?.data?.length > 0) && 
                                         (addresses?.data?.sort((a, b) => (b?.default === true ? 1 : 0) - (a?.default === true ? 1 : 0))?.map((address, index) => { 
                                         // if (address?.default == true) {
                                             return (
-                                                <div key={ index } class="col-sm-6 mb-3">
-                                                    <div class="card box-shadow-1 border-radius-25 p-2"> 
-                                                        <div class="card-body d-flex flex-column gap-1"> 
+                                                <div key={ index } className="col-sm-6 mb-3">
+                                                    <div className="card box-shadow-1 border-radius-25 p-2"> 
+                                                        <div className="card-body d-flex flex-column gap-1"> 
                                                             <div className="d-flex justify-content-between align-items-center flex-wrap pb-2">
                                                                 <span className="fw-semibold">#{ index + 1 }</span>
                                                                 { address?.default === false 
@@ -316,13 +316,13 @@ export default function Index() {
                                                                                         Default
                                                                                 </span> }
                                                             </div>
-                                                            <h4 class="card-title fs-5">{ address?.full_name }</h4>
-                                                            <span class="card-text fw-semibold">{ address?.address_line_1 }</span>
-                                                            <span class="card-text">{ address?.address_line_2 }</span>
-                                                            <span class="card-text">{ address?.post_code }</span>
-                                                            <span class="card-text">{ address?.town_city }</span>
-                                                            <span class="card-text">{ address?.state_region }</span>
-                                                            <span class="card-text">{ address?.country }</span>
+                                                            <h4 className="card-title fs-5">{ address?.full_name }</h4>
+                                                            <span className="card-text fw-semibold">{ address?.address_line_1 }</span>
+                                                            <span className="card-text">{ address?.address_line_2 }</span>
+                                                            <span className="card-text">{ address?.post_code }</span>
+                                                            <span className="card-text">{ address?.town_city }</span>
+                                                            <span className="card-text">{ address?.state_region }</span>
+                                                            <span className="card-text">{ address?.country }</span>
                                                         </div>
                                                     </div>
                                                 </div>

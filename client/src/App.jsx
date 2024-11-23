@@ -32,7 +32,7 @@ import ProtectedCalendarIndex from '@/views/protected/calendar/Index.jsx';
 
 import ProtectedClientShow from '@/views/protected/clients/Show.jsx'; 
 import ProtectedClientEdit from '@/views/protected/clients/Edit.jsx'; 
-import ProtectedClientsIndex from '@/views/protected/clients/Index.jsx'; 
+import ProtectedClientsIndex from '@/views/protected/clients/Index.jsx';  
 
 import ProtectedDealEdit from '@/views/protected/deals/Edit.jsx'; 
 import ProtectedDealsIndex from '@/views/protected/deals/Index.jsx'; 

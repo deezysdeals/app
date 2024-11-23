@@ -56,48 +56,48 @@ export default function Pay() {
                                 }}
                                 createOrder={async () => {
                                     try {
-                                    const response = await fetch(`${Constants.serverURL}/api/v1/orders`, {
-                                        method: "POST",
-                                        headers: { 
-                                            "Content-Type": "application/json", 
-                                            "Authorization": `Bearer ${ authTokens?.access }`, 
-                                        },
-                                        // use the "body" param to optionally pass additional order information
-                                        // like product ids and quantities
-                                        body: JSON.stringify({
-                                            // cart: [
-                                            //     {
-                                            //         id: "YOUR_PRODUCT_ID",
-                                            //         quantity: "YOUR_PRODUCT_QUANTITY",
-                                            //     },
-                                            // ], 
-                                            cart: cartItems, 
-                                        }),
-                                    });
+                                        const response = await fetch(`${Constants.serverURL}/api/v1/orders`, {
+                                            method: "POST",
+                                            headers: { 
+                                                "Content-Type": "application/json", 
+                                                "Authorization": `Bearer ${ authTokens?.access }`, 
+                                            },
+                                            // use the "body" param to optionally pass additional order information
+                                            // like product ids and quantities
+                                            body: JSON.stringify({
+                                                // cart: [
+                                                //     {
+                                                //         id: "YOUR_PRODUCT_ID",
+                                                //         quantity: "YOUR_PRODUCT_QUANTITY",
+                                                //     },
+                                                // ], 
+                                                cart: cartItems, 
+                                            }),
+                                        });
 
-                                    const orderData = await response.json(); 
-                                    console.log(orderData); 
+                                        const orderData = await response.json(); 
+                                        console.log(orderData); 
 
-                                    if (orderData?.data?.order?._id) {
-                                        return orderData?.data?.order?._id;
-                                    } else {
-                                        const errorDetail = orderData?.details?.[0];
-                                        const errorMessage = errorDetail
-                                            ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
-                                            : JSON.stringify(orderData?.data);
+                                        if (orderData?.jsonResponse?.id) {
+                                            return orderData?.jsonResponse?.id;
+                                        } else {
+                                            const errorDetail = orderData?.details?.[0];
+                                            const errorMessage = errorDetail
+                                                ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
+                                                : JSON.stringify(orderData?.data);
 
-                                        throw new Error(errorMessage);
-                                    }
+                                            throw new Error(errorMessage);
+                                        }
                                     } catch (error) {
                                         console.error(error); 
                                         setMessage(`Could not initiate PayPal Checkout...${error}`);
                                     }
                                 }} 
                                 onApprove={async (data, actions) => { 
-                                    // console.log(data); 
+                                    console.log(data); 
                                     try { 
                                         const response = await fetch(
-                                            `${Constants.serverURL}/orders/${data?.orderID}/capture`,
+                                            `${Constants.serverURL}/api/v1/orders/${data?.orderID}/capture`,
                                             {
                                                 method: "POST",
                                                 headers: { 
@@ -127,8 +127,7 @@ export default function Pay() {
                                         } else {
                                             // (3) Successful transaction -> Show confirmation or thank you message
                                             // Or go to another URL:  actions.redirect('thank_you.html');
-                                            const transaction =
-                                            orderData.purchase_units[0].payments.captures[0];
+                                            const transaction = orderData.purchase_units[0].payments.captures[0];
                                             setMessage(
                                                 `Transaction ${transaction.status}: ${transaction.id}. See console for all available details`,
                                             );
