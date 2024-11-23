@@ -214,7 +214,6 @@ const createOrder = asyncHandler(async (req, res) => {
             }
             fetchProduct(); 
 
-            
         }); 
 
         await Promise.all(cartResolve); 
@@ -242,9 +241,9 @@ const createOrder = asyncHandler(async (req, res) => {
         // Get the order to process payment
         const orderToBeProcessed = await Order.findById(newOrder?._id); 
 
-        console.log({ 'test2': orderToBeProcessed }); 
+        // console.log({ 'test2': orderToBeProcessed }); 
 
-        paypalCreateOrder(cart, orderToBeProcessed?.total_to_be_paid, orderToBeProcessed?.currency)
+        paypalCreateOrder(cart, orderToBeProcessed.total_to_be_paid, orderToBeProcessed.currency)
             .then(({ jsonResponse, httpStatusCode }) => {
                 res.status(httpStatusCode).json({
                     jsonResponse, 

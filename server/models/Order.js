@@ -34,7 +34,6 @@ const orderSchema = new Schema({
         total_to_be_paid: { type: Number }, 
         currency: { 
             type: String, 
-            required: true, 
             enum: ['usd', 'eur'], 
             default: 'usd'
         }, 
