@@ -1,6 +1,6 @@
 import ejs from 'ejs'; 
 import { fileURLToPath } from 'url'; 
-import { dirname, join } from 'path'; 
+import { dirname, join, resolve } from 'path'; 
 const __dirname = dirname(fileURLToPath(import.meta.url)); 
 import sendMail from '../../mails/sendMail.js'; 
 
@@ -8,7 +8,7 @@ import sendMail from '../../mails/sendMail.js';
 const passwordlessSignInMailTemplate = async (user) => { 
     const mailSubject = `${process.env.APP_NAME + ': Passwordless Sign In Request'}`; 
 
-    const mailBody = await ejs.renderFile(join(__dirname, 'views', 'emails', 'passwordlessSignInEmailTemplate.ejs'), { 
+    const mailBody = await ejs.renderFile(resolve(__dirname, '..', '..', 'views', 'emails', 'passwordlessSignInEmailTemplate.ejs'), { 
         user: `${user?.first_name} ${user?.last_name}`, 
         signInLink: `${process.env.CLIENT_URL}/passwordless-signin/${user?.username}/${user?.auth_token}`
     }); 

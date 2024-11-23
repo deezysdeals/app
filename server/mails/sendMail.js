@@ -9,7 +9,7 @@ const sendMail = async (senderEmail, recipientEmail, subject, html) => {
 
         var transporter; 
 
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.NODE_ENV == 'production') {
             transporter = nodemailer.createTransport({
                 // host​:​ ​"​smtp.gmail.com​"​,
                 host: process.env.MAIL_HOST,

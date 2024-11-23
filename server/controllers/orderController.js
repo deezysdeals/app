@@ -56,9 +56,9 @@ const getOrders = asyncHandler(async (req, res) => {
                 },
                 {
                     $group: {
-                    _id: null,
-                    // totalAmount: { $sum: "$total_paid" }
-                    totalAmount: { $sum: "$total_to_be_paid" }
+                        _id: null,
+                        // totalAmount: { $sum: "$total_paid" }
+                        totalAmount: { $sum: "$total_to_be_paid" }
                     }
                 }
             ]);
@@ -219,7 +219,9 @@ const createOrder = asyncHandler(async (req, res) => {
 
         await Promise.all(cartResolve); 
 
-    }
+    } 
+
+    console.log({'test': totalToBePaid}); 
 
     // PayPal record & processing for Order
     // const order = await paypal.createOrder(req?.body?.paymentSource);
@@ -236,8 +238,13 @@ const createOrder = asyncHandler(async (req, res) => {
     //     } 
     // } 
 
-    function paypalOrderCreate(cart) {
-        paypalCreateOrder(cart)
+    async function paypalOrderCreate(cart) { 
+        // Get the order to process payment
+        const orderToBeProcessed = await Order.findById(newOrder?._id); 
+
+        console.log({ 'test2': orderToBeProcessed }); 
+
+        paypalCreateOrder(cart, orderToBeProcessed?.total_to_be_paid, orderToBeProcessed?.currency)
             .then(({ jsonResponse, httpStatusCode }) => {
                 res.status(httpStatusCode).json({
                     jsonResponse, 

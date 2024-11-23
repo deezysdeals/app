@@ -40,7 +40,7 @@ async function handleResponse(response) {
     }
 }
 
-export async function paypalCreateOrder(cart) {
+export async function paypalCreateOrder(cart, amount, currency) {
 // const createOrder = async (cart) => {
     // use the cart information passed from the front-end to calculate the purchase unit details
     console.log(
@@ -56,8 +56,8 @@ export async function paypalCreateOrder(cart) {
         purchase_units: [
             {
                 amount: {
-                    currency_code: "USD",
-                    value: "100",
+                    currency_code: currency?.toUpperCase(), 
+                    value: amount,
                 },
             },
         ],

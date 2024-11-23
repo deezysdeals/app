@@ -190,71 +190,73 @@ const getUser = asyncHandler(async (req, res) => {
 
 	const userFound = await User.findOne({ username: username })
                                 .select(['-created_at', '-updated_at', '-deleted_at'])
-                                .exec(); 
+                                .lean(); 
 
 	if (!userFound) return res.status(404).json({ message: `No user matches user @${username}!` }); 
 
-    // // Query optimization 
-    // // Orders
-    // const orders_current_page = parseInt(req?.query?.orderPage) || 1;
-    // const orders_limit = parseInt(req?.query?.orderLimit) || 10; 
-    // const orders_skip = (orders_current_page - 1) * limit; 
+    console.log(userFound);
 
-    // // Products
-    // const products_current_page = parseInt(req?.query?.productPage) || 1;
-    // const products_limit = parseInt(req?.query?.productLimit) || 10; 
-    // const products_skip = (products_current_page - 1) * limit; 
+    // Query optimization 
+    // Orders
+    const orders_current_page = parseInt(req?.query?.orderPage) || 1;
+    const orders_limit = parseInt(req?.query?.orderLimit) || 10; 
+    const orders_skip = (orders_current_page - 1) * limit; 
 
-    // let userDetails = []; 
+    // Products
+    const products_current_page = parseInt(req?.query?.productPage) || 1;
+    const products_limit = parseInt(req?.query?.productLimit) || 10; 
+    const products_skip = (products_current_page - 1) * limit; 
 
-    // userDetails.push(user); 
+    let userDetails = []; 
 
-    // const updatePromises = async () => { 
-    //     // Orders
-    //     const orders = await Order.find({ user: user?._id, deleted_at: null })
-    //                             .sort('-created_at')
-    //                             .skip(products_skip)
-    //                             .limit(products_limit)
-    //                             .populate({
-    //                                 path: 'user', 
-    //                                 select: 'first_name last_name username' 
-    //                             })
-    //                             .lean(); 
+    userDetails.push(user); 
 
-    //     const updateOrderPromises = orders?.map(async order => {
-    //         let foundOrderItems = await OrderItem.find({ order: order?._id })
-    //                                             .populate({
-    //                                                 path: 'product', 
-    //                                             })
-    //                                             .exec(); 
-    //         order['orderItems'] = foundOrderItems; 
+    const updatePromises = async () => { 
+        // Orders
+        const orders = await Order.find({ user: user?._id, deleted_at: null })
+                                .sort('-created_at')
+                                .skip(products_skip)
+                                .limit(products_limit)
+                                .populate({
+                                    path: 'user', 
+                                    select: 'first_name last_name username' 
+                                })
+                                .lean(); 
 
-    //         userDetails.push(order); 
-    //     }); 
+        const updateOrderPromises = orders?.map(async order => {
+            let foundOrderItems = await OrderItem.find({ order: order?._id })
+                                                .populate({
+                                                    path: 'product', 
+                                                })
+                                                .exec(); 
+            order['orderItems'] = foundOrderItems; 
 
-    //     // Order Items 
-    //     const orderItems = await OrderItem.find({ user: user?._id, deleted_at: null }); 
+            userDetails.push(order); 
+        }); 
 
-    //     userDetails.push(orderItems);
+        // Order Items 
+        const orderItems = await OrderItem.find({ user: user?._id, deleted_at: null }); 
 
-    //     // Payments
-    //     const payments = await Payment.find({ user: user?._id, deleted_at: null }); 
+        userDetails.push(orderItems);
 
-    //     userDetails.push(payments);
-    // } 
+        // Payments
+        const payments = await Payment.find({ user: user?._id, deleted_at: null }); 
 
-    // await Promise.all(updatePromises); 
+        userDetails.push(payments);
+    } 
 
-	res.status(200).json({ data: userFound }); 
-    // res.json({ 
-    //             meta: {
-    //                 // current_page, 
-    //                 // limit, 
-    //                 // total_pages: Math.ceil(ordersCount / limit), 
-    //                 // total_results: ordersCount, 
-    //             }, 
-    //             data: userDetails 
-    //         });
+    await Promise.all(updatePromises); 
+
+	// res.status(200).json({ data: userFound }); 
+    res.json({ 
+                meta: {
+                    // current_page, 
+                    // limit, 
+                    // total_pages: Math.ceil(ordersCount / limit), 
+                    // total_results: ordersCount, 
+                }, 
+                data: userDetails 
+            });
 }); 
 
 const getAdmin = asyncHandler(async (req, res) => { 

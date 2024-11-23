@@ -32,6 +32,12 @@ const orderSchema = new Schema({
             default: 'unpaid'
         }, 
         total_to_be_paid: { type: Number }, 
+        currency: { 
+            type: String, 
+            required: true, 
+            enum: ['usd', 'eur'], 
+            default: 'usd'
+        }, 
         paid: { type: Boolean, default: false }, 
         total_paid: { type: Number }, 
         total_balance: { type: Number }, 

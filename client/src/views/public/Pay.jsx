@@ -17,6 +17,7 @@ function Message({ content }) {
 export default function Pay() { 
     const { authTokens } = useContext(AuthContext); 
     const { cartItems, getTotalPrice } = useContext(CartContext); 
+    console.log(cartItems); 
     const initialOptions = {
         "client-id": `${Constants?.paypalClientID}`,
         "enable-funding": "venmo",
@@ -73,7 +74,7 @@ export default function Pay() {
                                                 // ], 
                                                 cart: cartItems, 
                                             }),
-                                        });
+                                        }); 
 
                                         const orderData = await response.json(); 
                                         console.log(orderData); 
