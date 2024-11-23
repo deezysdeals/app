@@ -57,73 +57,73 @@ export default function Pay() {
                                     label: "pay",
                                 }}
                                 createOrder={async () => {
-                                    await axios.post(`${Constants.serverURL}/api/v1/orders`, {
-                                        cart: cartItems
-                                    }, {
-                                        "Content-Type": "application/json", 
-                                        "Authorization": `Bearer ${ authTokens?.access }`
-                                    })
-                                        .then(response => { 
-                                            console.log(response); 
-                                            const orderData = response.json(); 
+                                    // await axios.post(`${Constants.serverURL}/api/v1/orders`, {
+                                    //     cart: cartItems
+                                    // }, {
+                                    //     "Content-Type": "application/json", 
+                                    //     "Authorization": `Bearer ${ authTokens?.access }`
+                                    // })
+                                    //     .then(response => { 
+                                    //         console.log(response); 
+                                    //         const orderData = response.json(); 
 
-                                            console.log(orderData); 
+                                    //         console.log(orderData); 
 
-                                            if (orderData?.jsonResponse?.id) {
-                                                return orderData?.jsonResponse?.id; 
-                                            } else {
-                                                const errorDetail = orderData?.details?.[0];
-                                                const errorMessage = errorDetail
-                                                    ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
-                                                    : JSON.stringify(orderData?.data);
+                                    //         if (orderData?.jsonResponse?.id) {
+                                    //             return orderData?.jsonResponse?.id; 
+                                    //         } else {
+                                    //             const errorDetail = orderData?.details?.[0];
+                                    //             const errorMessage = errorDetail
+                                    //                 ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
+                                    //                 : JSON.stringify(orderData?.data);
 
-                                                throw new Error(errorMessage);
-                                            }
-                                        })
-                                        .catch(error => {
-                                            console.log(error); 
-                                            // setMessage(`Could not initiate PayPal Checkout...${error}`);
-                                            setMessage(`Could not initiate PayPal Checkout`);
-                                        })
+                                    //             throw new Error(errorMessage);
+                                    //         }
+                                    //     })
+                                    //     .catch(error => {
+                                    //         console.log(error); 
+                                    //         // setMessage(`Could not initiate PayPal Checkout...${error}`);
+                                    //         setMessage(`Could not initiate PayPal Checkout`);
+                                    //     })
 
-                                    // try {
-                                    //     const response = await fetch(`${Constants.serverURL}/api/v1/orders`, {
-                                    //         method: "POST",
-                                    //         headers: { 
-                                    //             "Content-Type": "application/json", 
-                                    //             "Authorization": `Bearer ${ authTokens?.access }`, 
-                                    //         },
-                                    //         // use the "body" param to optionally pass additional order information
-                                    //         // like product ids and quantities
-                                    //         body: JSON.stringify({
-                                    //             // cart: [
-                                    //             //     {
-                                    //             //         id: "YOUR_PRODUCT_ID",
-                                    //             //         quantity: "YOUR_PRODUCT_QUANTITY",
-                                    //             //     },
-                                    //             // ], 
-                                    //             cart: cartItems, 
-                                    //         }),
-                                    //     }); 
+                                    try {
+                                        const response = await fetch(`${Constants.serverURL}/api/v1/orders`, {
+                                            method: "POST",
+                                            headers: { 
+                                                "Content-Type": "application/json", 
+                                                "Authorization": `Bearer ${ authTokens?.access }`, 
+                                            },
+                                            // use the "body" param to optionally pass additional order information
+                                            // like product ids and quantities
+                                            body: JSON.stringify({
+                                                // cart: [
+                                                //     {
+                                                //         id: "YOUR_PRODUCT_ID",
+                                                //         quantity: "YOUR_PRODUCT_QUANTITY",
+                                                //     },
+                                                // ], 
+                                                cart: cartItems, 
+                                            }),
+                                        }); 
 
-                                    //     const orderData = await response.json(); 
-                                    //     console.log(orderData); 
+                                        const orderData = await response.json(); 
+                                        console.log(orderData); 
 
-                                    //     if (orderData?.jsonResponse?.id) {
-                                    //         return orderData?.jsonResponse?.id; 
-                                    //     } else {
-                                    //         const errorDetail = orderData?.details?.[0];
-                                    //         const errorMessage = errorDetail
-                                    //             ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
-                                    //             : JSON.stringify(orderData?.data);
+                                        if (orderData?.jsonResponse?.id) {
+                                            return orderData?.jsonResponse?.id; 
+                                        } else {
+                                            const errorDetail = orderData?.details?.[0];
+                                            const errorMessage = errorDetail
+                                                ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
+                                                : JSON.stringify(orderData?.data);
 
-                                    //         throw new Error(errorMessage);
-                                    //     }
-                                    // } catch (error) {
-                                    //     console.error(error); 
-                                    //     // setMessage(`Could not initiate PayPal Checkout...${error}`);
-                                    //     setMessage(`Could not initiate PayPal Checkout...`);
-                                    // }
+                                            throw new Error(errorMessage);
+                                        }
+                                    } catch (error) {
+                                        console.error(error); 
+                                        // setMessage(`Could not initiate PayPal Checkout...${error}`);
+                                        setMessage(`Could not initiate PayPal Checkout...`);
+                                    }
                                 }} 
                                 onApprove={async (data, actions) => { 
                                     console.log(data); 
