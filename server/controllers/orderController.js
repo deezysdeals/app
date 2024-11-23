@@ -239,7 +239,7 @@ const createOrder = asyncHandler(async (req, res) => {
         // Get the order to process payment
         const orderToBeProcessed = await Order.findById(newOrder?._id); 
 
-        // console.log({ 'test2': orderToBeProcessed }); 
+        console.log({ 'test2': orderToBeProcessed }); 
 
         await paypalCreateOrder(cart, orderToBeProcessed?.total_to_be_paid, orderToBeProcessed?.currency)
             .then(({ jsonResponse, httpStatusCode }) => {

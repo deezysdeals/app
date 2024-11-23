@@ -61,10 +61,11 @@ export default function Pay() {
                                         cart: cartItems
                                     }, {
                                         "Content-Type": "application/json", 
-                                        "Authorization": `Bearer ${ authTokens?.access }`
+                                        Authorization: `Bearer ${ authTokens?.access }`
                                     })
-                                        .then(response => {
-                                            const orderData = response.json(); 
+                                        .then(response => { 
+                                            console.log(response);
+                                            const orderData = response; 
 
                                             console.log(orderData); 
 
