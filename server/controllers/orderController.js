@@ -220,8 +220,6 @@ const createOrder = asyncHandler(async (req, res) => {
 
     } 
 
-    console.log({'test': totalToBePaid}); 
-
     // PayPal record & processing for Order
     // const order = await paypal.createOrder(req?.body?.paymentSource);
     // const order = await paypal.createOrder('paypal');
@@ -243,7 +241,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
         // console.log({ 'test2': orderToBeProcessed }); 
 
-        paypalCreateOrder(cart, orderToBeProcessed.total_to_be_paid, orderToBeProcessed.currency)
+        paypalCreateOrder(cart, orderToBeProcessed?.total_to_be_paid, orderToBeProcessed?.currency)
             .then(({ jsonResponse, httpStatusCode }) => {
                 res.status(httpStatusCode).json({
                     jsonResponse, 

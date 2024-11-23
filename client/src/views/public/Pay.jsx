@@ -11,7 +11,7 @@ import Layout from '@/components/public/Layout.jsx';
 
 // Renders errors or successfull transactions on the screen.
 function Message({ content }) {
-    return <p>{content}</p>;
+    return <p className="w-100">{content}</p>;
 }
 
 
@@ -81,7 +81,8 @@ export default function Pay() {
                                         })
                                         .catch(error => {
                                             console.log(error); 
-                                            setMessage(`Could not initiate PayPal Checkout...${error}`);
+                                            // setMessage(`Could not initiate PayPal Checkout...${error}`);
+                                            setMessage(`Could not initiate PayPal Checkout`);
                                         })
 
                                     // try {
@@ -119,7 +120,8 @@ export default function Pay() {
                                     //     }
                                     // } catch (error) {
                                     //     console.error(error); 
-                                    //     setMessage(`Could not initiate PayPal Checkout...${error}`);
+                                    //     // setMessage(`Could not initiate PayPal Checkout...${error}`);
+                                    //     setMessage(`Could not initiate PayPal Checkout...`);
                                     // }
                                 }} 
                                 onApprove={async (data, actions) => { 
