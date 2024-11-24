@@ -218,7 +218,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
         await Promise.all(cartResolve); 
 
-        async function paypalOrderCreate() { 
+        const chargeProcessing = async function paypalOrderCreate() { 
             // Get the order to process payment
             const orderToBeProcessed = await Order.findById(newOrder?._id); 
 
@@ -238,8 +238,10 @@ const createOrder = asyncHandler(async (req, res) => {
                     console.error("Failed to create order:", error);
                     res.status(500).json({ error: "Failed to create order." });
                 });
+                await paypalOrderCreate();
         }
-        await paypalOrderCreate();
+
+        await Promise.all(chargeProcessing);
 
         console.log(cart); 
     } 
