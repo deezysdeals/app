@@ -38,18 +38,22 @@ async function handleResponse(response) {
         const errorMessage = await response.text();
         throw new Error(errorMessage);
     }
+} 
+
+export function orderPaymentInfo(amount, currency) {
+    return ({amount, currency});
 }
 
-export async function paypalCreateOrder(cart) {
+export async function paypalCreateOrder(orderDetails) {
 // const createOrder = async (cart) => {
     // use the cart information passed from the front-end to calculate the purchase unit details
     console.log(
         "shopping cart information passed from the frontend createOrder() callback:",
-        cart
+        orderDetails
     );
 
     const accessToken = await generateAccessToken();
-    const url = `${base}/v2/checkout/orders`;
+    const url = `${base}/v2/checkout/orders`; 
 
     const payload = {
         intent: "CAPTURE",

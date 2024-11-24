@@ -1,6 +1,6 @@
 import axios from 'axios'; 
 import asyncHandler from 'express-async-handler'; 
-import { paypalCreateOrder, paypalCaptureOrder } from '../utils/paypal-api.js'; 
+import { orderPaymentInfo, paypalCreateOrder, paypalCaptureOrder } from '../utils/paypal-api.js'; 
 import Category from '../models/Category.js'; 
 import Product from '../models/Product.js'; 
 import ProductImage from '../models/ProductImage.js'; 
@@ -235,13 +235,15 @@ const createOrder = asyncHandler(async (req, res) => {
     //     } 
     // } 
 
-    async function paypalOrderCreate(cart) { 
+    async function paypalOrderCreate() { 
         // Get the order to process payment
         const orderToBeProcessed = await Order.findById(newOrder?._id); 
 
-        console.log({ 'test2': orderToBeProcessed }); 
+        // await orderPaymentInfo(orderToBeProcessed?.total_to_be_paid, orderToBeProcessed?.currency);
 
-        await paypalCreateOrder(cart)
+        // console.log({ 'test2': orderToBeProcessed }); 
+
+        await paypalCreateOrder(orderToBeProcessed)
             .then(({ jsonResponse, httpStatusCode }) => {
                 res.status(httpStatusCode).json({
                     jsonResponse, 

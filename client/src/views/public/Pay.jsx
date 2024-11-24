@@ -38,7 +38,7 @@ export default function Pay() {
 
                 <Aside />
 
-                <div className="main py-2 pb-4"> 
+                <div className="main py-2 pb-4 z-1"> 
 
                     <h2 className="border-bottom pb-1 mb-4 pt-3 fs-4">Payment</h2> 
 
