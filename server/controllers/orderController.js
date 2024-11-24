@@ -195,7 +195,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
                     if ((cart?.length) == index+1) { 
                         console.log({ 'totaltobe': totalToBePaid }); 
-                        await Order.findOneAndUpdate({ _id: newOrder?._id }, { total_to_be_paid: totalToBePaid }); 
+                        const orderProcessed = await Order.findOneAndUpdate({ _id: newOrder?._id }, { total_to_be_paid: totalToBePaid }); 
                         
                         async function paypalOrderCreate() { 
                             // Get the order to process payment
@@ -205,7 +205,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
                             // console.log({ 'test2': orderToBeProcessed }); 
 
-                            await paypalCreateOrder(totalToBePaid)
+                            await paypalCreateOrder(orderProcessed)
                                 .then(({ jsonResponse, httpStatusCode }) => {
                                     res.status(httpStatusCode).json({
                                         jsonResponse, 
