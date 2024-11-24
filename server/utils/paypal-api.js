@@ -61,7 +61,7 @@ export async function paypalCreateOrder(orderDetails) {
             {
                 amount: {
                     currency_code: "USD",
-                    value: "100",
+                    value: orderDetails?.total_to_be_paid,
                 },
             },
         ],

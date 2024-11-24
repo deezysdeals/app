@@ -224,7 +224,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
             // await orderPaymentInfo(orderToBeProcessed?.total_to_be_paid, orderToBeProcessed?.currency);
 
-            // console.log({ 'test2': orderToBeProcessed }); 
+            console.log({ 'test2': orderToBeProcessed }); 
 
             await paypalCreateOrder(orderToBeProcessed)
                 .then(({ jsonResponse, httpStatusCode }) => {
