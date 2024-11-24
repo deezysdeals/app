@@ -40,16 +40,12 @@ async function handleResponse(response) {
     }
 } 
 
-export function orderPaymentInfo(amount, currency) {
-    return ({amount, currency});
-}
-
-export async function paypalCreateOrder(orderDetails) {
+export async function paypalCreateOrder(amountPaid) {
 // const createOrder = async (cart) => {
     // use the cart information passed from the front-end to calculate the purchase unit details
     console.log(
         "shopping cart information passed from the frontend createOrder() callback:",
-        orderDetails
+        amountPaid
     );
 
     const accessToken = await generateAccessToken();
@@ -61,7 +57,7 @@ export async function paypalCreateOrder(orderDetails) {
             {
                 amount: {
                     currency_code: "USD",
-                    value: orderDetails?.total_to_be_paid,
+                    value: amountPaid,
                 },
             },
         ],
