@@ -17,6 +17,9 @@ const orderSchema = new Schema({
         //         },
         //     },
         // ], 
+        paypal_order_id: { type: String }, 
+        paypal_payer_id: { type: String }, 
+        paypal_payment_id: { type: String }, 
         delivery_mode: { type: Schema.Types.ObjectId, ref: 'DeliveryMode' }, 
         delivery_status: { 
             type: String, 
@@ -24,11 +27,16 @@ const orderSchema = new Schema({
             enum: ['undelivered', 'delivered'], 
             default: 'undelivered'
         }, 
-        payment_mode: { type: Schema.Types.ObjectId, ref: 'PaymentMode' }, 
+        payment_mode:  { 
+            type: String, 
+            required: true, 
+            enum: ['unpaid', 'cash', 'card', 'paypal'], 
+            default: 'unpaid'
+        }, 
         billing_status: { 
             type: String, 
             required: true, 
-            enum: ['unpaid', 'pay-on-delivery', 'paid-with-cash', 'paid-with-card', 'paid-with-paypal'], 
+            enum: ['unpaid', 'pay-on-delivery', 'paying-with-cash', 'paying-with-card', 'paying-with-paypal'], 
             default: 'unpaid'
         }, 
         total_to_be_paid: { type: Number }, 

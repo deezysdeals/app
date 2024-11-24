@@ -1,12 +1,13 @@
 import { useContext, useState } from 'react'; 
 import AuthContext from '@/context/AuthContext.jsx'; 
-import { Link } from 'react-router-dom'; 
+import { Link, useLocation } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import NavBarUserOptions from './nested-components/NavBarUserOptions'; 
 
 
 export default function Header() { 
-    const { user } = useContext(AuthContext); 
+    const location = useLocation(); 
+    const { user, signOut } = useContext(AuthContext); 
     const [navToggle, setNavToggle] = useState(true); 
     
     return (
@@ -100,20 +101,37 @@ export default function Header() {
                         </li> 
 
                         { user 
-                            ? <NavBarUserOptions /> 
-                                : <li className="fw-bold"> 
-                                    <Link to={ route('sign-in') } className="text-decoration-none d-flex align-items-center justify-content-end">
-                                        <span className="d-block d-md-none">
-                                            Sign In/Out
-                                        </span>&nbsp; 
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-person-fill-lock"
-                                            viewBox="0 0 16 16">
-                                            <path
-                                                d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-9 8c0 1 1 1 1 1h5v-1a2 2 0 0 1 .01-.2 4.49 4.49 0 0 1 1.534-3.693Q8.844 9.002 8 9c-5 0-6 3-6 4m7 0a1 1 0 0 1 1-1v-1a2 2 0 1 1 4 0v1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1zm3-3a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1" />
-                                        </svg>
-                                    </Link> 
-                                </li> }
-
+                                ?   <>
+                                        <NavBarUserOptions /> 
+                                        <li className="fw-bold"> 
+                                            <span 
+                                                type="button" 
+                                                onClick={ signOut } 
+                                                className="text-decoration-none d-flex align-items-center justify-content-end">
+                                                    <span className="d-block d-md-none">
+                                                        Sign Out
+                                                    </span>&nbsp; 
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ff0000" className="bi bi-power text-danger" viewBox="0 0 16 16">
+                                                        <path d="M7.5 1v7h1V1z"></path>
+                                                        <path d="M3 8.812a5 5 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812"></path>
+                                                    </svg>
+                                            </span> 
+                                        </li>
+                                    </>
+                                : (!user && location.pathname != route('sign-in')) 
+                                    ? <li className="fw-bold"> 
+                                        <Link to={ route('sign-in') } className="text-decoration-none d-flex align-items-center justify-content-end">
+                                            <span className="d-block d-md-none">
+                                                Sign In
+                                            </span>&nbsp; 
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-person-fill-lock"
+                                                viewBox="0 0 16 16">
+                                                <path
+                                                    d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-9 8c0 1 1 1 1 1h5v-1a2 2 0 0 1 .01-.2 4.49 4.49 0 0 1 1.534-3.693Q8.844 9.002 8 9c-5 0-6 3-6 4m7 0a1 1 0 0 1 1-1v-1a2 2 0 1 1 4 0v1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1zm3-3a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1" />
+                                            </svg>
+                                        </Link> 
+                                    </li> 
+                                : '' }
                     </ul>
                 </nav>
 

@@ -127,6 +127,7 @@ export default function Pay() {
                                 }} 
                                 onApprove={async (data, actions) => { 
                                     console.log(data); 
+                                    console.log(actions); 
                                     try { 
                                         const response = await fetch(
                                             `${Constants.serverURL}/api/v1/orders/${data?.orderID}/capture`,

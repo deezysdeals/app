@@ -6,6 +6,8 @@ import Product from '../models/Product.js';
 import ProductImage from '../models/ProductImage.js'; 
 import Order from '../models/Order.js'; 
 import OrderItem from '../models/OrderItem.js'; 
+import User from '../models/User.js'; 
+import Address from '../models/Address.js';
 
 
 const getOrders = asyncHandler(async (req, res) => { 
@@ -114,6 +116,9 @@ const createOrder = asyncHandler(async (req, res) => {
     // if (delivery_mode == 'business') proposed_delivery_destination_reach_date = Date.now();
     // if (delivery_mode == 'casual') proposed_delivery_destination_reach_date = Date.now(); 
 
+    const userPlacingOrder = await User.findOne({ _id: req?.user_id }).lean(); 
+    const addressOfUser = await Address.findOne({ user: req?.user_id, default: true }).lean();
+
     const newOrder = await Order.create({
         user: req?.user_id, 
         // order_items: items.map(item => ({
@@ -122,21 +127,21 @@ const createOrder = asyncHandler(async (req, res) => {
         //     _id: undefined
         // })),
         // delivery_mode, 
-        // payment_mode, 
+        payment_mode: 'unpaid', 
         billing_status: 'unpaid', 
         // total_to_be_paid, 
         // proposed_delivery_start_date,
-        // proposed_delivery_destination_reach_date,
-        full_name: 'test name', 
-        email: 'test@email.com', 
-        phone: '+123456789', 
-        address_line_1: '123 Test Avenue', 
-        // address_line_2, 
-        post_code: '12345', 
-        town_city: 'Test City', 
-        state_region: 'Owerri', 
-        country: 'USA', 
-        delivery_instructions: 'Must be dropped at the door.' 
+        // proposed_delivery_destination_reach_date, 
+        full_name: addressOfUser?.first_name + ' ' + addressOfUser?.last_name, 
+        email: userPlacingOrder?.email, 
+        phone: addressOfUser?.phone, 
+        address_line_1: addressOfUser?.address_line_1, 
+        address_line_2: addressOfUser?.address_line_2, 
+        post_code: addressOfUser?.post_code, 
+        town_city: addressOfUser?.town_city, 
+        state_region: addressOfUser?.state_region, 
+        country: addressOfUser?.country, 
+        delivery_instructions: addressOfUser?.delivery_instructions 
     }); 
 
     let totalToBePaid = 0;
@@ -240,91 +245,69 @@ const createOrder = asyncHandler(async (req, res) => {
         }); 
 
         await Promise.all(cartResolve); 
-
-        // async function paypalOrderCreate() { 
-        //     // Get the order to process payment
-        //     const orderToBeProcessed = await Order.findById(newOrder?._id); 
-
-        //     // await orderPaymentInfo(orderToBeProcessed?.total_to_be_paid, orderToBeProcessed?.currency);
-
-        //     console.log({ 'test2': orderToBeProcessed }); 
-
-        //     await paypalCreateOrder(orderToBeProcessed)
-        //         .then(({ jsonResponse, httpStatusCode }) => {
-        //             res.status(httpStatusCode).json({
-        //                 jsonResponse, 
-        //                 data: { 'order': newOrder}
-        //             }); 
-        //             // res.status(201).json({ success: `Order ${newOrder._id} added`, data: { 'order': newOrder} }); 
-        //         })
-        //         .catch(error => {
-        //             console.error("Failed to create order:", error);
-        //             res.status(500).json({ error: "Failed to create order." });
-        //         });
-        // }
-        // await paypalOrderCreate();
-
-        console.log(cart); 
     } 
-
-    // PayPal record & processing for Order
-    // const order = await paypal.createOrder(req?.body?.paymentSource);
-    // const order = await paypal.createOrder('paypal');
-    // console.log({'order': order}); 
-    // async function payPalProcessing() {
-    //     try {
-    //         // use the cart information passed from the front-end to calculate the order amount detals
-    //         const { jsonResponse, httpStatusCode } = await createOrder(cart);
-    //         res.status(httpStatusCode).json(jsonResponse);
-    //     } catch (error) {
-    //         console.error("Failed to create order:", error);
-    //         res.status(500).json({ error: "Failed to create order." });
-    //     } 
-    // } 
-
-    
-
-
-    // newOrder.save()
-    //     .then(() => {
-    //         res.status(201).json({ success: `Order ${newOrder._id} added`, data: newOrder });
-    //     })
-    //     .catch((error) => {
-    //         if (error) return res.status(400).json({ message: "An error occured!", details: `${error}` }); 
-    //     }); 
-
-    // res.status(201).json({ success: `Order ${newOrder._id} added`, 
-    //                         data: { 'order-paypal': order, 'order': newOrder} }); 
 }); 
 
+const updatePayPalOrderID = asyncHandler(async (req, res) => {
+    const { id } = req.params; 
+    const { paypal_order_id } = req.body; 
+
+    const orderFilter = { _id: id }; 
+    const orderUpdate = { paypal_order_id: paypal_order_id }; 
+
+    await Order.findOneAndUpdate(orderFilter, orderUpdate, {
+        upsert: true 
+    })
+        .then(order => {
+            if (order) { 
+                res.status(200).json({ success: `PayPal Order ID added to Order.`, data: order });
+            } else {
+                console.log('No order found to process payment.');
+            }
+        })
+        .catch(error => {
+            if (error) return res.status(400).json({ message: "An error occured!", details: `${error}` }); 
+        }); 
+})
+
 const captureOrder = asyncHandler(async (req, res) => {
-	// const order = await Order.findOne({ _id: req?.params?.id })
-	// 	.select(['-created_at', '-updated_at', '-deleted_at'])
-	// 	.lean();
-
-	// if (!order) return res.status(404).json({ message: `No order matches order ${req?.params?.id}!` }); 
-
-    // const orderItems = await OrderItem.find({ order: order?._id }).lean();
-    
-	// res.status(200).json({ data: {
-    //     order, order_items: orderItems
-    // } }); 
-
-    // try {
-    //     const { id } = req.params;
-    //     const { jsonResponse, httpStatusCode } = await captureOrder(id);
-    //     res.status(httpStatusCode).json(jsonResponse);
-    // } catch (error) {
-    //     console.error("Failed to create order:", error);
-    //     res.status(500).json({ error: "Failed to capture order." });
-    // } 
-
-
-    const { id } = req.params;
+    const { orderID, payerID, paymentID, paymentSource } = req.params; 
 
     function paypalOrderCapture() {
         paypalCaptureOrder(id)
-            .then(({ jsonResponse, httpStatusCode }) => {
+            .then(({ jsonResponse, httpStatusCode }) => { 
+                // Update database with updated order record 
+                const orderFilter = { paypal_order_id: orderID }; 
+                const orderUpdate = { paypal_payer_id: payerID, 
+                                    paypal_payment_id: paymentID, 
+                                    billing_status: (paymentSource == 'paypal') 
+                                                    ? 'paying-with-paypal' 
+                                                        : (paymentSource == 'card') 
+                                                        ? 'paying-with-card' 
+                                                            : 'pay-on-delivery', 
+                                    payment_mode: (paymentSource == 'paypal') 
+                                                    ? 'paypal' 
+                                                        : (paymentSource == 'card') 
+                                                        ? 'card' 
+                                                            : 'cash' };
+                async function updateOrder() {
+                    await Order.findOneAndUpdate(orderFilter, orderUpdate, {
+                        upsert: true 
+                    })
+                        .then(order => {
+                            if (order) { 
+                                res.status(200).json({ success: `Order updated with PayPal Payment details`, data: order });
+                            } else {
+                                // console.log('No order found to proceed with payment processing.'); 
+                                res.status(404).json({ message: 'No order found to proceed with payment processing.' });
+                            }
+                        })
+                        .catch(error => {
+                            if (error) return res.status(400).json({ message: "An error occured!", details: `${error}` }); 
+                        });
+                } 
+                updateOrder()
+
                 res.status(httpStatusCode).json(jsonResponse);
             })
             .catch(error => {
@@ -332,7 +315,32 @@ const captureOrder = asyncHandler(async (req, res) => {
                 res.status(500).json({ error: "Failed to capture order." });
             }); 
     }; 
-    paypalOrderCapture();
+    paypalOrderCapture(); 
+    
+}); 
+
+const markAsPaidOrder = asyncHandler(async (req, res) => {
+    const { id } = req.params; 
+
+    // const orderByPaypalID = await Order.findOne({paypal_order_id: id}).exec();
+
+    const orderFilter = { paypal_order_id: id }; 
+    const orderUpdate = { paid: true };
+
+    // const upsertOrderByPaypalID = await Order.findOneAndUpdate(orderFilter, orderUpdate, {
+    await Order.findOneAndUpdate(orderFilter, orderUpdate, {
+        upsert: true 
+    })
+        .then(order => {
+            if (order) { 
+                res.status(200).json({ success: `Payment Successful.`, data: order });
+            } else {
+                console.log('No order found to process payment.');
+            }
+        })
+        .catch(error => {
+            if (error) return res.status(400).json({ message: "An error occured!", details: `${error}` }); 
+        }); 
 }); 
 
 const getOrder = asyncHandler(async (req, res) => {
@@ -458,7 +466,9 @@ const destroyOrder = asyncHandler(async (req, res) => {
 
 export { getOrders, 
 		createOrder, 
+        updatePayPalOrderID, 
         captureOrder, 
+        markAsPaidOrder,
 		getOrder, 
 		updateOrder, 
 		deleteOrder, 

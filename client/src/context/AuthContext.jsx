@@ -46,6 +46,7 @@ export const AuthProvider = ({ children }) => {
                 // console.log(error); 
                 if (error?.response?.status == '400') {
                     swal.fire({
+                        // text: `${error?.response?.status}: Something went wrong!`, 
                         text: `${error?.response?.status}: Something went wrong!`, 
                         color: '#900000', 
                         width: 325, 
@@ -114,7 +115,12 @@ export const AuthProvider = ({ children }) => {
                     // console.log(user);
                     // console.log(authTokens);
                     localStorage.setItem('deezysdeals_authTokens', JSON.stringify(response?.data)); 
-                    navigate(route('home.index')); 
+                    // If Sign-in is successful
+                    // navigate(route('home.index')); 
+                    const lastVisitedPage = localStorage.getItem('deezysdeals_lastVisitedPage') || route('home.index');
+                    localStorage.removeItem('deezysdeals_lastVisitedPage'); 
+                    navigate(lastVisitedPage); 
+
                 })
             .catch(error => { 
                 // console.log(error);
@@ -136,7 +142,8 @@ export const AuthProvider = ({ children }) => {
                     })
                 } else {
                     swal.fire({
-                        text: `${error?.response?.status}: Something went wrong!`, 
+                        // text: `${error?.response?.status}: Something went wrong!`, 
+                        text: `Something went wrong!`, 
                         color: '#900000', 
                         width: 325, 
                         position: 'top', 
@@ -212,10 +219,11 @@ export const AuthProvider = ({ children }) => {
             });
     }
 
-    const signOut = async () => {
+    const signOut = async () => { 
         setAuthTokens(null); 
         setUser(null); 
         localStorage?.removeItem('deezysdeals_authTokens'); 
+        // localStorage.removeItem('deezysdeals_lastVisitedPage');
         await axios.post(`${ Constants?.serverURL }/api/v1/auth/sign-out`)
             .then(response => {
                 console.log(response);

@@ -5,7 +5,9 @@ import roles from '../../config/allowedRoles.js';
 import checkRoles from '../../middleware/checkRoles.js'; 
 import { getOrders, 
         createOrder, 
+        updatePayPalOrderID, 
         captureOrder, 
+        markAsPaidOrder,
         getOrder, 
         updateOrder, 
         deleteOrder, 
@@ -27,7 +29,9 @@ orderRouter.route('/:id')
                 .delete(destroyOrder); 
 
 orderRouter.patch('/:id/restore', restoreOrder); 
-orderRouter.post('/:id/capture', captureOrder); 
+orderRouter.patch('/:id/update-paypal-order-id', updatePayPalOrderID); 
+orderRouter.post('/:orderID/:payerID/:paymentID/:paymentSource/capture', captureOrder); 
+orderRouter.post('/:id/mark-as-paid', markAsPaidOrder); 
 
 
 export default orderRouter; 

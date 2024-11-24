@@ -3,6 +3,7 @@ import { route } from '@/routes';
 import { AuthProvider } from '@/context/AuthContext.jsx'; 
 import { CartProvider } from '@/context/CartContext.jsx'; 
 import ProtectedRoute from '@/utils/ProtectedRoute.jsx'; 
+import TrackPage from '@/utils/TrackPage.jsx'; 
 
 import SignUp from '@/views/auth/SignUp.jsx'; 
 import SignUpAsEnterprise from '@/views/auth/SignUpAsEnterprise.jsx'; 
@@ -93,7 +94,8 @@ function App() {
   return (
     <BrowserRouter> 
       <AuthProvider>
-        <CartProvider>
+        <CartProvider> 
+          <TrackPage />
           <Routes>
             {/* Auth Routes */}
               <Route path={ route('sign-up') } element={ <SignUp /> } /> 
