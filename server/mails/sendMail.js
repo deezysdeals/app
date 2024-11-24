@@ -40,7 +40,7 @@ const sendMail = async (senderEmail, recipientEmail, subject, html) => {
             attachments: [
                 {
                     filename: 'logo.png', // The logo file 
-                    path: resolve(__dirname, '..', '..', 'views', 'images', 'logo.png'), 
+                    path: resolve(__dirname, '..', 'views', 'images', 'logo.png'), 
                     cid: 'logo' // Same CID as used in the img tag in the template 
                 }
             ]

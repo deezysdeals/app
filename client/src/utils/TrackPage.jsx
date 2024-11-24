@@ -7,7 +7,7 @@ const TrackPage = () => {
     const location = useLocation(); 
 
     if (location.pathname != route('sign-in')) {
-        let pageToRedirectTo = ((location.pathname == route('sign-up')) 
+        let pageToRedirectTo = (location.pathname == route('sign-up')) 
                                     ? route('home.index')
                                 : (location.pathname == route('sign-up-as-enteprise')) 
                                     ? route('home.index')
@@ -19,7 +19,9 @@ const TrackPage = () => {
                                     ? route('home.index')
                                 : (location.pathname == route('password-reset')) 
                                     ? route('home.index')
-                                : (location.pathname == route('password-reset-request')))  
+                                : (location.pathname == route('password-reset-request'))  
+                                    ? route('home.index')
+                                : (location.pathname == route('index')) 
                                     ? route('home.index')
                                 : location.pathname 
 
