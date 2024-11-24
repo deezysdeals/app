@@ -1,6 +1,6 @@
 import axios from 'axios'; 
 import asyncHandler from 'express-async-handler'; 
-import { orderPaymentInfo, paypalCreateOrder, paypalCaptureOrder } from '../utils/paypal-api.js'; 
+import { paypalCreateOrder, paypalCaptureOrder } from '../utils/paypal-api.js'; 
 import Category from '../models/Category.js'; 
 import Product from '../models/Product.js'; 
 import ProductImage from '../models/ProductImage.js'; 
