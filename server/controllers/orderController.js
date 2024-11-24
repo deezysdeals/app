@@ -218,6 +218,30 @@ const createOrder = asyncHandler(async (req, res) => {
 
         await Promise.all(cartResolve); 
 
+        async function paypalOrderCreate() { 
+            // Get the order to process payment
+            const orderToBeProcessed = await Order.findById(newOrder?._id); 
+
+            // await orderPaymentInfo(orderToBeProcessed?.total_to_be_paid, orderToBeProcessed?.currency);
+
+            // console.log({ 'test2': orderToBeProcessed }); 
+
+            await paypalCreateOrder(orderToBeProcessed)
+                .then(({ jsonResponse, httpStatusCode }) => {
+                    res.status(httpStatusCode).json({
+                        jsonResponse, 
+                        data: { 'order': newOrder}
+                    }); 
+                    // res.status(201).json({ success: `Order ${newOrder._id} added`, data: { 'order': newOrder} }); 
+                })
+                .catch(error => {
+                    console.error("Failed to create order:", error);
+                    res.status(500).json({ error: "Failed to create order." });
+                });
+        }
+        await paypalOrderCreate();
+
+        console.log(cart); 
     } 
 
     // PayPal record & processing for Order
@@ -235,30 +259,7 @@ const createOrder = asyncHandler(async (req, res) => {
     //     } 
     // } 
 
-    async function paypalOrderCreate() { 
-        // Get the order to process payment
-        const orderToBeProcessed = await Order.findById(newOrder?._id); 
-
-        // await orderPaymentInfo(orderToBeProcessed?.total_to_be_paid, orderToBeProcessed?.currency);
-
-        // console.log({ 'test2': orderToBeProcessed }); 
-
-        await paypalCreateOrder(orderToBeProcessed)
-            .then(({ jsonResponse, httpStatusCode }) => {
-                res.status(httpStatusCode).json({
-                    jsonResponse, 
-                    data: { 'order': newOrder}
-                }); 
-                // res.status(201).json({ success: `Order ${newOrder._id} added`, data: { 'order': newOrder} }); 
-            })
-            .catch(error => {
-                console.error("Failed to create order:", error);
-                res.status(500).json({ error: "Failed to create order." });
-            });
-    }
-    paypalOrderCreate();
-
-    console.log(cart); 
+    
 
 
     // newOrder.save()
