@@ -195,7 +195,30 @@ const createOrder = asyncHandler(async (req, res) => {
 
                     if ((cart?.length) == index+1) { 
                         console.log({ 'totaltobe': totalToBePaid }); 
-                        await Order.findOneAndUpdate({ _id: newOrder?._id }, { total_to_be_paid: totalToBePaid }); 
+                        let orderToBeProcessed = await Order.findOneAndUpdate({ _id: newOrder?._id }, { total_to_be_paid: totalToBePaid }); 
+                        
+                        async function paypalOrderCreate() { 
+                            // Get the order to process payment
+                            // const orderToBeProcessed = await Order.findById(newOrder?._id); 
+
+                            // await orderPaymentInfo(orderToBeProcessed?.total_to_be_paid, orderToBeProcessed?.currency);
+
+                            console.log({ 'test2': orderToBeProcessed }); 
+
+                            await paypalCreateOrder(orderToBeProcessed)
+                                .then(({ jsonResponse, httpStatusCode }) => {
+                                    res.status(httpStatusCode).json({
+                                        jsonResponse, 
+                                        data: { 'order': newOrder}
+                                    }); 
+                                    // res.status(201).json({ success: `Order ${newOrder._id} added`, data: { 'order': newOrder} }); 
+                                })
+                                .catch(error => {
+                                    console.error("Failed to create order:", error);
+                                    res.status(500).json({ error: "Failed to create order." });
+                                });
+                        }
+                        await paypalOrderCreate();
                     }
 
                     // Create new category, if does not exist 
@@ -218,7 +241,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
         await Promise.all(cartResolve); 
 
-        const chargeProcessing = async function paypalOrderCreate() { 
+        async function paypalOrderCreate() { 
             // Get the order to process payment
             const orderToBeProcessed = await Order.findById(newOrder?._id); 
 
@@ -238,10 +261,8 @@ const createOrder = asyncHandler(async (req, res) => {
                     console.error("Failed to create order:", error);
                     res.status(500).json({ error: "Failed to create order." });
                 });
-                await paypalOrderCreate();
         }
-
-        await Promise.all(chargeProcessing);
+        await paypalOrderCreate();
 
         console.log(cart); 
     } 
