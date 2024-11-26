@@ -24,7 +24,7 @@ import Address from '../models/Address.js';
 
 const getOrders = asyncHandler(async (req, res) => { 
     console.log('ip', req.headers['x-forwarded-for'], req.connection.remoteAddress); 
-    console.log(req?.headers)
+    console.log(req?.headers); 
     // console.log('role', req?.role);
     // console.log('user', req?.user_id)
     console.log('cookies', req?.cookies); 

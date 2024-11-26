@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler'; 
 import jwt from 'jsonwebtoken'; 
 import User from '../../models/User.js';
+import SignInAttempt from '../../models/SignInAttempt.js';
 
 
 const signInUser = asyncHandler(async (req, res) => {
@@ -21,8 +22,19 @@ const signInUser = asyncHandler(async (req, res) => {
 
     if (userFound) {
         userFound.online = true;
+        userFound.sign_in_count = userFound?.sign_in_count+1;
         userFound.last_time_active = '';
-    };
+    }; 
+
+    // Record the sign-in attempt
+    if (userFound?.role == 'individual' || userFound?.role == 'enterprise') {
+        await SignInAttempt.create({
+            user: userFound?._id, 
+            // ip_address: (req?.connection?.remoteAddress)?.slice(7) || req?.headers['x-forwarded-for']
+            ip_address: (req?.connection?.remoteAddress)?.replace(/^::ffff:/, '') || req?.headers['x-forwarded-for']
+        }); 
+    }
+    // End of Record the sign-in attempt
 
     const access = jwt.sign(
         {

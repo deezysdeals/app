@@ -1,4 +1,7 @@
 import asyncHandler from 'express-async-handler'; 
+import { parseISO, startOfDay, endOfDay, subDays, 
+        startOfMonth, endOfMonth, addMonths, subMonths, 
+        startOfYear, endOfYear, addYears, subYears } from 'date-fns'; 
 import { getYesterdayDateRange, 
         getTodayDateRange, 
         getPreviousWeekDateRange, 
@@ -10,6 +13,7 @@ import { getYesterdayDateRange,
 import User from '../models/User.js'; 
 import Order from '../models/Order.js'; 
 import OrderItem from '../models/OrderItem.js'; 
+import Payment from '../models/Payment.js'; 
 import Product from '../models/Product.js'; 
 
 
@@ -20,11 +24,10 @@ import Product from '../models/Product.js';
 const getUsers = asyncHandler(async (req, res) => { 
     const current_page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 10; 
-    const roleQuery = req?.role; 
+    const roleQuery = req?.query?.role; 
     const range = req?.query?.range 
-    const type = req?.query?.type
 
-    console.log(current_page, limit, roleQuery, range, type); 
+    console.log(current_page, limit, roleQuery, range); 
 
     const skip = (current_page - 1) * limit; 
 
@@ -46,172 +49,305 @@ const getUsers = asyncHandler(async (req, res) => {
                                             $lte: todayEnd  
                                         }
                                     }).countDocuments(); 
-    // End of Users Today
-    if ((roleQuery == 'admin') || (roleQuery == 'dispatcher') || (roleQuery == 'enterprise') || (roleQuery == 'individual')) {
-        const users = await User.find({ role: roleQuery, deleted_at: null })
+    // End of Users Today 
+
+    let users, usersPreviousCount, usersCount;
+
+
+    // if ((roleQuery == 'admin') || (roleQuery == 'dispatcher') || (roleQuery == 'enterprise') || (roleQuery == 'individual')) {
+    if ((roleQuery != 'all')) {
+        
+        // Users Count By Period Range
+        if (range == 'today') { 
+            users = await User.find({ role: roleQuery, 
+                                    deleted_at: null, 
+                                    created_at: { 
+                                        $gte: todayStart, 
+                                        $lte: todayEnd  
+                                    } })
+                            .select(['-password', '-password_reset_token', '-updated_at'])
                             .sort('-created_at')
                             .skip(skip)
                             .limit(limit)
-                            .lean(); 
-
-        if (!users?.length) return res.status(404).json({ message: "No users found!" }); 
-
-        // const usersCount = await User.find({ role: roleQuery, deleted_at: null }).countDocuments();
-        
-        // Users Count
-        let usersPreviousCount, usersCount;
-
-        if (range == 'today') { 
-            usersPreviousCount = await User.find({ deleted_at: null,
-                                            created_at: { 
-                                                $gte: yesterdayStart, 
-                                                $lte: yesterdayEnd  
-                                            }
-                                        }).countDocuments(); 
-            usersCount = await User.find({ deleted_at: null,
+                            .lean();    
+            usersPreviousCount = await User.find({ role: roleQuery, 
+                                                    deleted_at: null,
+                                                    created_at: { 
+                                                        $gte: yesterdayStart, 
+                                                        $lte: yesterdayEnd  
+                                                    }
+                                                }).countDocuments(); 
+            usersCount = await User.find({ role: roleQuery, 
+                                            deleted_at: null,
                                             created_at: { 
                                                 $gte: todayStart, 
                                                 $lte: todayEnd  
                                             }
                                         }).countDocuments(); 
-        } else if (range == 'week') {
-            usersPreviousCount = await User.find({ deleted_at: null,
-                                            created_at: { 
-                                                $gte: lastWeekStart, 
-                                                $lte: lastWeekEnd  
-                                            }
+        } else if (range == 'week') { 
+            users = await User.find({ role: roleQuery, 
+                                    deleted_at: null, 
+                                    created_at: { 
+                                        $gte: weekStart, 
+                                        $lte: weekEnd  
+                                    } })
+                            .select(['-password', '-password_reset_token', '-updated_at'])
+                            .sort('-created_at')
+                            .skip(skip)
+                            .limit(limit)
+                            .lean();    
+            usersPreviousCount = await User.find({ role: roleQuery, 
+                                                    deleted_at: null,
+                                                    created_at: { 
+                                                        $gte: lastWeekStart, 
+                                                        $lte: lastWeekEnd  
+                                                    }
                                         }).countDocuments(); 
-            usersCount = await User.find({ deleted_at: null,
+            usersCount = await User.find({ role: roleQuery, 
+                                            deleted_at: null,
                                             created_at: { 
                                                 $gte: weekStart, 
                                                 $lte: weekEnd  
                                             }
                                         }).countDocuments(); 
         } else if (range == 'month') { 
-            usersPreviousCount = await User.find({ deleted_at: null,
-                                            created_at: { 
-                                                $gte: lastMonthStart, 
-                                                $lte: lastMonthEnd  
-                                            }
-                                        }).countDocuments(); 
-            usersCount = await User.find({ deleted_at: null,
-                                                created_at: {
-                                                    $gte: monthStart,
-                                                    $lte: monthEnd
-                                                }
-                                            }).countDocuments();
-        } else if (range == 'year') { 
-            usersPreviousCount = await User.find({ deleted_at: null,
-                                            created_at: { 
-                                                $gte: lastYearStart, 
-                                                $lte: lastYearEnd  
-                                            }
-                                        }).countDocuments(); 
-            usersCount = await User.find({ deleted_at: null,
-                                                created_at: {
-                                                    $gte: yearStart,
-                                                    $lte: yearEnd
-                                                }
-                                            }).countDocuments();
-        } else if (range == 'all') {
-            usersPreviousCount = 0;
-            usersCount = await User.find({ deleted_at: null }).countDocuments(); 
-        } 
-        // End Users Count
-
-        res.json({ 
-                    meta: {
-                        current_page, 
-                        limit, 
-                        total_pages: Math.ceil(usersCount / limit), 
-                        total_results: usersCount, 
-                        total_previous_results: usersPreviousCount, 
-                        total_today: usersTodayCount
-                    }, 
-                    data: users 
-                });
-    } else {
-        const users = await User.find({ deleted_at: null })
+            users = await User.find({ role: roleQuery, 
+                                    deleted_at: null, 
+                                    created_at: { 
+                                        $gte: monthStart, 
+                                        $lte: monthEnd  
+                                    } })
+                            .select(['-password', '-password_reset_token', '-updated_at'])
                             .sort('-created_at')
                             .skip(skip)
                             .limit(limit)
-                            .lean(); 
+                            .lean();   
+            usersPreviousCount = await User.find({ role: roleQuery, 
+                                                    deleted_at: null,
+                                                    created_at: { 
+                                                        $gte: lastMonthStart, 
+                                                        $lte: lastMonthEnd  
+                                                    }
+                                                }).countDocuments(); 
+            usersCount = await User.find({ role: roleQuery, 
+                                            deleted_at: null,
+                                            created_at: {
+                                                $gte: monthStart,
+                                                $lte: monthEnd
+                                            }
+                                        }).countDocuments();
+        } else if (range == 'year') { 
+            users = await User.find({ role: roleQuery, 
+                                    deleted_at: null, 
+                                    created_at: { 
+                                        $gte: yearStart, 
+                                        $lte: yearEnd  
+                                    } })
+                            .select(['-password', '-password_reset_token', '-updated_at'])
+                            .sort('-created_at')
+                            .skip(skip)
+                            .limit(limit)
+                            .lean();   
+            usersPreviousCount = await User.find({ role: roleQuery, 
+                                                    deleted_at: null,
+                                                    created_at: { 
+                                                        $gte: lastYearStart, 
+                                                        $lte: lastYearEnd  
+                                                    }
+                                                }).countDocuments(); 
+            usersCount = await User.find({ role: roleQuery, 
+                                            deleted_at: null,
+                                            created_at: {
+                                                $gte: yearStart,
+                                                $lte: yearEnd
+                                            }
+                                        }).countDocuments();
+        } else if (range == 'all') {
+            users = await User.find({ role: roleQuery, 
+                                    deleted_at: null })
+                            .select(['-password', '-password_reset_token', '-updated_at'])
+                            .sort('-created_at')
+                            .skip(skip)
+                            .limit(limit)
+                            .lean();   
+            usersPreviousCount = 0;
+            usersCount = await User.find({ role: roleQuery, deleted_at: null }).countDocuments(); 
+        } 
+        // End Users Count By Period Range
 
         if (!users?.length) return res.status(404).json({ message: "No users found!" }); 
 
-        let usersPreviousCount = 0;
-        const usersCount = await User.find({ deleted_at: null }).countDocuments(); 
+    } else if ((roleQuery == 'all' || !roleQuery)) {
+        
+        // Users Count By Period Range
+        if (range == 'today') { 
+            users = await User.find({ deleted_at: null, 
+                                        created_at: { 
+                                        $gte: todayStart, 
+                                        $lte: todayEnd  
+                                    } })
+                            .select(['-password', '-password_reset_token', '-updated_at'])
+                            .sort('-created_at')
+                            .skip(skip)
+                            .limit(limit)
+                            .lean();    
+            usersPreviousCount = await User.find({ deleted_at: null,
+                                                    created_at: { 
+                                                        $gte: yesterdayStart, 
+                                                        $lte: yesterdayEnd 
+                                                    }}).countDocuments(); 
+            usersCount = await User.find({ deleted_at: null,
+                                            created_at: { 
+                                                $gte: todayStart, 
+                                                $lte: todayEnd  
+                                            }}).countDocuments(); 
+        } else if (range == 'week') { 
+            users = await User.find({ deleted_at: null, 
+                                    created_at: { 
+                                        $gte: weekStart, 
+                                        $lte: weekEnd 
+                                    } })
+                            .select(['-password', '-password_reset_token', '-updated_at'])
+                            .sort('-created_at')
+                            .skip(skip)
+                            .limit(limit)
+                            .lean();    
+            usersPreviousCount = await User.find({ deleted_at: null,
+                                                    created_at: { 
+                                                        $gte: lastWeekStart, 
+                                                        $lte: lastWeekEnd  
+                                                    }}).countDocuments(); 
+            usersCount = await User.find({ deleted_at: null,
+                                            created_at: { 
+                                                $gte: weekStart, 
+                                                $lte: weekEnd  
+                                            }}).countDocuments(); 
+        } else if (range == 'month') { 
+            users = await User.find({ deleted_at: null, 
+                                    created_at: { 
+                                        $gte: monthStart, 
+                                        $lte: monthEnd  
+                                    } })
+                            .select(['-password', '-password_reset_token', '-updated_at'])
+                            .sort('-created_at')
+                            .skip(skip)
+                            .limit(limit)
+                            .lean();   
+            usersPreviousCount = await User.find({ deleted_at: null,
+                                                    created_at: { 
+                                                        $gte: lastMonthStart, 
+                                                        $lte: lastMonthEnd  
+                                                    }}).countDocuments(); 
+            usersCount = await User.find({ deleted_at: null,
+                                            created_at: {
+                                                $gte: monthStart,
+                                                $lte: monthEnd
+                                            }}).countDocuments();
+        } else if (range == 'year') { 
+            users = await User.find({ deleted_at: null, 
+                                    created_at: { 
+                                        $gte: yearStart, 
+                                        $lte: yearEnd  
+                                    } })
+                            .select(['-password', '-password_reset_token', '-updated_at'])
+                            .sort('-created_at')
+                            .skip(skip)
+                            .limit(limit)
+                            .lean();   
+            usersPreviousCount = await User.find({ deleted_at: null,
+                                                    created_at: { 
+                                                        $gte: lastYearStart, 
+                                                        $lte: lastYearEnd  
+                                                    } }).countDocuments(); 
+            usersCount = await User.find({ deleted_at: null,
+                                            created_at: {
+                                                $gte: yearStart,
+                                                $lte: yearEnd
+                                            }}).countDocuments();
+        } else if (range == 'all') {
+            users = await User.find({ deleted_at: null })
+                            .select(['-password', '-password_reset_token', '-updated_at'])
+                            .sort('-created_at')
+                            .skip(skip)
+                            .limit(limit)
+                            .lean();   
+            usersPreviousCount = 0;
+            usersCount = await User.find({ deleted_at: null }).countDocuments(); 
+        } 
+        // End Users Count By Period Range
 
-        res.json({ 
-                    meta: {
-                        current_page, 
-                        limit, 
-                        total_pages: Math.ceil(usersCount / limit), 
-                        total_results: usersCount, 
-                        total_previous_results: usersPreviousCount, 
-                        total_today: usersTodayCount
-                    }, 
-                    data: users 
-                }); 
+        if (!users?.length) return res.status(404).json({ message: "No users found!" }); 
 
     } 
-});
 
-
-const getAdmins = asyncHandler(async (req, res) => { 
-    const current_page = parseInt(req?.query?.page) || 1;
-    const limit = parseInt(req?.query?.limit) || 10; 
-
-    const skip = (current_page - 1) * limit; 
-
-	const users = await User.find({ deleted_at: null })
-                            .sort('-created_at')
-                            .skip(skip)
-                            .limit(limit)
-                            .lean(); 
-
-    if (!users?.length) return res.status(404).json({ message: "No users found!" }); 
-
-    const usersCount = await User.find({ deleted_at: null }).countDocuments(); 
-
-	res.json({ 
+    res.json({ 
                 meta: {
                     current_page, 
                     limit, 
                     total_pages: Math.ceil(usersCount / limit), 
-                    total_results: usersCount 
+                    total_results: usersCount, 
+                    total_previous_results: usersPreviousCount, 
+                    total_today: usersTodayCount
                 }, 
                 data: users 
-            });
+            }); 
 });
 
 
-const getClients = asyncHandler(async (req, res) => { 
-    const current_page = parseInt(req?.query?.page) || 1;
-    const limit = parseInt(req?.query?.limit) || 10; 
+// const getAdmins = asyncHandler(async (req, res) => { 
+//     const current_page = parseInt(req?.query?.page) || 1;
+//     const limit = parseInt(req?.query?.limit) || 10; 
 
-    const skip = (current_page - 1) * limit; 
+//     const skip = (current_page - 1) * limit; 
 
-	const users = await User.find({ deleted_at: null })
-                            .sort('-created_at')
-                            .skip(skip)
-                            .limit(limit)
-                            .lean(); 
+// 	const users = await User.find({ deleted_at: null })
+//                             .sort('-created_at')
+//                             .skip(skip)
+//                             .limit(limit)
+//                             .lean(); 
 
-    if (!users?.length) return res.status(404).json({ message: "No users found!" }); 
+//     if (!users?.length) return res.status(404).json({ message: "No users found!" }); 
 
-    const usersCount = await User.find({ deleted_at: null }).countDocuments(); 
+//     const usersCount = await User.find({ deleted_at: null }).countDocuments(); 
 
-	res.json({ 
-                meta: {
-                    current_page, 
-                    limit, 
-                    total_pages: Math.ceil(usersCount / limit), 
-                    total_results: usersCount 
-                }, 
-                data: users 
-            });
-});
+// 	res.json({ 
+//                 meta: {
+//                     current_page, 
+//                     limit, 
+//                     total_pages: Math.ceil(usersCount / limit), 
+//                     total_results: usersCount 
+//                 }, 
+//                 data: users 
+//             });
+// });
+
+
+// const getClients = asyncHandler(async (req, res) => { 
+//     const current_page = parseInt(req?.query?.page) || 1;
+//     const limit = parseInt(req?.query?.limit) || 10; 
+
+//     const skip = (current_page - 1) * limit; 
+
+// 	const users = await User.find({ deleted_at: null })
+//                             .sort('-created_at')
+//                             .skip(skip)
+//                             .limit(limit)
+//                             .lean(); 
+
+//     if (!users?.length) return res.status(404).json({ message: "No users found!" }); 
+
+//     const usersCount = await User.find({ deleted_at: null }).countDocuments(); 
+
+// 	res.json({ 
+//                 meta: {
+//                     current_page, 
+//                     limit, 
+//                     total_pages: Math.ceil(usersCount / limit), 
+//                     total_results: usersCount 
+//                 }, 
+//                 data: users 
+//             });
+// });
 
 const createUser = asyncHandler(async (req, res) => {
     const { username, 
@@ -283,12 +419,8 @@ const createUser = asyncHandler(async (req, res) => {
 const getUser = asyncHandler(async (req, res) => { 
     const { username } = req?.params; 
 
-    // console.log(username); 
-
-	// const userFound = await User.findOne({ username: username }).lean(); 
-
 	const userFound = await User.findOne({ username: username })
-                                .select(['-created_at', '-updated_at', '-deleted_at'])
+                                .select(['-password', '-password_reset_token', '-updated_at', '-deleted_at'])
                                 .lean(); 
 
 	if (!userFound) return res.status(404).json({ message: `No user matches user @${username}!` }); 
@@ -299,52 +431,66 @@ const getUser = asyncHandler(async (req, res) => {
     // Orders
     const orders_current_page = parseInt(req?.query?.orderPage) || 1;
     const orders_limit = parseInt(req?.query?.orderLimit) || 10; 
-    const orders_skip = (orders_current_page - 1) * limit; 
+    const orders_skip = (orders_current_page - 1) * orders_limit; 
 
-    // Products
-    const products_current_page = parseInt(req?.query?.productPage) || 1;
-    const products_limit = parseInt(req?.query?.productLimit) || 10; 
-    const products_skip = (products_current_page - 1) * limit; 
+    // // Products
+    // const products_current_page = parseInt(req?.query?.productPage) || 1;
+    // const products_limit = parseInt(req?.query?.productLimit) || 10; 
+    // const products_skip = (products_current_page - 1) * limit; 
 
     let userDetails = []; 
 
-    userDetails.push(user); 
+    // userDetails.push(userFound); 
 
     const updatePromises = async () => { 
         // Orders
-        const orders = await Order.find({ user: user?._id, deleted_at: null })
+        const orders = await Order.find({ user: userFound?._id, deleted_at: null })
                                 .sort('-created_at')
-                                .skip(products_skip)
-                                .limit(products_limit)
+                                .skip(orders_skip)
+                                .limit(orders_limit)
                                 .populate({
                                     path: 'user', 
                                     select: 'first_name last_name username' 
                                 })
                                 .lean(); 
 
-        const updateOrderPromises = orders?.map(async order => {
-            let foundOrderItems = await OrderItem.find({ order: order?._id })
-                                                .populate({
-                                                    path: 'product', 
-                                                })
-                                                .exec(); 
-            order['orderItems'] = foundOrderItems; 
+        let updateOrderPromises = []; 
 
-            userDetails.push(order); 
-        }); 
+        // Ensure orders is an array before calling map
+        if (Array.isArray(orders) && orders.length > 0) {
+            updateOrderPromises = orders?.map(async (order) => {
+                let foundOrderItems = await OrderItem.find({ order: order?._id })
+                                                    .populate({
+                                                        path: 'product', 
+                                                    })
+                                                    .exec(); 
+                order['orderItems'] = foundOrderItems; 
 
-        // Order Items 
-        const orderItems = await OrderItem.find({ user: user?._id, deleted_at: null }); 
+                userDetails.push(order); 
+            }); 
 
-        userDetails.push(orderItems);
+            // await Promise.all(updateOrderPromises); 
+        } else {
+            console.log("No orders found for the user.");
+        }
+
+        // Only call Promise.all if updateOrderPromises is an array and has promises
+        // if (updateOrderPromises.length > 0) {
+        //     await Promise.all(updateOrderPromises); 
+        // }
 
         // Payments
-        const payments = await Payment.find({ user: user?._id, deleted_at: null }); 
+        const payments = await Payment.find({ user: userFound?._id, deleted_at: null }); 
 
         userDetails.push(payments);
     } 
 
-    await Promise.all(updatePromises); 
+    if (updatePromises.length > 0) {
+        await Promise.all(updatePromises); 
+    }
+    // await Promise.all(updatePromises); 
+
+    userDetails.push(userFound); 
 
 	// res.status(200).json({ data: userFound }); 
     res.json({ 
@@ -358,25 +504,25 @@ const getUser = asyncHandler(async (req, res) => {
             });
 }); 
 
-const getAdmin = asyncHandler(async (req, res) => { 
-    const { username } = req?.params;
-	const user = await User.findOne({ username: username })
-		.select(['-created_at', '-updated_at', '-deleted_at'])
-		.lean();
+// const getAdmin = asyncHandler(async (req, res) => { 
+//     const { username } = req?.params;
+// 	const user = await User.findOne({ username: username })
+// 		.select(['-created_at', '-updated_at', '-deleted_at'])
+// 		.lean();
 
-	if (!user) return res.status(404).json({ message: `No user matches user ${username}!` });
-	res.status(200).json({ data: user });
-}); 
+// 	if (!user) return res.status(404).json({ message: `No user matches user ${username}!` });
+// 	res.status(200).json({ data: user });
+// }); 
 
-const getClient = asyncHandler(async (req, res) => { 
-    const { username } = req?.params;
-	const user = await User.findOne({ username: username })
-		.select(['-created_at', '-updated_at', '-deleted_at'])
-		.lean();
+// const getClient = asyncHandler(async (req, res) => { 
+//     const { username } = req?.params;
+// 	const user = await User.findOne({ username: username })
+// 		.select(['-created_at', '-updated_at', '-deleted_at'])
+// 		.lean();
 
-	if (!user) return res.status(404).json({ message: `No user matches user ${username}!` });
-	res.status(200).json({ data: user });
-}); 
+// 	if (!user) return res.status(404).json({ message: `No user matches user ${username}!` });
+// 	res.status(200).json({ data: user });
+// }); 
 
 const updateUser = asyncHandler(async (req, res) => {
     const { first_name, 
@@ -477,12 +623,12 @@ const destroyUser = asyncHandler(async (req, res) => {
 
 
 export { getUsers, 
-        getAdmins, 
-        getClients, 
+        // getAdmins, 
+        // getClients, 
 		createUser, 
 		getUser, 
-        getAdmin, 
-        getClient, 
+        // getAdmin, 
+        // getClient, 
 		updateUser, 
 		deleteUser, 
         restoreUser, 

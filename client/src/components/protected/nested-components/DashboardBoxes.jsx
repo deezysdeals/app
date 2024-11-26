@@ -7,6 +7,7 @@ dayjs.extend(utc);
 import { useOrders } from '@/hooks/useOrders.jsx'; 
 import { useUsers } from '@/hooks/useUsers.jsx'; 
 import RatingChart from './RatingChart';
+import { useSignInAttempts } from '../../../hooks/useSignInAttempts';
 
 
 export default function DashboardBoxes() { 
@@ -18,23 +19,29 @@ export default function DashboardBoxes() {
     }); 
     const [userQuery, setUserQuery] = useState({
         range: 'all', 
-        type: 'all', 
+        role: 'all', 
         page: 1, 
         limit: 10, 
-        role: 'individual' 
+    }); 
+    const [signInAttemptQuery, setSignInAttemptQuery] = useState({
+        range: 'all', 
+        page: 1, 
+        limit: 10, 
     }); 
 
     const { orders, getOrders } = useOrders(orderQuery); 
     console.log(orders); 
-    // console.log(orderQuery); 
 
     const { users, getUsers } = useUsers(userQuery); 
     console.log(users); 
 
+    const { signInAttempts, getSignInAttempts } = useSignInAttempts(signInAttemptQuery);
+    console.log(signInAttempts); 
+
     // Compute the Percentage Difference
-    function calculatePercentageDifference(totalPaidLastMonth, totalPaidThisMonth) {
-        const absoluteDifference = Math.abs(totalPaidLastMonth - totalPaidThisMonth);
-        const average = (totalPaidLastMonth + totalPaidThisMonth) / 2;
+    function calculatePercentageDifference(totalPaidThisMonth, totalPaidLastMonth) {
+        const absoluteDifference = Math.abs(totalPaidThisMonth - totalPaidLastMonth);
+        const average = (totalPaidThisMonth + totalPaidLastMonth) / 2;
         const percentageDifference = (absoluteDifference / average) * 100;
         return percentageDifference;
     } 
@@ -43,14 +50,21 @@ export default function DashboardBoxes() {
     const totalPaidOrdersLastMonth = orders?.meta?.total_amount?.total_paid_last_month; 
     const totalPaidOrdersThisMonth = orders?.meta?.total_amount?.total_paid_this_month; 
 
-    const monthlyOrderPercentageDifference = calculatePercentageDifference(totalPaidOrdersLastMonth, totalPaidOrdersThisMonth); 
+    const monthlyOrderPercentageDifference = calculatePercentageDifference(totalPaidOrdersThisMonth, totalPaidOrdersLastMonth); 
     // End of For Orders
 
     // For New Clients
     const totalUsersLastMonth = users?.meta?.total_previous_results; 
     const totalUsersThisMonth = users?.meta?.total_results; 
 
-    const usersPercentageDifference = calculatePercentageDifference(totalUsersLastMonth, totalUsersThisMonth); 
+    const usersPercentageDifference = calculatePercentageDifference(totalUsersThisMonth, totalUsersLastMonth); 
+    // End of For New Clients
+
+    // For New Clients
+    const totalSignInAttemptsLastMonth = signInAttempts?.meta?.total_previous_results; 
+    const totalSignInAttemptsThisMonth = signInAttempts?.meta?.total_results; 
+
+    const signInAttemptsPercentageDifference = calculatePercentageDifference(totalSignInAttemptsThisMonth, totalSignInAttemptsLastMonth); 
     // End of For New Clients
     // End of Compute the Percentage Difference 
 
@@ -214,71 +228,71 @@ export default function DashboardBoxes() {
                                 <li 
                                     type="button" 
                                     onClick={ async () => {
-                                        await setUserQuery(prevState => ({
+                                        await setSignInAttemptQuery(prevState => ({
                                             ...prevState,
                                             range: 'all'
                                         })); 
-                                        await getUsers(userQuery?.range); 
+                                        await getSignInAttempts(signInAttemptQuery?.range); 
                                     }}
-                                    className={`badge rounded-pill ${(userQuery?.range == 'all') ? `text-bg-dark` : `text-bg-secondary`}`}>
+                                    className={`badge rounded-pill ${(signInAttemptQuery?.range == 'all') ? `text-bg-dark` : `text-bg-secondary`}`}>
                                         <span>All</span>
                                 </li>
                                 <li 
                                     type="button" 
                                     onClick={ async () => {
-                                        await setUserQuery(prevState => ({
+                                        await setSignInAttemptQuery(prevState => ({
                                             ...prevState,
                                             range: 'today'
                                         })); 
-                                        await getUsers(userQuery?.range); 
+                                        await getSignInAttempts(signInAttemptQuery?.range); 
                                     }}
-                                    className={`badge rounded-pill ${(userQuery?.range == 'today') ? `text-bg-dark` : `text-bg-secondary`}`}>
+                                    className={`badge rounded-pill ${(signInAttemptQuery?.range == 'today') ? `text-bg-dark` : `text-bg-secondary`}`}>
                                         <span>Today</span>
                                 </li>
                                 <li 
                                     type="button" 
                                     onClick={ async () => {
-                                        await setUserQuery(prevState => ({
+                                        await setSignInAttemptQuery(prevState => ({
                                             ...prevState,
                                             range: 'week'
                                         })); 
-                                        await getUsers(userQuery?.range); 
+                                        await getSignInAttempts(signInAttemptQuery?.range); 
                                     }}
-                                    className={`badge rounded-pill ${(userQuery?.range == 'week') ? `text-bg-dark` : `text-bg-secondary`}`}>
-                                        <span>A Week</span>
+                                    className={`badge rounded-pill ${(signInAttemptQuery?.range == 'week') ? `text-bg-dark` : `text-bg-secondary`}`}>
+                                        <span>Week</span>
                                 </li> 
                                 <li 
                                     type="button" 
                                     onClick={ async () => {
-                                        await setUserQuery(prevState => ({
+                                        await setSignInAttemptQuery(prevState => ({
                                             ...prevState,
                                             range: 'month'
                                         })); 
-                                        await getUsers(userQuery?.range); 
+                                        await getSignInAttempts(signInAttemptQuery?.range); 
                                     }}
-                                    className={`badge rounded-pill ${(userQuery?.range == 'month') ? `text-bg-dark` : `text-bg-secondary`}`}>
-                                        <span>A Month</span>
+                                    className={`badge rounded-pill ${(signInAttemptQuery?.range == 'month') ? `text-bg-dark` : `text-bg-secondary`}`}>
+                                        <span>Month</span>
                                 </li> 
                                 <li 
                                     type="button" 
                                     onClick={ async () => {
-                                        await setUserQuery(prevState => ({
+                                        await setSignInAttemptQuery(prevState => ({
                                             ...prevState,
                                             range: 'year'
                                         })); 
-                                        await getUsers(userQuery?.range); 
+                                        await getSignInAttempts(signInAttemptQuery?.range); 
                                     }}
-                                    className={`badge rounded-pill ${(userQuery?.range == 'year') ? `text-bg-dark` : `text-bg-secondary`}`}>
-                                        <span>A Year</span>
+                                    className={`badge rounded-pill ${(signInAttemptQuery?.range == 'year') ? `text-bg-dark` : `text-bg-secondary`}`}>
+                                        <span>Year</span>
                                 </li> 
                             </ul>
                         </div>
                     </div>
 
                     <div className="d-flex align-items-center justify-content-between">
-                        <span className="fw-semibold fs-4">{ (users?.meta?.total_results)?.toLocaleString('en') }</span>
+                        <span className="fw-semibold fs-4">{ (signInAttempts?.meta?.total_results)?.toLocaleString('en') }</span>
                         <span className="badge rounded-pill text-bg-success">
-                            { (totalUsersThisMonth>totalUsersLastMonth) ? 
+                            { (totalSignInAttemptsThisMonth>totalSignInAttemptsLastMonth) ? 
                             <span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" className="bi bi-arrow-up-right"
                                     viewBox="0 0 16 16">
@@ -295,23 +309,23 @@ export default function DashboardBoxes() {
                             </span> }
                             <span>
                                 <small>
-                                    { (((totalUsersThisMonth>totalUsersLastMonth) && !isNaN(usersPercentageDifference?.toFixed()))?'+':'-') }
-                                    { isNaN(usersPercentageDifference?.toFixed())?'0':usersPercentageDifference?.toFixed() }%
+                                    { (((totalSignInAttemptsThisMonth>totalSignInAttemptsLastMonth) && !isNaN(signInAttemptsPercentageDifference?.toFixed()))?'+':'-') }
+                                    { isNaN(signInAttemptsPercentageDifference?.toFixed())?'0':signInAttemptsPercentageDifference?.toFixed() }%
                                 </small>
                             </span>
                         </span>
                     </div> 
 
                     <div>
-                        <meter id="fuel" min="0" max="100" low="33" high="66" optimum="80" value={ usersPercentageDifference?.toFixed() }>at 50/100</meter>
+                        <meter id="fuel" min="0" max="100" low="33" high="66" optimum="80" value={ signInAttemptsPercentageDifference?.toFixed() }>at 50/100</meter>
                     </div> 
 
                     <div className="d-flex align-items-center justify-content-between fw-semibold">
                         <small>Check-ins totally</small> 
-                        <small>{ ((users?.meta?.total_today)>0)&&'+' }{ (users?.meta?.total_today)?.toLocaleString('en') } today</small>
+                        <small>{ ((signInAttempts?.meta?.total_today)>0)&&'+' }{ (signInAttempts?.meta?.total_today)?.toLocaleString('en') } today</small>
                     </div>
                 </div>
-            
+
                 <div className="customers-volume box-shadow-1 border-radius-25 p-3 d-flex flex-column justify-content-between gap-2">
                     <div className="d-flex align-items-center justify-content-between">
                         <h2 className="fs-6">Client Growth</h2>
@@ -329,11 +343,11 @@ export default function DashboardBoxes() {
                                     <span 
                                         type="button" 
                                         onClick={ async () => {
-                                            await setUserQuery(prevState => ({
+                                            setUserQuery(prevState => ({
                                                 ...prevState,
                                                 range: 'today'
                                             })); 
-                                            await getUsers(userQuery); 
+                                            await getUsers(); 
                                         }}
                                         className="dropdown-item">
                                             Today
@@ -343,11 +357,11 @@ export default function DashboardBoxes() {
                                     <span 
                                         type="button" 
                                         onClick={ async () => {
-                                            await setUserQuery(prevState => ({
+                                            setUserQuery(prevState => ({
                                                 ...prevState,
                                                 range: 'week'
                                             })); 
-                                            await getUsers(userQuery); 
+                                            await getUsers(); 
                                         }}
                                         className="dropdown-item">
                                             This Week
@@ -357,11 +371,11 @@ export default function DashboardBoxes() {
                                     <span 
                                         type="button" 
                                         onClick={ async () => {
-                                            await setUserQuery(prevState => ({
+                                            setUserQuery(prevState => ({
                                                 ...prevState,
                                                 range: 'month'
                                             })); 
-                                            await getUsers(userQuery); 
+                                            await getUsers(); 
                                         }}
                                         className="dropdown-item">
                                             This Month
@@ -371,11 +385,11 @@ export default function DashboardBoxes() {
                                     <span 
                                         type="button" 
                                         onClick={ async () => { 
-                                            await setUserQuery(prevState => ({
+                                            setUserQuery(prevState => ({
                                                 ...prevState,
                                                 range: 'year'
                                             })); 
-                                            await getUsers(userQuery);  
+                                            await getUsers();  
                                         }}
                                         className="dropdown-item">
                                             This Year
@@ -385,11 +399,11 @@ export default function DashboardBoxes() {
                                     <span 
                                         type="button" 
                                         onClick={ async () => { 
-                                            await setUserQuery(prevState => ({
+                                            setUserQuery(prevState => ({
                                                 ...prevState,
                                                 range: 'all'
                                             })); 
-                                            await getUsers(userQuery); 
+                                            await getUsers(); 
                                         }}
                                         className="dropdown-item">
                                             All Time

@@ -1,4 +1,4 @@
-import { useState } from 'react'; 
+import { useEffect, useState } from 'react'; 
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import dayjs from 'dayjs';
@@ -13,12 +13,36 @@ import Previous from '@/components/protected/nested-components/pagination-links/
 import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
 import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
+// import { voiceText, setVoiceText, isListening, handleStartListening } from '@/utils/VoiceToText.jsx';
+import { useVoiceToText } from '@/utils/useVoiceToText.jsx'; 
 
 
 export default function Index() { 
-    const [userRole, setUserRole] = useState(''); 
-    const { users, getUsers } = useUsers(); 
-    console.log(users)
+    // Voice-to-Text Search funtionality
+    const [searchKey, setSearchKey] = useState(''); 
+
+    useEffect(() => {
+        if (searchKey) {
+            console.log('search for:', searchKey);
+        }
+    }, [searchKey]);
+    // End of Voice-to-Text search functionality
+
+    const { handleStartListening, 
+            handleStopListening, 
+            voiceText, 
+            setVoiceText,
+            isListening, 
+            setIsListening } = useVoiceToText()
+
+    const [userQuery, setUserQuery] = useState({
+        range: 'all', 
+        role: 'individual', 
+        page: 1, 
+        limit: 10, 
+    }); 
+    const { users, getUsers } = useUsers(userQuery); 
+    console.log(users); 
 
     return (
         <Layout>
@@ -30,46 +54,66 @@ export default function Index() {
                             <span 
                                 type="button" 
                                 onClick={ async () => {
-                                    setUserRole(''); 
-                                    await getUsers('', 1); 
+                                    await setUserQuery(prevState => ({
+                                        ...prevState,
+                                        role: 'all', 
+                                        page: 1
+                                    })); 
+                                    await getUsers(userQuery?.role); 
                                 } }
-                                className={`btn btn-sm ${(userRole == '') ? 'btn-secondary' : 'btn-outline-secondary'} border-radius-35 py-0 fw-semibold`}>
+                                className={`btn btn-sm ${(userQuery?.role == '') ? 'btn-secondary' : 'btn-outline-secondary'} border-radius-35 py-0 fw-semibold`}>
                                     All
                             </span>
                             <span 
                                 type="button" 
                                 onClick={ async () => {
-                                    setUserRole('admin'); 
-                                    await getUsers('admin', 1); 
+                                    await setUserQuery(prevState => ({
+                                        ...prevState,
+                                        role: 'admin', 
+                                        page: 1
+                                    })); 
+                                    await getUsers(userQuery?.role); 
                                 } }
-                                className={`btn btn-sm ${(userRole == 'admin') ? 'btn-secondary' : 'btn-outline-secondary'} border-radius-35 py-0 fw-semibold`}>
+                                className={`btn btn-sm ${(userQuery?.role == 'admin') ? 'btn-secondary' : 'btn-outline-secondary'} border-radius-35 py-0 fw-semibold`}>
                                     Admins
                             </span>
                             <span 
                                 type="button" 
                                 onClick={ async () => {
-                                    setUserRole('dispatcher'); 
-                                    await getUsers('dispatcher', 1); 
+                                    await setUserQuery(prevState => ({
+                                        ...prevState,
+                                        role: 'dispatcher', 
+                                        page: 1
+                                    })); 
+                                    await getUsers(userQuery?.role);
                                 } }
-                                className={`btn btn-sm ${(userRole == 'dispatcher') ? 'btn-secondary' : 'btn-outline-secondary'} border-radius-35 py-0 fw-semibold`}>
+                                className={`btn btn-sm ${(userQuery?.role == 'dispatcher') ? 'btn-secondary' : 'btn-outline-secondary'} border-radius-35 py-0 fw-semibold`}>
                                     Dispatchers
                             </span>
                             <span 
                                 type="button" 
-                                onClick={ async () => {
-                                    setUserRole('individual'); 
-                                    await getUsers('individual', 1); 
+                                onClick={ async () => { 
+                                    await setUserQuery(prevState => ({
+                                        ...prevState,
+                                        role: 'individual', 
+                                        page: 1
+                                    })); 
+                                    await getUsers(userQuery?.role);
                                 } }
-                                className={`btn btn-sm ${(userRole == 'individual') ? 'btn-secondary' : 'btn-outline-secondary'} border-radius-35 py-0 fw-semibold`}>
+                                className={`btn btn-sm ${(userQuery?.role == 'individual') ? 'btn-secondary' : 'btn-outline-secondary'} border-radius-35 py-0 fw-semibold`}>
                                     Individuals
                             </span>
                             <span 
                                 type="button" 
-                                onClick={ async () => {
-                                    setUserRole('enterprise'); 
-                                    await getUsers('enterprise', 1); 
+                                onClick={ async () => { 
+                                    await setUserQuery(prevState => ({
+                                            ...prevState,
+                                            role: 'enterprise', 
+                                            page: 1
+                                        })); 
+                                    await getUsers(userQuery?.role);
                                 } }
-                                className={`btn btn-sm ${(userRole == 'enterprise') ? 'btn-secondary' : 'btn-outline-secondary'} border-radius-35 py-0 fw-semibold`}>
+                                className={`btn btn-sm ${(userQuery?.role == 'enterprise') ? 'btn-secondary' : 'btn-outline-secondary'} border-radius-35 py-0 fw-semibold`}>
                                     Enterprises
                             </span>
                         </div>
@@ -78,17 +122,34 @@ export default function Index() {
                     <div className="d-flex justify-content-between flex-wrap gap-2"> 
                         <div className="search">
                             <div className="search-container border border-dark" style={{ maxWidth: '375px' }}>
-                                <span className="voice-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-mic-fill"
-                                        viewBox="0 0 16 16">
-                                        <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"></path>
-                                        <path
-                                            d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5">
-                                        </path>
-                                    </svg>
-                                </span>
-                                <input type="text" placeholder="Search user ..." className="" />
-                                <span className="search-icon">
+                                { !isListening &&
+                                    <span 
+                                        type="button" 
+                                        onClick={ handleStartListening }
+                                        className="voice-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-mic-fill"
+                                            viewBox="0 0 16 16">
+                                            <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"></path>
+                                            <path
+                                                d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5">
+                                            </path>
+                                        </svg>
+                                    </span> }
+                                <input 
+                                    type="text" 
+                                    value={ voiceText } 
+                                    onChange={ (e) => setVoiceText(e.target.value) }
+                                    placeholder="Search user ..." 
+                                    className="" />
+
+                                <span 
+                                    type="button" 
+                                    onClick={ () => {
+                                        setSearchKey(voiceText); 
+                                        setIsListening(false); 
+                                        // console.log('search', searchKey);
+                                    } }
+                                    className="search-icon">
                                     <svg width="16"
                                         height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -116,7 +177,7 @@ export default function Index() {
 
                     <section className="py-4">
                         <ul className="list-unstyled d-flex flex-column gap-5">
-                            { (users?.data?.length > 1) && (users?.data?.map((user, index) => {
+                            { (users?.data?.length > 0) && (users?.data?.map((user, index) => {
                                 return (
                                     <li key={ user?._id } className="box-shadow-1 border-radius-25 py-4 px-2 cursor-pointer">
                                         <div className="text-dark px-3">
@@ -135,6 +196,7 @@ export default function Index() {
                                             <div className="amount-and-client d-flex flex-column gap-2">
                                                 <h3 className="fw-semibold">{ user?.first_name + ' ' + user?.last_name }</h3> 
                                                 <span className="fw-semibold fs-5">@{ user?.username }</span>
+                                                <span className="fw-semibold fs-5"><small>joined: { dayjs.utc(user?.created_at).fromNow() }</small></span>
                                             </div>
                                         </div> 
                                     </li> 
@@ -149,7 +211,13 @@ export default function Index() {
                         type="button" 
                         onClick={ async () => { 
                             scrollToTop(); 
-                            await getUsers(userRole, 1); 
+                            let firstPage = 1
+                            setUserQuery(prevState => ({
+                                ...prevState, 
+                                // role: userQuery?.role, 
+                                page: firstPage
+                            })); 
+                            await getUsers(); 
                         } }>
                             <First /> 
                     </span> 
@@ -157,7 +225,13 @@ export default function Index() {
                         type="button" 
                         onClick={ async () => { 
                             scrollToTop(); 
-                            await getUsers(userRole, ((users?.meta?.current_page >= 1) ? (users?.meta?.current_page - 1) : 1)); 
+                            let previousPage = ((users?.meta?.current_page >= 1) ? (users?.meta?.current_page - 1) : 1)
+                            setUserQuery(prevState => ({
+                                ...prevState, 
+                                // role: userQuery?.role, 
+                                page: previousPage
+                            })); 
+                            await getUsers(); 
                         } }>
                             <Previous /> 
                     </span> 
@@ -165,7 +239,14 @@ export default function Index() {
                         type="button" 
                         onClick={ async () => { 
                             scrollToTop(); 
-                            await getUsers(userRole, ((users?.meta?.current_page < users?.meta?.total_pages) ? (users?.meta?.current_page + 1) : users?.meta?.total_pages)); 
+                            let nextPage = ((users?.meta?.current_page < users?.meta?.total_pages) ? (users?.meta?.current_page + 1) : users?.meta?.total_pages)
+                            setUserQuery(prevState => ({
+                                ...prevState, 
+                                // role: userQuery?.role, 
+                                page: nextPage
+                            })); 
+                            await getUsers(); 
+                            // console.log('user page', userQuery?.page)
                         } }>
                         <Next /> 
                     </span> 
@@ -173,7 +254,13 @@ export default function Index() {
                         type="button" 
                         onClick={ async () => { 
                             scrollToTop(); 
-                            await getUsers(userRole, users?.meta?.total_pages); 
+                            let lastPage = users?.meta?.total_pages
+                            setUserQuery(prevState => ({
+                                ...prevState, 
+                                // role: userQuery?.role, 
+                                page: lastPage
+                            })); 
+                            await getUsers(); 
                         } }>
                             <Last />
                     </span>

@@ -4,12 +4,12 @@ import authenticated from '../../middleware/authenticated.js';
 import roles from '../../config/allowedRoles.js'; 
 import checkRoles from '../../middleware/checkRoles.js'; 
 import { getUsers, 
-        getAdmins, 
-        getClients, 
+        // getAdmins, 
+        // getClients, 
         createUser, 
         getUser, 
-        getAdmin, 
-        getClient, 
+        // getAdmin, 
+        // getClient, 
         updateUser, 
         deleteUser,
         restoreUser, 
@@ -34,16 +34,16 @@ userRouter.patch('/:id/restore', restoreUser);
 
 
 // Admins
-userRouter.get('/admins', getAdmins);
+// userRouter.get('/admins', getAdmins);
 
-userRouter.get('/admins/:username', getAdmin); 
+// userRouter.get('/admins/:username', getAdmin); 
 
 
 
 // Clients
-userRouter.get('/clients', getClients); 
+// userRouter.get('/clients', getClients); 
 
-userRouter.get('/clients/:username', getClient); 
+// userRouter.get('/clients/:username', getClient); 
 
 
 

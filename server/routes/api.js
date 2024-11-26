@@ -17,6 +17,7 @@ import productVariationRouter from './apiRoutes/productVariationRoutes.js';
 import productVariationValueRouter from './apiRoutes/productVariationValueRoutes.js'; 
 import productImageRouter from './apiRoutes/productImageRoutes.js'; 
 import userRouter from './apiRoutes/userRoutes.js'; 
+import signInAttemptRouter from './apiRoutes/signInAttemptRoutes.js'; 
 
 
 router.use('/auth', authRouter); 
@@ -34,6 +35,7 @@ router.use('/product-variations', productVariationRouter);
 router.use('/product-variation-values', productVariationValueRouter); 
 router.use('/product-images', productImageRouter); 
 router.use('/users', userRouter); 
+router.use('/sign-in-attempts', signInAttemptRouter); 
 
 
 export default router;

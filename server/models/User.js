@@ -66,6 +66,7 @@ const userSchema = new Schema({
         verified: { type: Boolean, default: false }, 
         verified_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
         online: { type: Boolean, default: false }, 
+        sign_in_count: { type: Number, default: 0 }, 
         show_online_status: { type: Boolean, default: true }, 
         last_time_active: String, 
         active: { type: Boolean, default: true }, 

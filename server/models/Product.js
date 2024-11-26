@@ -16,7 +16,7 @@ const productSchema = new Schema({
         initial_retail_price: { type: String }, 
         currency: { type: String, default: 'usd' }, 
         images: [ String ], 
-        purchased: { type: Boolean, default: false }, 
+        // purchased: { type: Boolean, default: false }, 
         order_count: { type: Number }, 
         proposed_delivery_start_date: { type: Date }, 
         proposed_delivery_destination_reach_date: { type: Date }, 

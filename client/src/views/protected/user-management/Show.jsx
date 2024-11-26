@@ -15,18 +15,23 @@ import Layout from '@/components/protected/Layout.jsx';
 
 
 export default function Show() { 
-    const [activeLink, setActiveLink] = useState('deliveries'); 
-
     const params = useParams(); 
     const { retrievedUser, getUser } = useUser(params?.username); 
+
+    const [activeLink, setActiveLink] = useState('deliveries'); 
+
+    console.log(params?.username)
     
     console.log(retrievedUser); 
+    console.log(retrievedUser?.data); 
+    console.log(retrievedUser?.data); 
 
     return (
         <Layout>
             <div className="main">
                 <div className="dashboard-content pt-3">
-                    <h2 className="border-bottom pb-1 fs-4">Pae Daezi</h2> 
+                    <h2 className="border-bottom pb-1 fs-4">{ `${retrievedUser?.data?.first_name}` + ' ' + retrievedUser?.data?.last_name }</h2> 
+                    { retrievedUser?.loading }
 
                     <div className="py-3"> 
                         <section className="d-flex align-items-center flex-wrap column-gap-5 row-gap-3">
@@ -37,8 +42,8 @@ export default function Show() {
                             </div>
                             <div className="d-flex flex-column">
                                 <h3>Pae Daezi</h3> 
-                                <span className="fw-semibold">@paedaezi</span>
-                                <span className="pt-0 mt-0">paedaezi@deezysdeals.com</span>
+                                <span className="fw-semibold">@{ retrievedUser?.data?.username }</span>
+                                <span className="pt-0 mt-0">{ retrievedUser?.data?.email }</span>
                                 <span className="pt-0 mt-0">I am here to shop the whole of America! Why don't you join me?</span>
                             </div>
                         </section> 
