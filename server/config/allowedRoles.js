@@ -1,5 +1,5 @@
 const roles = {
-    superAdmin: 'generic-user', 
+    superAdmin: 'individual', 
     vendor: 'admin',
     individual: 'superadmin'
 }

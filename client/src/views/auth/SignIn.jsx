@@ -21,31 +21,27 @@ export default function SignIn() {
         <Layout>
             <h2 className="fw-bold fs-6 d-flex justify-content-end mb-3">Sign In</h2>
             <form onSubmit={ handleSubmit } id="auth-form" className="auth-form" >
-                <div className="">
-                    <div className="form border border-dark mb-3">
-                        <label htmlFor="email_username" className="label" id="email_username-label">Username/Email:</label>
-                        <input 
-                            type="text" 
-                            name="email_username" 
-                            id="email_username" 
-                            onChange={ e => setEmailUsername(e.target.value) }
-                            placeholder="e.g. daezi1 OR daezi@daezi.com" data-target="email_username-label" 
-                            required />
-                    </div>
+                <div className="form border border-dark mb-3">
+                    <label htmlFor="email_username" className="label" id="email_username-label">Username/Email:</label>
+                    <input 
+                        type="text" 
+                        name="email_username" 
+                        id="email_username" 
+                        onChange={ e => setEmailUsername(e.target.value) }
+                        placeholder="e.g. daezi1 OR daezi@daezi.com" data-target="email_username-label" 
+                        required />
                 </div>
-                <div className="">
-                    <div className="form border border-dark mb-3">
-                        <label htmlFor="password" className="label" id="password-label">Password:</label>
-                        <input 
-                            type="password" 
-                            name="password" 
-                            id="password" 
-                            onChange={ e => setPassword(e.target.value) }
-                            placeholder="*********" 
-                            data-target="password-label" 
-                            required />
-                    </div>
-                </div> 
+                <div className="form border border-dark mb-3">
+                    <label htmlFor="password" className="label" id="password-label">Password:</label>
+                    <input 
+                        type="password" 
+                        name="password" 
+                        id="password" 
+                        onChange={ e => setPassword(e.target.value) }
+                        placeholder="*********" 
+                        data-target="password-label" 
+                        required />
+                </div>
 
                 <div className="pt-3 d-flex justify-content-end">
                     <button type="submit" className="btn btn-dark px-4 border-radius-35">

@@ -51,7 +51,7 @@ const verifyMailLinkAuthenticate = asyncHandler(async (req, res) => {
             .then(function () {
                 res.cookie('jwt', refresh, {
                     httpOnly: true, 
-                    secure: false, 
+                    secure: true, 
                     sameSite: 'None', 
                     maxAge: 1 * 60 * 60 * 1000      // 1 hour
                 });

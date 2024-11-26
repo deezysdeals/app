@@ -13,7 +13,7 @@ const authenticated = (req, res, next) => {
             if (error) return res.sendStatus(403); 
             req.user_id = decoded?.user?.user_id; 
             req.username = decoded?.user?.username; 
-            req.roles = decoded?.user?.roles; 
+            req.role = decoded?.user?.role; 
             next();
         }
     );

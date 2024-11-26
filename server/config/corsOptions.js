@@ -3,9 +3,11 @@ import origins from './allowedOrigins.js';
 
 const corsOptions = {
     origin: (origin, callback) => {
-        if (origins.indexOf(origin) == -1 || origin) {
+        if (origins.indexOf(origin) !== -1 || !origin) {
+            // console.log('true')
             callback(null, true)
         } else {
+            // console.log('false')
             callback(new Error('CORS Restriction'))
         }
     },
@@ -14,4 +16,4 @@ const corsOptions = {
 };
 
 
-export default corsOptions;
+export default corsOptions; 

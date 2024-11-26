@@ -37,19 +37,17 @@ export default function PasswordReset() {
     <Layout>
         <h2 className="fw-bold fs-6 d-flex justify-content-end mb-3">Password Reset</h2>
         <form onSubmit={ handleSubmit } id="auth-form" className="auth-form" >
-            <div className="">
-                <div className="form border border-dark mb-3">
-                    <label htmlFor="password" className="label" id="password_label">Password:</label>
-                    <input 
-                        type="password" 
-                        name="password" 
-                        id="password" 
-                        onChange={ e => setPassword(e.target.value) }
-                        placeholder="*********" 
-                        data-target="password_label" 
-                        required />
-                </div>
-            </div> 
+            <div className="form border border-dark mb-3">
+                <label htmlFor="password" className="label" id="password_label">Password:</label>
+                <input 
+                    type="password" 
+                    name="password" 
+                    id="password" 
+                    onChange={ e => setPassword(e.target.value) }
+                    placeholder="*********" 
+                    data-target="password_label" 
+                    required />
+            </div>
 
             <div className="form border border-dark mb-3">
                 <label htmlFor="" className="label" id="repeat_password_label">Repeat Password:</label>

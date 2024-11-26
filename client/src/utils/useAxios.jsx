@@ -20,7 +20,7 @@ const useAxios = () => {
             'Authorization': `Bearer ${ authTokens?.access }`, 
             'Content-Type': 'multipart/form-data', 
         }
-    }); 
+    }, { withCredentials: true }); 
 
     axiosInstance.interceptors.request.use(async req => {
         const user = jwtDecode(authTokens?.access); 
@@ -33,7 +33,7 @@ const useAxios = () => {
                 'Authorization': `Bearer ${ authTokens?.access }`, 
                 'Content-Type': 'multipart/form-data', 
             }
-        }); 
+        }, { withCredentials: true }); 
 
         localStorage?.setItem('deezysdeals_authTokens', JSON?.stringify(response?.data)); 
 

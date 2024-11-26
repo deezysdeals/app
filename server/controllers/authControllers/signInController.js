@@ -57,17 +57,18 @@ const signInUser = asyncHandler(async (req, res) => {
         .then(function () {
             res.cookie('jwt', refresh, {
                 httpOnly: true, 
-                secure: false, 
-                sameSite: 'None', 
-                maxAge: 1 * 60 * 60 * 1000      // 1 hour
+                secure: true, 
+                sameSite: 'Lax', 
+                maxAge: 5 * 60 * 60 * 1000      // 1 hour
                 // maxAge: 1 * 60 * 1000      // 1 minute
-            });
+            }); 
+            // res.cookie('jwt', refresh, { httpOnly: true, secure: true, sameSite: 'Strict' });
 
             res.json({ access })
         })
         .catch(function (error) {
             return res.status(400).json(error);
-        });
+        }); 
 }); 
 
 

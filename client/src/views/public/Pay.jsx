@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import AuthContext from '@/context/AuthContext.jsx'; 
 import { CartContext } from '@/context/CartContext.jsx'; 
 import axios from 'axios'; 
+import useAxios from '@/utils/useAxios.jsx'; 
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 // import { Link } from 'react-router-dom'; 
 // import { route } from '@/routes'; 
@@ -19,6 +20,8 @@ export default function Pay() {
     const { authTokens } = useContext(AuthContext); 
     const { cartItems, getTotalPrice } = useContext(CartContext); 
     console.log(cartItems); 
+    const axiosInstance = useAxios(); 
+    
     const initialOptions = {
         "client-id": `${Constants?.paypalClientID}`,
         "enable-funding": "venmo",
@@ -57,7 +60,7 @@ export default function Pay() {
                                     label: "pay",
                                 }}
                                 createOrder={async () => {
-                                    // await axios.post(`${Constants.serverURL}/api/v1/orders`, {
+                                    // await axiosInstance.post(`orders`, {
                                     //     cart: cartItems
                                     // }, {
                                     //     "Content-Type": "application/json", 
@@ -109,6 +112,50 @@ export default function Pay() {
                                         const orderData = await response.json(); 
                                         console.log(orderData); 
 
+                                        // Update order with the PayPal Order ID
+                                        await axiosInstance.post(`orders/${orderData?.data?.order?._id}/update-paypal-order-id`, {
+                                            paypal_order_id: orderData?.jsonResponse?.id
+                                        })
+                                            .then(response => { 
+                                                console.log(response);
+                                            })
+                                            .catch(error => {
+                                                // console.error(error); 
+                                                if (error?.response?.status == '400') {
+                                                    swal.fire({
+                                                        text: `${error?.response?.status}: Something went wrong!`, 
+                                                        color: '#900000', 
+                                                        width: 325, 
+                                                        position: 'top', 
+                                                        showConfirmButton: false
+                                                    })
+                                                } else if (error?.response?.status == '401') {
+                                                    swal.fire({
+                                                        text: `${error?.response?.status}: You must sign in  to proceed.`, 
+                                                        color: '#900000', 
+                                                        width: 325, 
+                                                        position: 'top', 
+                                                        showConfirmButton: false
+                                                    })
+                                                } else if (error?.response?.status == '403') {
+                                                    swal.fire({
+                                                        text: `${error?.response?.status}: Forbidden.`, 
+                                                        color: '#900000', 
+                                                        width: 325, 
+                                                        position: 'top', 
+                                                        showConfirmButton: false
+                                                    })
+                                                } else {
+                                                    swal.fire({
+                                                        text: `${error?.response?.status}: ${error?.response?.data?.message}`, 
+                                                        color: '#900000', 
+                                                        width: 325, 
+                                                        position: 'top', 
+                                                        showConfirmButton: false
+                                                    })
+                                                }
+                                            })
+
                                         if (orderData?.jsonResponse?.id) {
                                             return orderData?.jsonResponse?.id; 
                                         } else {
@@ -122,7 +169,14 @@ export default function Pay() {
                                     } catch (error) {
                                         console.error(error); 
                                         // setMessage(`Could not initiate PayPal Checkout...${error}`);
-                                        setMessage(`Could not initiate PayPal Checkout...`);
+                                        // setMessage(`Could not initiate PayPal Checkout...`); 
+                                        swal.fire({
+                                            text: `Could not initiate PayPal Checkout...`, 
+                                            color: '#900000', 
+                                            width: 325, 
+                                            position: 'top', 
+                                            showConfirmButton: false
+                                        })
                                     }
                                 }} 
                                 onApprove={async (data, actions) => { 
@@ -130,7 +184,7 @@ export default function Pay() {
                                     console.log(actions); 
                                     try { 
                                         const response = await fetch(
-                                            `${Constants.serverURL}/api/v1/orders/${data?.orderID}/capture`,
+                                            `${Constants.serverURL}/api/v1/orders/${data?.orderID}/${data?.payerID}/${data?.paymentID}/${data?.paymentSource}/capture`,
                                             {
                                                 method: "POST",
                                                 headers: { 
@@ -168,7 +222,32 @@ export default function Pay() {
                                                 "Capture result",
                                                 orderData,
                                                 JSON.stringify(orderData, null, 2),
-                                            );
+                                            ); 
+
+                                            // Mark order as paid after server-side confirmation
+                                            await axiosInstance.post(`orders/${orderData?.id}/mark-as-paid`)
+                                                .then(response => { 
+                                                    console.log(response); 
+                                                    const orderData = response.json(); 
+
+                                                    console.log(orderData); 
+
+                                                    if (orderData?.jsonResponse?.id) {
+                                                        return orderData?.jsonResponse?.id; 
+                                                    } else {
+                                                        const errorDetail = orderData?.details?.[0];
+                                                        const errorMessage = errorDetail
+                                                            ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
+                                                            : JSON.stringify(orderData?.data);
+
+                                                        throw new Error(errorMessage);
+                                                    }
+                                                })
+                                                .catch(error => {
+                                                    console.log(error); 
+                                                    // setMessage(`Could not initiate PayPal Checkout...${error}`);
+                                                    setMessage(`Could not initiate PayPal Checkout`);
+                                                })
                                         }
                                     } catch (error) {
                                         console.error(error);

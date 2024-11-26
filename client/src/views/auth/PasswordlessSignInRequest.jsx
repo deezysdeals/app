@@ -20,17 +20,16 @@ export default function PasswordlessSignInRequest() {
         <Layout>
             <h2 className="fw-bold fs-6 d-flex justify-content-end mb-3">Passwordless SignIn</h2>
             <form onSubmit={ handleSubmit } id="auth-form" className="auth-form" >
-                <div className="">
-                    <div className="form border border-dark mb-3">
-                        <label htmlFor="" className="label" id="username-label">Username:</label>
-                        <input 
-                            type="text" 
-                            name="username" 
-                            id="username" 
-                            onChange={ e => setUsername(e.target.value) }
-                            placeholder="e.g. daezi1" 
-                            data-target="username-label" />
-                    </div>
+                <div className="form border border-dark mb-3">
+                    <label htmlFor="" className="label" id="username-label">Username:</label>
+                    <input 
+                        type="text" 
+                        name="username" 
+                        id="username" 
+                        onChange={ e => setUsername(e.target.value) }
+                        placeholder="e.g. daezi1" 
+                        data-target="username-label" 
+                        required />
                 </div>
 
                 <div className="pt-3 d-flex justify-content-end">

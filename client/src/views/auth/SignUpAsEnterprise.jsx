@@ -39,32 +39,28 @@ export default function SignUpAsEnterprise() {
         <Layout>
             <h2 className="fw-bold fs-6 d-flex justify-content-end mb-3">Sign Up</h2>
             <form onSubmit={ handleSubmit } id="auth-form" className="auth-form" >
-                <div className="">
-                    <div className="form border border-dark mb-3">
-                        <label htmlFor="" className="label">Email:</label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            id="email" 
-                            onChange={ e => setEmail(e.target.value) }
-                            placeholder="e.g. pae@daezi.com" 
-                            data-target="email" 
-                            required />
-                    </div>
+                <div className="form border border-dark mb-3">
+                    <label htmlFor="" className="label">Email:</label>
+                    <input 
+                        type="email" 
+                        name="email" 
+                        id="email" 
+                        onChange={ e => setEmail(e.target.value) }
+                        placeholder="e.g. pae@daezi.com" 
+                        data-target="email" 
+                        required />
                 </div>
-                <div className="">
-                    <div className="form border border-dark mb-3">
-                        <label htmlFor="username" className="label">Username:</label>
-                        <input 
-                            type="text" 
-                            name="username" 
-                            id="username" 
-                            onChange={ e => setUsername(e.target.value) }
-                            placeholder="e.g. daezi1" 
-                            data-target="username" 
-                            required />
-                    </div>
-                </div> 
+                <div className="form border border-dark mb-3">
+                    <label htmlFor="username" className="label">Username:</label>
+                    <input 
+                        type="text" 
+                        name="username" 
+                        id="username" 
+                        onChange={ e => setUsername(e.target.value) }
+                        placeholder="e.g. daezi1" 
+                        data-target="username" 
+                        required />
+                </div>
                 <div className="grid">
                     <div className="form border border-dark mb-3">
                         <label htmlFor="first_name" className="label">First Name:</label>
@@ -89,18 +85,16 @@ export default function SignUpAsEnterprise() {
                             required />
                     </div>
                 </div> 
-                <div className="">
-                    <div className="form border border-dark mb-3">
-                        <label htmlFor="enterpriseName" className="label">Enterprise Name:</label>
-                        <input 
-                            type="text" 
-                            name="enterpriseName" 
-                            id="enterpriseName" 
-                            onChange={ e => setEnterpriseName(e.target.value) }
-                            placeholder="e.g. Daezi GmbH" 
-                            data-target="enterpriseName" 
-                            required />
-                    </div>
+                <div className="form border border-dark mb-3">
+                    <label htmlFor="enterpriseName" className="label">Enterprise Name:</label>
+                    <input 
+                        type="text" 
+                        name="enterpriseName" 
+                        id="enterpriseName" 
+                        onChange={ e => setEnterpriseName(e.target.value) }
+                        placeholder="e.g. Daezi GmbH" 
+                        data-target="enterpriseName" 
+                        required />
                 </div> 
                 <div className="grid">
                     <div className="form border border-dark mb-3">

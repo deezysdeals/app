@@ -1,6 +1,6 @@
 
-import express, { json, urlencoded, static as expressStatic } from 'express'; 
-const app = express(); 
+import express, { json as expressJSON, urlencoded, static as expressStatic } from 'express'; 
+let app = express(); 
 // import 'express-async-errors';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -41,11 +41,15 @@ app.use(morgan(':remote-addr - :remote-user [:date[iso]] ":method :url HTTP/:htt
 dbConnection(); 
 
 app.disable('x-powered-by'); 
-app.use(json()); 
+app.use(expressJSON()); 
 app.use(urlencoded({ extended: true })); 
-app.use(cors(corsOptions)); 
 // app.use(cors()); 
+// app.use(cors({
+//     origin: 'http://localhost:5174', 
+//     credentials: true // Allow cookies to be sent
+// })); 
 app.use(cookieParser()); 
+app.use(cors(corsOptions)); 
 app.use(fileupload({useTempFiles: true})); 
 
 app.use('/', expressStatic(join(__dirname, 'public'))); 

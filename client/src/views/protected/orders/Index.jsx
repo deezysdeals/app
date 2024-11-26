@@ -34,7 +34,7 @@ export default function Index() {
                             <span 
                                 type="button" 
                                 onClick={ async () => {
-                                    await getOrders('all', 1); 
+                                    await getOrders('all', 'all', 1); 
                                     setOrderType('all'); 
                                 } }
                                 className={`btn btn-sm ${(orderType == 'all') ? 'btn-secondary' : 'btn-outline-secondary'} border-radius-35 py-0 fw-semibold`}>
@@ -43,7 +43,7 @@ export default function Index() {
                             <span 
                                 type="button" 
                                 onClick={ async () => {
-                                    await getOrders('delivered', 1); 
+                                    await getOrders('all', 'delivered', 1); 
                                     setOrderType('delivered'); 
                                 } }
                                 className={`btn btn-sm ${(orderType == 'delivered') ? 'btn-secondary' : 'btn-outline-secondary'} border-radius-35 py-0 fw-semibold`}>
@@ -52,7 +52,7 @@ export default function Index() {
                             <span 
                                 type="button" 
                                 onClick={ async () => {
-                                    await getOrders('undelivered', 1); 
+                                    await getOrders('all', 'undelivered', 1); 
                                     setOrderType('undelivered'); 
                                 } }
                                 className={`btn btn-sm ${(orderType == 'undelivered') ? 'btn-secondary' : 'btn-outline-secondary'} border-radius-35 py-0 fw-semibold`}>

@@ -37,7 +37,6 @@ const refreshTokenHandler = async (req, res) => {
                         "enterprise_name": userFound.enterprise_name, 
                         "email": userFound.email, 
                         "phone": userFound.phone, 
-                        "address": userFound.address, 
                         "role": userFound.role, 
                         "verified": userFound.verified, 
                     }

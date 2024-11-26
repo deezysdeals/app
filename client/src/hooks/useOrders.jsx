@@ -2,20 +2,22 @@ import { useState, useEffect } from 'react';
 import useAxios from '@/utils/useAxios.jsx'; 
 
 
-export function useOrders(page = 1, limit = 10) {
+export function useOrders(orderRange = 'all', type = 'all', page = 1, limit = 10) {
     const axiosInstance = useAxios(); 
     const [orders, setOrders] = useState([]); 
 
     useEffect(() => {
         if (page !== null) {
             const controller = new AbortController(); 
-            getOrders({page, limit}, { signal: controller.signal }); 
+            getOrders({orderRange}, { signal: controller.signal }); 
             return () => { controller.abort() };
         }
-    }, [page, limit]); 
+    }, [orderRange, type, page, limit]); 
 
-    async function getOrders(type = 'all', page = 1, { signal } = {}) {
-        return axiosInstance.get(`orders?type=${type}&page=${page}&limit=${limit}`, { signal }) 
+    // async function getOrders(range = 'all', type = 'all', page = 1, { signal } = {}) { 
+    async function getOrders(obj, { signal } = {}) { 
+        console.log(obj) 
+        return axiosInstance.get(`orders?range=${obj?.orderRange?.range}&type=${obj?.orderRange?.type}&page=${obj?.orderRange?.page}&limit=${obj?.orderRange?.limit}`, { signal }) 
             .then(response => { 
                 console.log(response?.data)
                 setOrders(response?.data)
@@ -25,3 +27,4 @@ export function useOrders(page = 1, limit = 10) {
 
     return { orders, getOrders }; 
 } 
+ 

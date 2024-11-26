@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     /** Routes */ 
 
     const signUp = async (username, email, firstname, lastname, password, account_type, enterpriseName = '') => {
-        await axios.post(`${ Constants?.serverURL }/api/v1/auth/sign-up`, { username, email, first_name: firstname, last_name: lastname, password, account_type, enterprise_name: enterpriseName })
+        await axios.post(`${ Constants?.serverURL }/api/v1/auth/sign-up`, { username, email, first_name: firstname, last_name: lastname, password, account_type, enterprise_name: enterpriseName }, { withCredentials: true })
             .then((response) => { 
                 // console.log(response); 
                 navigate(route('sign-in')); 
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
     } 
 
     const verifyEmail = async (username, token) => {
-        await axios.post(`${ Constants.serverURL }/api/v1/auth/verify-email/${ username }/${ token }`)
+        await axios.post(`${ Constants.serverURL }/api/v1/auth/verify-email/${ username }/${ token }`, { withCredentials: true })
             .then(response => {
                 // console.log(response); 
                 setAuthTokens(response?.data); 
@@ -106,7 +106,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     const signIn = async (email_username, password) => { 
-        await axios.post(`${ Constants?.serverURL }/api/v1/auth/sign-in`, { email_username, password })
+        await axios.post(`${ Constants?.serverURL }/api/v1/auth/sign-in`, { email_username, password }, { withCredentials: true })
             .then((response) => { 
                     // console.log(response?.data);
                     // console.log(response);
@@ -123,7 +123,7 @@ export const AuthProvider = ({ children }) => {
 
                 })
             .catch(error => { 
-                // console.log(error);
+                console.log(error);
                 if (error?.response?.status == '401') {
                     swal.fire({
                         text: `${error?.response?.data?.message}`, 
@@ -154,7 +154,7 @@ export const AuthProvider = ({ children }) => {
     } 
 
     const passwordlessSignInRequest = async (username) => {
-        await axios.post(`${ Constants.serverURL }/api/v1/auth/passwordless-signin-request`, { username })
+        await axios.post(`${ Constants.serverURL }/api/v1/auth/passwordless-signin-request`, { username }, { withCredentials: true })
             .then((response) => { 
                 // console.log(response); 
                 swal.fire({
@@ -188,7 +188,7 @@ export const AuthProvider = ({ children }) => {
     } 
 
     const passwordlessSignIn = async (username, token) => {
-        await axios.post(`${ Constants.serverURL }/api/v1/auth/passwordless-signin/${ username }/${ token }`)
+        await axios.post(`${ Constants.serverURL }/api/v1/auth/passwordless-signin/${ username }/${ token }`, { withCredentials: true })
             .then(response => {
                 // console.log(response); 
                 setAuthTokens(response?.data); 
@@ -220,11 +220,8 @@ export const AuthProvider = ({ children }) => {
     }
 
     const signOut = async () => { 
-        setAuthTokens(null); 
-        setUser(null); 
-        localStorage?.removeItem('deezysdeals_authTokens'); 
         // localStorage.removeItem('deezysdeals_lastVisitedPage');
-        await axios.post(`${ Constants?.serverURL }/api/v1/auth/sign-out`)
+        await axios.post(`${ Constants?.serverURL }/api/v1/auth/sign-out`, { withCredentials: true })
             .then(response => {
                 console.log(response);
             })
@@ -232,12 +229,15 @@ export const AuthProvider = ({ children }) => {
                 console.log(error);
             })
             .finally(() => {
+                setAuthTokens(null); 
+                setUser(null); 
+                localStorage?.removeItem('deezysdeals_authTokens'); 
                 // navigate(route('sign-in'));
             })
     } 
 
     const resetPasswordRequest = async (email) => {
-        await axios.post(`${ Constants?.serverURL }/api/v1/auth/password-reset`, { email })
+        await axios.post(`${ Constants?.serverURL }/api/v1/auth/password-reset`, { email }, { withCredentials: true })
             .then(response => {
                 // console.log(response); 
                 swal.fire({
@@ -263,7 +263,7 @@ export const AuthProvider = ({ children }) => {
     } 
 
     const resetPassword = async (username, token, password) => {
-        await axios.post(`${ Constants?.serverURL }/api/v1/auth/password-reset/${ username }/${ token }`, { password })
+        await axios.post(`${ Constants?.serverURL }/api/v1/auth/password-reset/${ username }/${ token }`, { password }, { withCredentials: true })
             .then(response => {
                 // console.log(response); 
                 navigate(route('sign-in')); 

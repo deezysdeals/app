@@ -39,31 +39,27 @@ export default function SignUp() {
         <Layout>
             <h2 className="fw-bold fs-6 d-flex justify-content-end mb-3">Sign Up</h2>
             <form onSubmit={ handleSubmit } id="auth-form" className="auth-form" >
-                <div className="">
-                    <div className="form border border-dark mb-3">
-                        <label htmlFor="" className="label">Email:</label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            id="email" 
-                            onChange={ e => setEmail(e.target.value) }
-                            placeholder="e.g. pae@daezi.com" 
-                            data-target="email" 
-                            required />
-                    </div>
+                <div className="form border border-dark mb-3">
+                    <label htmlFor="" className="label">Email:</label>
+                    <input 
+                        type="email" 
+                        name="email" 
+                        id="email" 
+                        onChange={ e => setEmail(e.target.value) }
+                        placeholder="e.g. pae@daezi.com" 
+                        data-target="email" 
+                        required />
                 </div>
-                <div className="">
-                    <div className="form border border-dark mb-3">
-                        <label htmlFor="username" className="label">Username:</label>
-                        <input 
-                            type="text" 
-                            name="username" 
-                            id="username" 
-                            onChange={ e => setUsername(e.target.value) }
-                            placeholder="e.g. daezi1" 
-                            data-target="username" 
-                            required />
-                    </div>
+                <div className="form border border-dark mb-3">
+                    <label htmlFor="username" className="label">Username:</label>
+                    <input 
+                        type="text" 
+                        name="username" 
+                        id="username" 
+                        onChange={ e => setUsername(e.target.value) }
+                        placeholder="e.g. daezi1" 
+                        data-target="username" 
+                        required />
                 </div>
                 <div className="grid">
                     <div className="form border border-dark mb-3">

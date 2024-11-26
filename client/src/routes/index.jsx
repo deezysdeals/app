@@ -32,13 +32,17 @@ const routeNames = {
     'home.discounts.edit': '/home/discounts/:id/edit', 
     'home.discounts.index': '/home/discounts', 
 
+    'home.favorites.show': '/home/favorites/:id/show', 
+    'home.favorites.edit': '/home/favorites/:id/edit', 
+    'home.favorites.index': '/home/favorites', 
+
     'home.invoices.show': '/home/invoices/:id/show', 
     'home.invoices.index': '/home/invoices', 
 
     'home.notifications.index': '/home/notifications', 
     
     'home.order-items.edit': '/home/order-items/:id/edit', 
-    'home.order-items.index': '/home/order-items', 
+    'home.order-items.index': '/home/ordered-items', 
     
     'home.orders.show': '/home/orders/:id/show', 
     'home.orders.edit': '/home/orders/:id/edit', 

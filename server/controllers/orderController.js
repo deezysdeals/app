@@ -1,5 +1,13 @@
 import axios from 'axios'; 
 import asyncHandler from 'express-async-handler'; 
+import { getYesterdayDateRange, 
+        getTodayDateRange, 
+        getPreviousWeekDateRange, 
+        getCurrentWeekDateRange, 
+        getPreviousMonthDateRange,
+        getCurrentMonthDateRange, 
+        getPreviousYearDateRange, 
+        getCurrentYearDateRange } from '../utils/date_range.js'; 
 import { paypalCreateOrder, paypalCaptureOrder } from '../utils/paypal-api.js'; 
 import Category from '../models/Category.js'; 
 import Product from '../models/Product.js'; 
@@ -10,27 +18,122 @@ import User from '../models/User.js';
 import Address from '../models/Address.js';
 
 
+
+
+
+
 const getOrders = asyncHandler(async (req, res) => { 
-    // console.log(req?.query)
+    console.log('ip', req.headers['x-forwarded-for'], req.connection.remoteAddress); 
+    console.log(req?.headers)
+    // console.log('role', req?.role);
+    // console.log('user', req?.user_id)
+    console.log('cookies', req?.cookies); 
+    // console.log('req', req); 
+    // console.log('cookies', req?.cookies); 
+    // console.log(req?.query) 
+    const range = req?.query?.range 
+    console.log(range);
+    const type = req?.query?.type
+    // const { range, type } = req?.query; 
     const current_page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 10; 
+    console.log(range, current_page, limit)
 
     const skip = (current_page - 1) * limit; 
 
-	const orders = await Order.find({ deleted_at: null })
-                            .sort('-created_at')
-                            .skip(skip)
-                            .limit(limit)
-                            .populate({
-                                path: 'user', 
-                                select: 'first_name last_name username' 
-                            })
-                            .lean(); 
+    // Importing Date Range Manipulation Functions
+    const { weekStart, weekEnd } = getCurrentWeekDateRange(); 
+    const { lastMonthStart, lastMonthEnd } = getPreviousMonthDateRange();
+    const { monthStart, monthEnd } = getCurrentMonthDateRange(); 
+    const { yearStart, yearEnd } = getCurrentYearDateRange(); 
+    // End of Importing Date Range Manipulation Functions 
+
+
+    // Monthly percentage difference 
+    // Last Month
+    const totalLastMonth = await Order.aggregate([
+        {
+            $match: { deleted_at: null, created_at: {
+                                    $gte: lastMonthStart,
+                                    $lte: lastMonthEnd
+                                } }
+        },
+        {
+            $group: {
+                _id: null,
+                // totalAmount: { $sum: "$total_paid" }
+                totalAmount: { $sum: "$total_to_be_paid" }
+            }
+        }
+    ]); 
+    const totalPaidLastMonth = totalLastMonth.length > 0 ? totalLastMonth[0].totalAmount : 0;
+    console.log('Total Amount Last Month:', totalPaidLastMonth); 
+
+    // This Month
+    const totalThisMonth = await Order.aggregate([
+        {
+            $match: { deleted_at: null, created_at: {
+                                    $gte: monthStart,
+                                    $lte: monthEnd
+                                } }
+        },
+        {
+            $group: {
+                _id: null,
+                // totalAmount: { $sum: "$total_paid" }
+                totalAmount: { $sum: "$total_to_be_paid" }
+            }
+        }
+    ]); 
+    const totalPaidThisMonth = totalThisMonth.length > 0 ? totalThisMonth[0].totalAmount : 0;
+    console.log('Total Amount This Month:', totalPaidThisMonth); 
+
+
+    // Orders
+    const orders = await Order.find({ deleted_at: null }).sort('-created_at')
+                                .skip(skip)
+                                .limit(limit)
+                                .populate({
+                                    path: 'user', 
+                                    select: 'first_name last_name username' 
+                                })
+                                .lean(); 
+
     if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
+    // End Orders
 
-    // Orders count 
-    const ordersCount = await Order.find({ deleted_at: null }).countDocuments(); 
+    // Orders Count
+    let ordersCount;
 
+    if (range == 'this-week') {
+        ordersCount = await Order.find({ deleted_at: null,
+                                        created_at: { 
+                                            $gte: weekStart, 
+                                            $lte: weekEnd  
+                                        }
+                                    }).countDocuments(); 
+    } else if (range == 'this-month') {
+        ordersCount = await Order.find({
+                                            deleted_at: null,
+                                            created_at: {
+                                                $gte: monthStart,
+                                                $lte: monthEnd
+                                            }
+                                        }).countDocuments();
+    } else if (range == 'this-year') {
+        ordersCount = await Order.find({
+                                            deleted_at: null,
+                                            created_at: {
+                                                $gte: yearStart,
+                                                $lte: yearEnd
+                                            }
+                                        }).countDocuments();
+    } else if (range == 'all') {
+        ordersCount = await Order.find({ deleted_at: null }).countDocuments(); 
+    } 
+    // End Orders Count
+
+    // Order Items within Orders
     let ordersList = []; 
 
     const updatePromises = orders?.map(async order => { 
@@ -43,6 +146,7 @@ const getOrders = asyncHandler(async (req, res) => {
 
         ordersList.push(order);
     }); 
+    // End of Order Items within Orders
 
     await Promise.all(updatePromises); 
 
@@ -50,29 +154,110 @@ const getOrders = asyncHandler(async (req, res) => {
     let totalPaid;
     async function calculateTotalAmount() {
         try {
-            const total = await Order.aggregate([
-                {
-                    // $match: { paid: true, deleted_at: { $exists: false } }
-                    // $match: { deleted_at: { $exists: false } }
-                    $match: { deleted_at: null }
-                },
-                {
-                    $group: {
-                        _id: null,
-                        // totalAmount: { $sum: "$total_paid" }
-                        totalAmount: { $sum: "$total_to_be_paid" }
-                    }
-                }
-            ]);
+            let total;
 
-            totalPaid = total.length > 0 ? total[0].totalAmount : 0;
+            if (range == 'this-week') {
+                total = await Order.aggregate([
+                    {
+                        $match: { deleted_at: null, created_at: {
+                                                $gte: weekStart,
+                                                $lte: weekEnd
+                                            } }
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            // totalAmount: { $sum: "$total_paid" }
+                            totalAmount: { $sum: "$total_to_be_paid" }
+                        }
+                    }
+                ]);
+            } else if (range == 'this-month') {
+                total = await Order.aggregate([
+                    {
+                        $match: { deleted_at: null, created_at: {
+                                                $gte: monthStart,
+                                                $lte: monthEnd
+                                            } }
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            // totalAmount: { $sum: "$total_paid" }
+                            totalAmount: { $sum: "$total_to_be_paid" }
+                        }
+                    }
+                ]);
+            } else if (range == 'this-year') {
+                total = await Order.aggregate([
+                    {
+                        $match: { deleted_at: null, created_at: {
+                                                $gte: yearStart,
+                                                $lte: yearEnd
+                                            } }
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            // totalAmount: { $sum: "$total_paid" }
+                            totalAmount: { $sum: "$total_to_be_paid" }
+                        }
+                    }
+                ]);
+            } else if (range == 'all') {
+                total = await Order.aggregate([
+                    {
+                        // $match: { paid: true, deleted_at: { $exists: false } }
+                        // $match: { deleted_at: { $exists: false } }
+                        $match: { deleted_at: null }
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            // totalAmount: { $sum: "$total_paid" }
+                            totalAmount: { $sum: "$total_to_be_paid" }
+                        }
+                    }
+                ]);
+            }
+            
+
+            totalPaid = total?.length > 0 ? total[0].totalAmount : 0;
             console.log('Total Amount:', totalPaid);
         } catch (error) {
             console.error('Error calculating total amount:', error);
         }
     } 
-
     await calculateTotalAmount(); 
+    // End of Order Sum 
+
+
+    // Getting the top Orders
+    async function getTopThreeHighestValues() {
+        try {
+            const topThreeOrders = await Order.find()
+                .sort({ total_to_be_paid: -1 }) // Sort in descending order by the 'total_to_be_paid' field
+                .limit(3) // Limit the results to the top 3 orders
+                .populate({
+                    path: 'user', 
+                    select: 'first_name last_name username' 
+                })
+                .lean(); 
+            
+            return topThreeOrders;
+        } catch (error) {
+            console.error('Error retrieving top three highest total_to_be_paid values:', error);
+        }
+    }
+
+    let topThreeOrders; 
+    
+    await getTopThreeHighestValues().then(orders => {
+        topThreeOrders = orders; 
+    });
+    getTopThreeHighestValues(); 
+    // console.log('yes',topThreeOrders)
+    // End of Getting the top Orders
 
 	// res.json({ data: orders, count: ordersCount, total_amount: totalPaid }); 
     res.json({ 
@@ -81,11 +266,20 @@ const getOrders = asyncHandler(async (req, res) => {
                     limit, 
                     total_pages: Math.ceil(ordersCount / limit), 
                     total_results: ordersCount, 
-                    total_amount: totalPaid
+                    total_amount: {
+                        total_paid: totalPaid,
+                        total_paid_last_month: totalPaidLastMonth,  
+                        total_paid_this_month: totalPaidThisMonth,  
+                    }, 
+                    top_3: topThreeOrders
                 }, 
                 data: ordersList 
             });
 });
+
+
+
+
 
 const createOrder = asyncHandler(async (req, res) => {
     const { cart, 
@@ -248,6 +442,10 @@ const createOrder = asyncHandler(async (req, res) => {
     } 
 }); 
 
+
+
+
+
 const updatePayPalOrderID = asyncHandler(async (req, res) => {
     const { id } = req.params; 
     const { paypal_order_id } = req.body; 
@@ -269,6 +467,10 @@ const updatePayPalOrderID = asyncHandler(async (req, res) => {
             if (error) return res.status(400).json({ message: "An error occured!", details: `${error}` }); 
         }); 
 })
+
+
+
+
 
 const captureOrder = asyncHandler(async (req, res) => {
     const { orderID, payerID, paymentID, paymentSource } = req.params; 
@@ -319,6 +521,10 @@ const captureOrder = asyncHandler(async (req, res) => {
     
 }); 
 
+
+
+
+
 const markAsPaidOrder = asyncHandler(async (req, res) => {
     const { id } = req.params; 
 
@@ -343,6 +549,10 @@ const markAsPaidOrder = asyncHandler(async (req, res) => {
         }); 
 }); 
 
+
+
+
+
 const getOrder = asyncHandler(async (req, res) => {
 	const order = await Order.findOne({ _id: req?.params?.id })
 		.select(['-created_at', '-updated_at', '-deleted_at'])
@@ -356,6 +566,10 @@ const getOrder = asyncHandler(async (req, res) => {
         order, order_items: orderItems
     } });
 }); 
+
+
+
+
 
 const updateOrder = asyncHandler(async (req, res) => {
     const { delivery_mode, 
@@ -412,6 +626,10 @@ const updateOrder = asyncHandler(async (req, res) => {
         });
 }); 
 
+
+
+
+
 const deleteOrder = asyncHandler(async (req, res) => {
     const { id } = req?.params; 
     const order = await Order.findOne({ _id: id }).exec();
@@ -431,6 +649,10 @@ const deleteOrder = asyncHandler(async (req, res) => {
             if (error) return res.status(400).json({ message: "An error occured!", details: `${error}` }); 
         });
 }); 
+
+
+
+
 
 const restoreOrder = asyncHandler(async (req, res) => {
     const { id } = req?.params; 
@@ -452,6 +674,10 @@ const restoreOrder = asyncHandler(async (req, res) => {
         });
 }); 
 
+
+
+
+
 const destroyOrder = asyncHandler(async (req, res) => {
     const { id } = req?.params;
 	const order = await Order.findOne({ _id: id }).exec();
@@ -462,6 +688,10 @@ const destroyOrder = asyncHandler(async (req, res) => {
 
 	res.status(200).json({ success: `Order ${order?.code} has been permanently deleted.`, data: `${order}` });
 }); 
+
+
+
+
 
 
 export { getOrders, 

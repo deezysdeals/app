@@ -1,7 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'; 
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import { AuthProvider } from '@/context/AuthContext.jsx'; 
 import { CartProvider } from '@/context/CartContext.jsx'; 
+import AuthRoute from '@/utils/AuthRoute.jsx'; 
 import ProtectedRoute from '@/utils/ProtectedRoute.jsx'; 
 import TrackPage from '@/utils/TrackPage.jsx'; 
 
@@ -97,15 +98,17 @@ function App() {
         <CartProvider> 
           <TrackPage />
           <Routes>
-            {/* Auth Routes */}
-              <Route path={ route('sign-up') } element={ <SignUp /> } /> 
-              <Route path={ route('sign-up-as-enteprise') } element={ <SignUpAsEnterprise /> } /> 
-              <Route path={ route('verify-email') } element={ <VerifyEmail /> } /> 
-              <Route path={ route('sign-in') } element={ <SignIn /> } /> 
-              <Route path={ route('passwordless-signin-request') } element={ <PasswordlessSignInRequest /> } /> 
-              <Route path={ route('passwordless-signin') } element={ <PasswordlessSignIn /> } /> 
-              <Route path={ route('password-reset-request') } element={ <PasswordResetRequest /> } /> 
-              <Route path={ route('password-reset') } element={ <PasswordReset /> } /> 
+              {/* Auth Routes */} 
+              <Route element={ <AuthRoute />}>
+                <Route path={ route('sign-up') } element={ <SignUp /> } /> 
+                <Route path={ route('sign-up-as-enteprise') } element={ <SignUpAsEnterprise /> } /> 
+                <Route path={ route('verify-email') } element={ <VerifyEmail /> } /> 
+                <Route path={ route('sign-in') } element={ <SignIn /> } /> 
+                <Route path={ route('passwordless-signin-request') } element={ <PasswordlessSignInRequest /> } /> 
+                <Route path={ route('passwordless-signin') } element={ <PasswordlessSignIn /> } /> 
+                <Route path={ route('password-reset-request') } element={ <PasswordResetRequest /> } /> 
+                <Route path={ route('password-reset') } element={ <PasswordReset /> } /> 
+              </Route>
 
               {/* Public Routes */} 
               <Route path={ route('brands.show') } element={ <Brand /> } /> 
@@ -121,7 +124,7 @@ function App() {
               <Route path={ route('index') } element={ <Index /> } /> 
 
               {/* Proctected Routes */} 
-              <Route path='/' element={ <ProtectedRoute />}>
+              <Route element={ <ProtectedRoute />}>
                 <Route path={ route('home.admin.show') } element={ <ProtectedAdminShow /> } />
                 <Route path={ route('home.admin.edit') } element={ <ProtectedAdminEdit /> } />
                 <Route path={ route('home.admin.index') } element={ <ProtectedAdminIndex /> } /> 
