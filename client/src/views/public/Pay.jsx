@@ -117,7 +117,7 @@ export default function Pay() {
                                             console.log(orderData); 
 
                                             // Update order with the PayPal Order ID
-                                            await axiosInstance.post(`orders/${orderData?.data?.order?._id}/update-paypal-order-id`, {
+                                            await axiosInstance.patch(`orders/${orderData?.data?.order?._id}/update-paypal-order-id`, {
                                                 paypal_order_id: orderData?.jsonResponse?.id
                                             })
                                                 .then(response => { 
@@ -170,7 +170,7 @@ export default function Pay() {
 
                                                 throw new Error(errorMessage);
                                             }
-                                        } else if (response?.status == 403) {
+                                        } else {
                                             // Handle non-OK responses
                                             const errorDetail = await response.json();
                                             let errorMessage = `Error: ${response.status} - ${response.statusText}`; 
