@@ -500,7 +500,7 @@ const getUser = asyncHandler(async (req, res) => {
                     // total_pages: Math.ceil(ordersCount / limit), 
                     // total_results: ordersCount, 
                 }, 
-                data: userDetails 
+                data: userFound 
             });
 }); 
 

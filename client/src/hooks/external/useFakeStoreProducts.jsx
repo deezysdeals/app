@@ -13,10 +13,11 @@ export function useProductsExt(limit = '10') {
     }, []); 
 
     async function getProductsExt({ signal } = {}) {
-        return axiosFakeStoreInstance.get(`/products?limit=${limit}`, { signal })
+        // return axiosFakeStoreInstance.get(`/products?limit=${limit}`, { signal })
+        return axiosFakeStoreInstance.get(`/products`, { signal })
             .then(response => {
                 console.log(response);
-                setProductsExt(response?.data);
+                setProductsExt(response);
             })
             .catch(error => { console.log(error) });
     } 

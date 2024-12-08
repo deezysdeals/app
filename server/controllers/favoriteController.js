@@ -1,39 +1,155 @@
+import axios from 'axios'; 
 import asyncHandler from 'express-async-handler'; 
-import Favorite from '../models/Favorite.js'; 
 import Product from '../models/Product.js';
+import ProductImage from '../models/ProductImage.js';
+import Category from '../models/Category.js';
+import Favorite from '../models/Favorite.js'; 
 
 
-const getFavorites = asyncHandler(async (req, res) => {
-	const favorites = await Favorite.find()
-                                    .sort('-created_at')
-                                    .populate({
-                                        path: 'product'
-                                    })
-                                    .lean(); 
-    if (!favorites?.length) return res.status(404).json({ message: "No favorites found!" });
+const getFavorites = asyncHandler(async (req, res) => { 
+    const current_page = parseInt(req?.query?.page) || 1;
+    // const limit = 2; 
+    const limit = parseInt(req?.query?.limit) || 10; 
+    const searchPhrase = req?.query?.search; 
 
-	res.json({ data: favorites });
+    const skip = (current_page - 1) * limit; 
+
+    console.log(current_page, limit, searchPhrase); 
+
+    let favorites;
+
+    // if (searchPhrase?.length) {
+    //     favorites = await Favorite.find({ $or: [
+    //                                         { 'product.title': { $text: { $search: searchPhrase } } }, 
+    //                                         { 'product.description': { $text: { $search: searchPhrase } } }, 
+    //                                     ], 
+    //                                     user: req?.user_id })
+    //                                 .populate({
+    //                                     path: 'product'
+    //                                 })
+    //                                 .sort('-created_at')
+    //                                 .skip(skip)
+    //                                 .limit(limit)
+    //                                 .lean(); 
+    // } else if ((searchPhrase == '') || (searchPhrase == undefined)) {
+    //     favorites = await Favorite.find({ user: req?.user_id })
+    //                                 .sort('-created_at')
+    //                                 .skip(skip)
+    //                                 .limit(limit)
+    //                                 .populate({
+    //                                     path: 'product'
+    //                                 })
+    //                                 .lean(); 
+    // } 
+    favorites = await Favorite.find({ user: req?.user_id })
+                                .sort('-created_at')
+                                .skip(skip)
+                                .limit(limit)
+                                .populate({
+                                    path: 'product'
+                                })
+                                .lean(); 
+	
+    if (!favorites?.length) return res.status(404).json({ message: "No favorites found!" }); 
+
+    const total = await Favorite.find({ user: req?.user_id }).countDocuments(); 
+
+	// res.json({ data: favorites }); 
+    res.json({ 
+                meta: {
+                    current_page, 
+                    limit, 
+                    total_pages: Math.ceil(total / limit), 
+                    total_results: total
+                }, 
+                data: favorites 
+            });
 });
 
 const createFavorite = asyncHandler(async (req, res) => {
     const { product } = req?.params; 
 
-    const productFound = await Product.findOne({ _id: product }).lean();
+    // const productFound = await Product.findOne({ _id: product }).lean();
 
-    if(!productFound?.length) return res.status(404).json({ message: "No product matches the product key provided!" });
+    // if (!productFound?.length) return res.status(404).json({ message: "No product matches the product key provided!" });
+    async function fetchProductAndCreateFavorite() {
+        try {
+            const response = await axios.get(`https://fakestoreapi.com/products/${product}`);
+            // console.log('Response:', response?.data); 
 
-    const favorite = new Favorite({
-        added_by: req?.user_id, 
-        product
-    }); 
+            // Create new product (order item), if does not exist
+            // const productFilter = { title: response?.data?.title }; 
+            const productFilter = { asin: response?.data?.id }; 
+            const productUpdate = { added_by: req?.user_id, 
+                                    title: response?.data?.title, 
+                                    retail_price: response?.data?.price, 
+                                    images: [response?.data?.image] };
 
-    favorite.save()
-        .then(() => {
-            res.status(201).json({ success: `Favorite ${favorite._id} added`, data: favorite });
-        })
-        .catch((error) => {
-            if (error) return res.status(400).json({ message: "An error occured!", details: `${error}` }); 
-        });
+            const upsertProduct = await Product.findOneAndUpdate(productFilter, productUpdate, {
+                new: true,
+                upsert: true 
+            }); 
+            console.log(upsertProduct); 
+
+            // Create new product Image (order item image), if does not exist
+            const productImageFilter = { 'image_path.url': response?.data?.image }; 
+            const productImageUpdate = { $set: { product: upsertProduct?._id,
+                                                'image_path.$.url': response?.data?.image } }; 
+
+            const upsertProductImage = await ProductImage.findOneAndUpdate(productImageFilter, productImageUpdate, {
+                new: true,
+                upsert: true 
+            }); 
+            console.log(upsertProductImage); 
+
+            // Create new category, if does not exist 
+            const categoryFilter = { name: response?.data?.category }; 
+            const categoryUpdate = { added_by: req?.user_id }; 
+
+            const upsertCategory = await Category.findOneAndUpdate(categoryFilter, categoryUpdate, {
+                new: true, 
+                upsert: true 
+            }); 
+            console.log(upsertCategory); 
+
+            /** Finally, create the Favorite if it does not exist */ 
+            const favoriteAlreadyExists = await Favorite.findOne({
+                added_by: req?.user_id, 
+                product: upsertProduct?._id
+            }).lean();
+
+            if (!favoriteAlreadyExists) {
+                const favorite = new Favorite({
+                    added_by: req?.user_id, 
+                    product: upsertProduct?._id 
+                }); 
+
+                favorite.save()
+                    .then(() => {
+                        res.status(201).json({ success: `Favorite ${favorite._id} added`, data: favorite });
+                    })
+                    .catch((error) => {
+                        if (error) return res.status(400).json({ message: "An error occured!", details: `${error}` }); 
+                    });
+            } else if (favoriteAlreadyExists) {
+                Favorite.findOneAndDelete({
+                        added_by: req?.user_id, 
+                        product: upsertProduct?._id
+                    })
+                    .then(result => {
+                        console.log('Favorite deleted:', result);
+                    })
+                    .catch(error => {
+                        console.error('Error deleting favorite:', error);
+                    });
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+        } 
+    }
+    fetchProductAndCreateFavorite(); 
+ 
 }); 
 
 const getFavorite = asyncHandler(async (req, res) => {

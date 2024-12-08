@@ -3,6 +3,7 @@ import { CartContext } from '@/context/CartContext.jsx';
 
 
 export default function CartItemMini({ itemId, 
+                                        asin, 
                                         imgSrc, 
                                         title, 
                                         description = '', 
@@ -23,8 +24,8 @@ export default function CartItemMini({ itemId,
                     <h5 className="item-title fw-semibold">{ title?.slice(0, 20) } { (title?.length > 20) && '...' }</h5>
                     <p className="item-description">{ description?.slice(0, 20) }</p>
                     <p className="item-amount">
-                        <s className="">{ oldPrice ? `${ (oldPrice)?.toFixed(2) }` : ''}</s>&nbsp;
-                        <span className="fw-semibold text-success">${ (currentPrice)?.toFixed(2) }&nbsp;<span className="fw-bold">{ (quantity > 1) ? '($'+(currentPrice * quantity)?.toFixed(2)+')' : '' }</span>
+                        <s className="">{ oldPrice ? `${ Number(oldPrice)?.toFixed(2) }` : ''}</s>&nbsp;
+                        <span className="fw-semibold text-success">${ Number(currentPrice)?.toFixed(2) }&nbsp;<span className="fw-bold">{ (Number(quantity) > 1) ? '($'+(Number(currentPrice) * Number(quantity))?.toFixed(2)+')' : '' }</span>
                         </span>
                     </p>
                 </div>
@@ -45,7 +46,15 @@ export default function CartItemMini({ itemId,
                     <span>
                         <span 
                             type="button" 
-                            onClick={ () => addToCart(itemId) }>
+                            onClick={ () => addToCart(itemId, asin) }> 
+                            {/* // onClick={ () => {addToCart(itemId, 
+                            //                             (asin = itemId), 
+                            //                             imgSrc, 
+                            //                             title, 
+                            //                             description, 
+                            //                             oldPrice, 
+                            //                             currentPrice
+                            // )} }> */}
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                                 className="bi bi-plus-circle-fill text-secondary" viewBox="0 0 16 16">
                                 <path

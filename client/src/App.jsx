@@ -30,6 +30,9 @@ import ProtectedAdminShow from '@/views/protected/admin/Show.jsx';
 import ProtectedAdminEdit from '@/views/protected/admin/Edit.jsx'; 
 import ProtectedAdminIndex from '@/views/protected/admin/Index.jsx'; 
 
+import ProtectedBrandEdit from '@/views/protected/brands/Edit.jsx'; 
+import ProtectedBrandsIndex from '@/views/protected/brands/Index.jsx'; 
+
 import ProtectedCalendarIndex from '@/views/protected/calendar/Index.jsx'; 
 
 import ProtectedClientShow from '@/views/protected/clients/Show.jsx'; 
@@ -46,8 +49,14 @@ import ProtectedDiscountShow from '@/views/protected/discounts/Show.jsx';
 import ProtectedDiscountEdit from '@/views/protected/discounts/Edit.jsx'; 
 import ProtectedDiscountsIndex from '@/views/protected/discounts/Index.jsx'; 
 
+import ProtectedFavoriteShow from '@/views/protected/favorites/Show.jsx'; 
+import ProtectedFavoritesIndex from '@/views/protected/favorites/Index.jsx'; 
+
 import ProtectedInvoiceShow from '@/views/protected/invoices/Show.jsx'; 
 import ProtectedInvoicesIndex from '@/views/protected/invoices/Index.jsx'; 
+
+import ProtectedMarketShow from '@/views/protected/market/Show.jsx'; 
+import ProtectedMarketIndex from '@/views/protected/market/Index.jsx'; 
 
 import ProtectedNotificationsIndex from '@/views/protected/notifications/Index.jsx'; 
 
@@ -62,6 +71,7 @@ import ProtectedOrdersIndex from '@/views/protected/orders/Index.jsx';
 import ProtectedPaymentsIndex from '@/views/protected/payments/Index.jsx'; 
 
 import ProtectedProductEdit from '@/views/protected/products/Edit.jsx'; 
+import ProtectedProductCreate from '@/views/protected/products/Create.jsx'; 
 import ProtectedProductsIndex from '@/views/protected/products/Index.jsx'; 
 
 import ProtectedProfileIndex from '@/views/protected/profile/Index.jsx'; 
@@ -129,6 +139,9 @@ function App() {
                 <Route path={ route('home.admin.edit') } element={ <ProtectedAdminEdit /> } />
                 <Route path={ route('home.admin.index') } element={ <ProtectedAdminIndex /> } /> 
 
+                <Route path={ route('home.brands.edit') } element={ <ProtectedBrandEdit /> } />
+                <Route path={ route('home.brands.index') } element={ <ProtectedBrandsIndex /> } /> 
+
                 <Route path={ route('home.calendar.index') } element={ <ProtectedCalendarIndex /> } /> 
 
                 <Route path={ route('home.clients.show') } element={ <ProtectedClientShow /> } />
@@ -145,8 +158,14 @@ function App() {
                 <Route path={ route('home.discounts.edit') } element={ <ProtectedDiscountEdit /> } />
                 <Route path={ route('home.discounts.index') } element={ <ProtectedDiscountsIndex /> } /> 
 
+                <Route path={ route('home.favorites.show') } element={ <ProtectedFavoriteShow /> } />
+                <Route path={ route('home.favorites.index') } element={ <ProtectedFavoritesIndex /> } /> 
+
                 <Route path={ route('home.invoices.show') } element={ <ProtectedInvoiceShow /> } />
                 <Route path={ route('home.invoices.index') } element={ <ProtectedInvoicesIndex /> } /> 
+
+                <Route path={ route('home.market.show') } element={ <ProtectedMarketShow /> } />
+                <Route path={ route('home.market.index') } element={ <ProtectedMarketIndex /> } /> 
 
                 <Route path={ route('home.notifications.index') } element={ <ProtectedNotificationsIndex /> } /> 
 
@@ -159,7 +178,8 @@ function App() {
 
                 <Route path={ route('home.payments.index') } element={ <ProtectedPaymentsIndex /> } /> 
 
-                <Route path={ route('home.products.edit') } element={ <ProtectedProductEdit /> } />
+                <Route path={ route('home.products.edit') } element={ <ProtectedProductEdit /> } /> 
+                <Route path={ route('home.products.create') } element={ <ProtectedProductCreate /> } /> 
                 <Route path={ route('home.products.index') } element={ <ProtectedProductsIndex /> } /> 
 
                 <Route path={ route('home.profile.index') } element={ <ProtectedProfileIndex /> } /> 

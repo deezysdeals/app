@@ -16,6 +16,9 @@ const routeNames = {
     'home.admin.edit': '/home/admin/:username/edit', 
     'home.admin.index': '/home/admin', 
 
+    'home.brands.edit': '/home/brands/:id/edit', 
+    'home.brands.index': '/home/brands', 
+
     'home.calendar.index': '/home/calendar', 
 
     'home.clients.show': '/home/clients/:username/show', 
@@ -39,6 +42,9 @@ const routeNames = {
     'home.invoices.show': '/home/invoices/:id/show', 
     'home.invoices.index': '/home/invoices', 
 
+    'home.market.show': '/home/market/:id/show', 
+    'home.market.index': '/home/market', 
+
     'home.notifications.index': '/home/notifications', 
     
     'home.order-items.edit': '/home/order-items/:id/edit', 
@@ -51,6 +57,7 @@ const routeNames = {
     'home.payments.index': '/home/payments', 
 
     'home.products.edit': '/home/products/:id/edit', 
+    'home.products.create': '/home/products/create', 
     'home.products.index': '/home/products', 
 
     'home.profile.index': '/home/profile', 

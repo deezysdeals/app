@@ -8,7 +8,7 @@ import swal from 'sweetalert2';
 export function useUser(username = null) {
     const [errors, setErrors] = useState({}); 
     const [loading, setLoading] = useState(false); 
-    const [data, setData] = useState([]); 
+    const [data, setData] = useState({}); 
     const navigate = useNavigate(); 
     const axiosInstance = useAxios(); 
 

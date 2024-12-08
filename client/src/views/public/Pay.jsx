@@ -3,6 +3,7 @@ import AuthContext from '@/context/AuthContext.jsx';
 import { CartContext } from '@/context/CartContext.jsx'; 
 import axios from 'axios'; 
 import useAxios from '@/utils/useAxios.jsx'; 
+import swal from 'sweetalert2'; 
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 // import { Link } from 'react-router-dom'; 
 // import { route } from '@/routes'; 
@@ -109,61 +110,83 @@ export default function Pay() {
                                             }),
                                         }); 
 
-                                        const orderData = await response.json(); 
-                                        console.log(orderData); 
+                                        console.log(response); 
 
-                                        // Update order with the PayPal Order ID
-                                        await axiosInstance.post(`orders/${orderData?.data?.order?._id}/update-paypal-order-id`, {
-                                            paypal_order_id: orderData?.jsonResponse?.id
-                                        })
-                                            .then(response => { 
-                                                console.log(response);
+                                        if (response.ok) {
+                                            const orderData = await response.json(); 
+                                            console.log(orderData); 
+
+                                            // Update order with the PayPal Order ID
+                                            await axiosInstance.post(`orders/${orderData?.data?.order?._id}/update-paypal-order-id`, {
+                                                paypal_order_id: orderData?.jsonResponse?.id
                                             })
-                                            .catch(error => {
-                                                // console.error(error); 
-                                                if (error?.response?.status == '400') {
-                                                    swal.fire({
-                                                        text: `${error?.response?.status}: Something went wrong!`, 
-                                                        color: '#900000', 
-                                                        width: 325, 
-                                                        position: 'top', 
-                                                        showConfirmButton: false
-                                                    })
-                                                } else if (error?.response?.status == '401') {
-                                                    swal.fire({
-                                                        text: `${error?.response?.status}: You must sign in  to proceed.`, 
-                                                        color: '#900000', 
-                                                        width: 325, 
-                                                        position: 'top', 
-                                                        showConfirmButton: false
-                                                    })
-                                                } else if (error?.response?.status == '403') {
-                                                    swal.fire({
-                                                        text: `${error?.response?.status}: Forbidden.`, 
-                                                        color: '#900000', 
-                                                        width: 325, 
-                                                        position: 'top', 
-                                                        showConfirmButton: false
-                                                    })
-                                                } else {
-                                                    swal.fire({
-                                                        text: `${error?.response?.status}: ${error?.response?.data?.message}`, 
-                                                        color: '#900000', 
-                                                        width: 325, 
-                                                        position: 'top', 
-                                                        showConfirmButton: false
-                                                    })
-                                                }
+                                                .then(response => { 
+                                                    console.log(response);
+                                                })
+                                                .catch(error => {
+                                                    // console.error(error); 
+                                                    if (error?.response?.status == '400') {
+                                                        swal.fire({
+                                                            text: `${error?.response?.status}: Something went wrong!`, 
+                                                            color: '#900000', 
+                                                            width: 325, 
+                                                            position: 'top', 
+                                                            showConfirmButton: false
+                                                        })
+                                                    } else if (error?.response?.status == '401') {
+                                                        swal.fire({
+                                                            text: `${error?.response?.status}: You must sign in  to proceed.`, 
+                                                            color: '#900000', 
+                                                            width: 325, 
+                                                            position: 'top', 
+                                                            showConfirmButton: false
+                                                        })
+                                                    } else if (error?.response?.status == '403') {
+                                                        swal.fire({
+                                                            text: `${error?.response?.status}: Forbidden.`, 
+                                                            color: '#900000', 
+                                                            width: 325, 
+                                                            position: 'top', 
+                                                            showConfirmButton: false
+                                                        })
+                                                    } else {
+                                                        swal.fire({
+                                                            text: `${error?.response?.status}: ${error?.response?.data?.message}`, 
+                                                            color: '#900000', 
+                                                            width: 325, 
+                                                            position: 'top', 
+                                                            showConfirmButton: false
+                                                        })
+                                                    }
+                                                })
+
+                                            if (orderData?.jsonResponse?.id) {
+                                                return orderData?.jsonResponse?.id; 
+                                            } else {
+                                                const errorDetail = orderData?.details?.[0];
+                                                const errorMessage = errorDetail
+                                                    ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
+                                                    : JSON.stringify(orderData?.data);
+
+                                                throw new Error(errorMessage);
+                                            }
+                                        } else if (response?.status == 403) {
+                                            // Handle non-OK responses
+                                            const errorDetail = await response.json();
+                                            let errorMessage = `Error: ${response.status} - ${response.statusText}`; 
+                                            console.log(errorMessage); 
+                                            
+                                            swal.fire({
+                                                text: `Could not initiate PayPal Checkout. You must login to proceed. 
+                                                Error: ${response?.status} - ${response?.statusText}`, 
+                                                color: '#900000', 
+                                                width: 325, 
+                                                position: 'top', 
+                                                showConfirmButton: false
                                             })
-
-                                        if (orderData?.jsonResponse?.id) {
-                                            return orderData?.jsonResponse?.id; 
-                                        } else {
-                                            const errorDetail = orderData?.details?.[0];
-                                            const errorMessage = errorDetail
-                                                ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
-                                                : JSON.stringify(orderData?.data);
-
+                                            if (errorDetail?.message) {
+                                                errorMessage = errorDetail.message;
+                                            }
                                             throw new Error(errorMessage);
                                         }
                                     } catch (error) {
@@ -307,7 +330,7 @@ export default function Pay() {
                                         <div className="col-md-10">
                                             <div className="d-flex align-items-center justify-content-between gap-1 flex-wrap">
                                                 <h5>{ (item?.title)?.slice(0, 20) }&nbsp;{ ((item?.title)?.length >= 20) && '...' }</h5>
-                                                <div className=""><small className="quantity">{ item?.quantity }</small>&nbsp;x&nbsp;<span className="cost fw-semibold">${ (item?.currentPrice)?.toFixed(2) }</span></div>
+                                                <div className=""><small className="quantity">{ item?.quantity }</small>&nbsp;x&nbsp;<span className="cost fw-semibold">${ Number(item?.currentPrice)?.toFixed(2) }</span></div>
                                             </div>
                                         </div> 
                                     </li>

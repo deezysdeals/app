@@ -10,6 +10,8 @@ export default function Cart() {
     const [discountCode, setDiscountCode] = useState(''); 
     const [cartToggle, setCartToggle] = useState(false); 
 
+    // console.log('cart items', cartItems);
+
     const handleApplyDiscount = () => {
         applyDiscount(discountCode); 
         setDiscountCode(''); 
@@ -51,14 +53,15 @@ export default function Cart() {
                                 { (cartItems?.map((item, index) => ( 
                                     <CartItemMini 
                                         key= {index} 
-                                        itemId = { item?.id }
+                                        itemId = { item?.id } 
+                                        asin = { item?.id }
                                         imgSrc = { item?.img }
                                         title = { item?.title } 
                                         description = '' 
                                         oldPrice = ''
-                                        currentPrice = { item?.currentPrice } 
+                                        currentPrice = { Number(item?.currentPrice) } 
                                         rating = '' 
-                                        quantity = { item?.quantity } 
+                                        quantity = { Number(item?.quantity) } 
                                     /> 
                                 )))}
                             </section>

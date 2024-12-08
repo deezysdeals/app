@@ -27,6 +27,7 @@ const orderSchema = new Schema({
             enum: ['undelivered', 'delivered'], 
             default: 'undelivered'
         }, 
+        delivery_cost: { type: Number }, 
         payment_mode:  { 
             type: String, 
             required: true, 

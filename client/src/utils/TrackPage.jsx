@@ -21,8 +21,8 @@ const TrackPage = () => {
                                     ? route('home.index')
                                 : (location.pathname == route('password-reset-request'))  
                                     ? route('home.index')
-                                : (location.pathname == route('index')) 
-                                    ? route('home.index')
+                                // : (location.pathname == route('index')) 
+                                //     ? route('home.index')
                                 : location.pathname 
 
         useEffect(() => {

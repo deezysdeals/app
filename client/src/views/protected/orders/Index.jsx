@@ -102,7 +102,7 @@ export default function Index() {
 
                     <section className="py-4">
                         <ul className="list-unstyled d-flex flex-column gap-5">
-                            { (orders?.data?.length > 1) && (orders?.data?.map((order, index) => {
+                            { (orders?.data?.length > 0) && (orders?.data?.map((order, index) => {
                                 return (
                                     <li key={order?._id} className="box-shadow-1 border-radius-25 py-4 px-2 cursor-pointer">
                                         <div className="text-dark px-3">

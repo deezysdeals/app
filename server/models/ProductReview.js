@@ -6,6 +6,7 @@ const productReviewSchema = new Schema({
         added_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
         product: { type: Schema.Types.ObjectId, ref: 'Product' }, 
         product_unit: { type: Schema.Types.ObjectId, ref: 'ProductUnit' }, 
+        order_item: { type: Schema.Types.ObjectId, ref: 'OrderItem' }, 
         title: { type: String, required: true }, 
         content: { type: String, required: true }, 
         rating: { 

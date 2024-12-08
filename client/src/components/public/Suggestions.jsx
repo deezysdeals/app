@@ -5,7 +5,7 @@ import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx';
 
 
 export default function Suggestions() { 
-    const { productsExt, getProductsExt } = useProductsExt(); 
+    const { productsExt } = useProductsExt(); 
     
     return (
         <section className="suggestions pt-5 mt-2 px-3">
@@ -18,7 +18,8 @@ export default function Suggestions() {
                         return (
                             <ProductComponent1 
                                 key = { product?.id } 
-                                id = { product?.id } 
+                                itemId = { product?.id } 
+                                asin = { product?.id } 
                                 imgSrc =  { product?.image }
                                 title = { product?.title } 
                                 description = '' 

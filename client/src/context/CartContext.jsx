@@ -31,20 +31,28 @@ export const CartProvider = ({ children }) => {
     }, [cartItems]); 
 
     const addToCart = (itemId, 
-                        imgSrc, 
+                        asin, 
+                        imgsSrc, 
                         title, 
                         description, 
                         oldPrice, 
-                        currentPrice) => {
+                        currentPrice) => { 
+        // console.log(itemId, 
+        //             asin, 
+        //             imgsSrc, 
+        //             title, 
+        //             description, 
+        //             oldPrice, 
+        //             currentPrice)
         setCartItems(prevItems => {
-            const itemExists = prevItems.find(item => item?.id == itemId); 
+            const itemExists = prevItems.find(item => item?.id == asin); 
 
             if (itemExists) {
-                return prevItems?.map(item => item?.id == itemId ? { ...item, quantity: item.quantity + 1 } : item);
+                return prevItems?.map(item => item?.id == asin ? { ...item, quantity: item.quantity + 1 } : item);
             } 
 
-            let newItem = { id: itemId, 
-                            img: imgSrc, 
+            let newItem = { id: asin, 
+                            img: imgsSrc, 
                             title, 
                             description, 
                             oldPrice, 
@@ -54,7 +62,8 @@ export const CartProvider = ({ children }) => {
         });
     }; 
 
-    const removeFromCart = (productId) => {
+    const removeFromCart = (productId) => { 
+        console.log(productId)
         setCartItems(prevItems => 
             prevItems
                 .map(item => (item?.id === productId ? { ...item, quantity: item.quantity - 1 } : item))

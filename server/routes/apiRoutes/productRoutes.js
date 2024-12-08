@@ -9,13 +9,20 @@ import { getProducts,
         updateProduct, 
         deleteProduct,
         restoreProduct, 
-        destroyProduct
+        destroyProduct, 
+
+        getPurchasedProducts, 
+        getSoldProducts
 } from '../../controllers/productController.js'; 
 
 
-productRouter.route('/')
-                .get(getProducts)
-                .post(authenticated, createProduct); 
+/** Additional Routes */
+productRouter.get('/purchases', getPurchasedProducts); 
+productRouter.get('/sales-of-purchases', getSoldProducts); 
+
+
+/** Main Routes */
+productRouter.patch('/:id/restore', authenticated, restoreProduct); 
 
 productRouter.route('/:id')
                 .get(getProduct)
@@ -23,7 +30,9 @@ productRouter.route('/:id')
                 .patch(authenticated, deleteProduct)
                 .delete(authenticated, destroyProduct); 
 
-productRouter.patch('/:id/restore', authenticated, restoreProduct); 
+productRouter.route('/')
+                .get(getProducts)
+                .post(authenticated, createProduct); 
 
 
 export default productRouter; 

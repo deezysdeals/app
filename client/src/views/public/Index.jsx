@@ -10,8 +10,8 @@ import BrandComponent from '../../components/public/nested-components/BrandCompo
 
 
 export default function Index() { 
-    const { categoriesExt, getCategoriesExt } = useCategoriesExt(); 
-    const { productsExt, getProductsExt } = useProductsExt(); 
+    const { categoriesExt } = useCategoriesExt(); 
+    const { productsExt } = useProductsExt(); 
     // console.log(categoriesExt); 
     // console.log(productsExt); 
 
@@ -28,11 +28,12 @@ export default function Index() {
                         <div className="nav-scroller">
                             <nav className="nav justify-content-between py-3" style={{ height: '325px', overflowY: 'hidden' }}>
 
-                                { (productsExt?.length > 0) && (productsExt?.map(product => {
+                                { (productsExt?.data?.length > 0) && (productsExt?.data?.map(product => {
                                     return (
                                         <ProductComponent1 
                                             key = { product?.id } 
                                             itemId = { product?.id } 
+                                            asin = { product?.id } 
                                             imgSrc =  { product?.image }
                                             title = { product?.title } 
                                             description = '' 
@@ -66,11 +67,12 @@ export default function Index() {
                         <div className="nav-scroller">
                             <nav className="nav justify-content-between py-3" style={{ height: '325px', overflowY: 'hidden' }}>
 
-                                { (productsExt?.length > 0) && (productsExt?.map(product => {
+                                { (productsExt?.data?.length > 0) && (productsExt?.data?.map(product => {
                                     return (
                                         <ProductComponent1 
                                             key = { product?.id } 
                                             itemId = { product?.id } 
+                                            asin = { product?.id } 
                                             imgSrc =  { product?.image }
                                             title = { product?.title } 
                                             description = '' 
@@ -104,11 +106,12 @@ export default function Index() {
                         <div className="nav-scroller">
                             <nav className="nav justify-content-between py-3" style={{ height: '325px', overflowY: 'hidden' }}>
                         
-                                { (productsExt?.length > 0) && (productsExt?.map(product => {
+                                { (productsExt?.data?.length > 0) && (productsExt?.data?.map(product => {
                                     return (
                                         <ProductComponent1 
                                             key = { product?.id } 
                                             itemId = { product?.id } 
+                                            asin = { product?.id } 
                                             imgSrc =  { product?.image }
                                             title = { product?.title } 
                                             description = '' 

@@ -8,7 +8,8 @@ const categorySchema = new Schema({
             type: String, 
             minLength: 1, 
             unique: true 
-        }
+        }, 
+        link: { type: String }, 
     }, 
     {
         timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }

@@ -29,6 +29,8 @@ const brandSchema = new Schema({
     }
 ); 
 
+brandSchema.index({ name: 'text' }); 
+
 
 let Brand = mongoose.model("Brand", brandSchema);
 export default Brand; 

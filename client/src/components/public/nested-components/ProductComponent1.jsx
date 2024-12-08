@@ -1,10 +1,13 @@
-import { useContext } from 'react';
+import { useContext } from 'react'; 
 import { CartContext } from '@/context/CartContext.jsx'; 
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
+import { useFavorites } from '@/hooks/useFavorites.jsx'; 
+import { useFavorite } from '@/hooks/useFavorite.jsx'; 
 
 
 export default function ProductComponent1({ itemId, 
+                                            asin, 
                                             imgSrc, 
                                             title, 
                                             description = '', 
@@ -12,7 +15,11 @@ export default function ProductComponent1({ itemId,
                                             currentPrice, 
                                             rating, 
                                             category = '' }) { 
-    const { addToCart } = useContext(CartContext); 
+    const { cartItems, addToCart, removeFromCart } = useContext(CartContext); 
+    const { favorites, getFavorites } = useFavorites(); 
+    const { createFavorite, getFavorite } = useFavorite(); 
+
+    // console.log('cart', cartItems);
 
     return (
         <article className="nav-item" style={{ width: '225px', height: '285px' }}> 
@@ -230,30 +237,57 @@ export default function ProductComponent1({ itemId,
                             </h5>
                             <div className="card-text buy d-flex justify-content-between gap-3">
                                 <div className="price fw-bold">
-                                    <span><s className="old-price"><small>${ oldPrice ? oldPrice : (currentPrice*1.05)?.toFixed(2) }</small></s>&nbsp;<span className="new-price fw-semibold text-success">${ currentPrice?.toFixed(2) }</span></span>
+                                    <span><s className="old-price"><small>${ oldPrice ? oldPrice : (currentPrice*1.05)?.toFixed(2) }</small></s>&nbsp;<span className="new-price fw-semibold text-success">${ Number(currentPrice)?.toFixed(2) }</span></span>
                                 </div>
                             
                                 <div className="actions d-flex gap-3">
-                                    <span className="cursor-pointer">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bookmark"
-                                            viewBox="0 0 16 16">
-                                            <path
-                                                d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z" />
-                                        </svg>
-                                    </span>
                                     <span 
                                         type="button" 
-                                        onClick={ () => addToCart(itemId, 
-                                                                    imgSrc, 
-                                                                    title, 
-                                                                    description, 
-                                                                    oldPrice, 
-                                                                    currentPrice
-                                        ) }
+                                        onClick={ async () => {
+                                                    await createFavorite(itemId); 
+                                                    await getFavorites();
+                                                } }
                                         className="cursor-pointer">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-handbag" viewBox="0 0 16 16">
+                                            { (favorites?.data?.length > 0) && favorites?.data?.find(foundFavorite => foundFavorite?.product?.asin == itemId) 
+                                                ?
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bookmark-fill" viewBox="0 0 16 16">
+                                                        <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2"/>
+                                                    </svg>
+                                                : 
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bookmark"
+                                                        viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z" />
+                                                    </svg>
+                                                
+                                            }
+                                    </span> 
+                                    <span className="cursor-pointer">
+                                        { (cartItems?.length > 0) && cartItems?.find(item => item?.id == itemId) ? 
+                                            <svg 
+                                                type="button"
+                                                onClick={ () => removeFromCart(itemId) }
+                                                xmlns="http://www.w3.org/2000/svg" 
+                                                width="16" 
+                                                height="16" 
+                                                fill="currentColor" 
+                                                className="bi bi-handbag-fill" 
+                                                viewBox="0 0 16 16">
+                                                <path d="M8 1a2 2 0 0 0-2 2v2H5V3a3 3 0 1 1 6 0v2h-1V3a2 2 0 0 0-2-2M5 5H3.36a1.5 1.5 0 0 0-1.483 1.277L.85 13.13A2.5 2.5 0 0 0 3.322 16h9.355a2.5 2.5 0 0 0 2.473-2.87l-1.028-6.853A1.5 1.5 0 0 0 12.64 5H11v1.5a.5.5 0 0 1-1 0V5H6v1.5a.5.5 0 0 1-1 0z"/>
+                                            </svg> :
+                                            <svg 
+                                                type="button" 
+                                                onClick={ () => addToCart(itemId, 
+                                                                            asin, 
+                                                                            imgSrc, 
+                                                                            title, 
+                                                                            description, 
+                                                                            oldPrice, 
+                                                                            currentPrice
+                                                ) }
+                                                xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-handbag" viewBox="0 0 16 16">
                                                 <path d="M8 1a2 2 0 0 1 2 2v2H6V3a2 2 0 0 1 2-2m3 4V3a3 3 0 1 0-6 0v2H3.36a1.5 1.5 0 0 0-1.483 1.277L.85 13.13A2.5 2.5 0 0 0 3.322 16h9.355a2.5 2.5 0 0 0 2.473-2.87l-1.028-6.853A1.5 1.5 0 0 0 12.64 5zm-1 1v1.5a.5.5 0 0 0 1 0V6h1.639a.5.5 0 0 1 .494.426l1.028 6.851A1.5 1.5 0 0 1 12.678 15H3.322a1.5 1.5 0 0 1-1.483-1.723l1.028-6.851A.5.5 0 0 1 3.36 6H5v1.5a.5.5 0 1 0 1 0V6z"/>
-                                            </svg>
+                                            </svg> }
                                     </span>
                                 </div>
                             </div>

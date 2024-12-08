@@ -26,14 +26,14 @@ export default function Index() {
             console.log('search for:', searchKey);
         }
     }, [searchKey]);
-    // End of Voice-to-Text search functionality
 
     const { handleStartListening, 
             handleStopListening, 
             voiceText, 
             setVoiceText,
             isListening, 
-            setIsListening } = useVoiceToText()
+            setIsListening } = useVoiceToText();
+    // End of Voice-to-Text search functionality
 
     const [userQuery, setUserQuery] = useState({
         range: 'all', 
@@ -42,7 +42,7 @@ export default function Index() {
         limit: 10, 
     }); 
     const { users, getUsers } = useUsers(userQuery); 
-    console.log(users); 
+    // console.log(users); 
 
     return (
         <Layout>

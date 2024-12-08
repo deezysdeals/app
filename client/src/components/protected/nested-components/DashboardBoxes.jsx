@@ -93,11 +93,11 @@ export default function DashboardBoxes() {
                                         <span 
                                             type="button" 
                                             onClick={ async () => {
-                                                await setOrderQuery(prevState => ({
+                                                setOrderQuery(prevState => ({
                                                     ...prevState,
                                                     range: 'this-week'
                                                 })); 
-                                                await getOrders(orderQuery); 
+                                                await getOrders(); 
                                             }}
                                             className="dropdown-item">
                                                 This Week
@@ -107,11 +107,11 @@ export default function DashboardBoxes() {
                                         <span 
                                             type="button" 
                                             onClick={ async () => {
-                                                await setOrderQuery(prevState => ({
+                                                setOrderQuery(prevState => ({
                                                     ...prevState,
                                                     range: 'this-month'
                                                 })); 
-                                                await getOrders(orderQuery); 
+                                                await getOrders(); 
                                             }}
                                             className="dropdown-item">
                                                 This Month
@@ -121,11 +121,11 @@ export default function DashboardBoxes() {
                                         <span 
                                             type="button" 
                                             onClick={ async () => { 
-                                                await setOrderQuery(prevState => ({
+                                                setOrderQuery(prevState => ({
                                                     ...prevState,
                                                     range: 'this-year'
                                                 })); 
-                                                await getOrders(orderQuery);  
+                                                await getOrders();  
                                             }}
                                             className="dropdown-item">
                                                 This Year
@@ -135,11 +135,11 @@ export default function DashboardBoxes() {
                                         <span 
                                             type="button" 
                                             onClick={ async () => { 
-                                                await setOrderQuery(prevState => ({
+                                                setOrderQuery(prevState => ({
                                                     ...prevState,
                                                     range: 'all'
                                                 })); 
-                                                await getOrders(orderQuery); 
+                                                await getOrders(); 
                                             }}
                                             className="dropdown-item">
                                                 All Time
@@ -326,7 +326,7 @@ export default function DashboardBoxes() {
                     </div>
                 </div>
 
-                <div className="customers-volume box-shadow-1 border-radius-25 p-3 d-flex flex-column justify-content-between gap-2">
+                <div className="customers-volume client-growth box-shadow-1 border-radius-25 p-3 d-flex flex-column justify-content-between gap-2">
                     <div className="d-flex align-items-center justify-content-between">
                         <h2 className="fs-6">Client Growth</h2>
                         <span className="dropdown">
@@ -504,7 +504,7 @@ export default function DashboardBoxes() {
                     </div>
 
                     <section>
-                        {/* (orders?.data?.length > 1) && (orders?.data?.map((order, index) => { */}
+                        {/* (orders?.data?.length > 0) && (orders?.data?.map((order, index) => { */}
                         <ul className="list-unstyled d-flex flex-column gap-2">
                             { (orders?.meta?.top_3?.length > 0) && ((orders?.meta?.top_3)?.map((order, index) => {
                                 return (
