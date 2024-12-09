@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema; 
 
 const productSchema = new Schema({
-        added_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
+        user: { type: Schema.Types.ObjectId, ref: 'User' }, 
         brand: { type: Schema.Types.ObjectId, ref: 'Brand' }, 
         // discount: { type: Schema.Types.ObjectId, ref: 'Discount' }, 
         // category: { type: Schema.Types.ObjectId, ref: 'Category' }, 

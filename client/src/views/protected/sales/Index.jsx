@@ -14,6 +14,7 @@ import First from '@/components/protected/nested-components/pagination-links/Fir
 import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
 import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
 import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
+import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
 import ProductComponent1 from '../../../components/protected/nested-components/ProductComponent1';
 import Layout from '@/components/protected/Layout.jsx'; 
 
@@ -94,18 +95,12 @@ export default function Index() {
                             </div>
                         </div>
                         <span>
-                            { ((sales?.meta?.current_page) > 1) 
-                                ? (((sales?.meta?.current_page - 1) * sales?.meta?.limit) + 1) || 0 
-                                : sales?.meta?.current_page || 0 }
-                                    &nbsp;-&nbsp;
-                                { ((sales?.meta?.current_page * (sales?.meta?.limit)) > sales?.meta?.total_results) 
-                                    ? (sales?.meta?.total_results || 0)
-                                        : ((sales?.meta?.current_page) != 1) 
-                                        ? (sales?.meta?.current_page * sales?.meta?.limit) || 0 
-                                            : ((sales?.meta?.current_page + (sales?.meta?.limit - 1))) || 0 } 
-                                    &nbsp;of&nbsp; 
-                                { sales?.meta?.total_results || 0 } 
-                                &nbsp;(page { sales?.meta?.current_page || 0 } of { sales?.meta?.total_pages || 0 })
+                            { (sales?.data?.length > 0) 
+                                && <PaginationMeter 
+                                        current_page={ sales?.meta?.current_page } 
+                                        limit={ sales?.meta?.limit } 
+                                        total_pages={ sales?.meta?.total_pages } 
+                                        total_results={ sales?.meta?.total_results } /> } 
                         </span>
                     </div>
 

@@ -3,17 +3,16 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema; 
 
 const productReviewSchema = new Schema({ 
-        added_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
+        user: { type: Schema.Types.ObjectId, ref: 'User' }, 
         product: { type: Schema.Types.ObjectId, ref: 'Product' }, 
-        product_unit: { type: Schema.Types.ObjectId, ref: 'ProductUnit' }, 
+        // product_unit: { type: Schema.Types.ObjectId, ref: 'ProductUnit' }, 
+        order: { type: Schema.Types.ObjectId, ref: 'Order' }, 
         order_item: { type: Schema.Types.ObjectId, ref: 'OrderItem' }, 
         title: { type: String, required: true }, 
         content: { type: String, required: true }, 
         rating: { 
-            type: String, 
-            required: true, 
-            enum: [1, 2, 3, 4, 5], 
-            default: 5
+            type: Number, 
+            enum: [1, 2, 3, 4, 5] 
         }, 
         deleted_at: { type: String, default: null }, 
         deleted_by: { type: Schema.Types.ObjectId, ref: 'User' }, 

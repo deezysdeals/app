@@ -13,6 +13,8 @@ import { getProductReviews,
 } from '../../controllers/productReviewController.js'; 
 
 
+productReviewRouter.use(authenticated); 
+
 productReviewRouter.route('/')
                 .get(getProductReviews)
                 .post(authenticated, createProductReview); 

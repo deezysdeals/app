@@ -11,6 +11,7 @@ import First from '@/components/protected/nested-components/pagination-links/Fir
 import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
 import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
 import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
+import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
@@ -85,18 +86,12 @@ export default function Index() {
                             </div>
                         </div>
                         <span>
-                            { ((orders?.meta?.current_page) > 1) 
-                                ? (((orders?.meta?.current_page - 1) * orders?.meta?.limit) + 1) 
-                                : orders?.meta?.current_page }
-                                    &nbsp;-&nbsp;
-                                { ((orders?.meta?.current_page * (orders?.meta?.limit)) > orders?.meta?.total_results) 
-                                    ? (orders?.meta?.total_results)
-                                        : ((orders?.meta?.current_page) != 1) 
-                                        ? (orders?.meta?.current_page * orders?.meta?.limit) 
-                                            : ((orders?.meta?.current_page + (orders?.meta?.limit - 1))) } 
-                                    &nbsp;of&nbsp; 
-                                { orders?.meta?.total_results } 
-                                &nbsp;(page { orders?.meta?.current_page } of { orders?.meta?.total_pages })
+                            { (orders?.data?.length > 0) 
+                                && <PaginationMeter 
+                                        current_page={ orders?.meta?.current_page } 
+                                        limit={ orders?.meta?.limit } 
+                                        total_pages={ orders?.meta?.total_pages } 
+                                        total_results={ orders?.meta?.total_results } /> } 
                         </span> 
                     </div>
 
@@ -104,7 +99,7 @@ export default function Index() {
                         <ul className="list-unstyled d-flex flex-column gap-5">
                             { (orders?.data?.length > 0) && (orders?.data?.map((order, index) => {
                                 return (
-                                    <li key={order?._id} className="box-shadow-1 border-radius-25 py-4 px-2 cursor-pointer">
+                                    <li key={order?._id} className="box-shadow-1 border-radius-25 py-4 px-2">
                                         <div className="text-dark px-3">
                                             <div className="d-flex justify-content-between align-items-center flex-wrap pb-2">
                                                 <span className="fw-semibold">#

@@ -23,6 +23,7 @@ import Address from '../models/Address.js';
 
 
 const getOrders = asyncHandler(async (req, res) => { 
+    // console.log('user', req?.user_id)
     // console.log('cookies', req?.cookies); 
     // console.log('req', req); 
     // console.log('cookies', req?.cookies); 
@@ -449,7 +450,7 @@ const createOrder = asyncHandler(async (req, res) => {
         // total_to_be_paid, 
         // proposed_delivery_start_date,
         // proposed_delivery_destination_reach_date, 
-        full_name: addressOfUser?.first_name + ' ' + addressOfUser?.last_name, 
+        full_name: addressOfUser?.full_name, 
         email: userPlacingOrder?.email, 
         phone: addressOfUser?.phone, 
         address_line_1: addressOfUser?.address_line_1, 

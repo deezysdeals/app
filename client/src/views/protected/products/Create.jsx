@@ -90,7 +90,7 @@ export default function Create() {
     }); 
 
     async function submitProduct(e) {
-        e.preventDefault();
+        e.preventDefault(); 
 
         const formData = new FormData(); 
         formData.append('title', product.data.title); 
@@ -221,7 +221,7 @@ export default function Create() {
         productFeatureFields?.field_9 && formData.append('feature_9', product.data.feature_9); 
         productFeatureFields?.field_10 && formData.append('feature_10', product.data.feature_10); 
 
-        await createProduct(formData);
+        await createProduct(formData); 
     }
     
     return (

@@ -2,16 +2,104 @@ import asyncHandler from 'express-async-handler';
 import ProductReview from '../models/ProductReview.js'; 
 
 
-const getProductReviews = asyncHandler(async (req, res) => {
-	const productReviews = await ProductReview.find().sort('-created_at').lean(); 
-    if (!productReviews?.length) return res.status(404).json({ message: "No product reviews found!" });
+const getProductReviews = asyncHandler(async (req, res) => { 
+    const current_page = parseInt(req?.query?.page) || 1;
+    const limit = parseInt(req?.query?.limit) || 10; 
 
-	res.json({ data: productReviews });
+    const skip = (current_page - 1) * limit; 
+
+    // console.log(req?.query)
+
+    let productReviews; 
+    let total; 
+
+    /** Query building */
+    const queryforNonAdmin = {
+        user: req?.user_id,
+        deleted_at: null,
+    };
+    if (req?.query?.stars != null) {
+        const stars = parseInt(req.query.stars);
+        if ([1, 2, 3, 4, 5].includes(stars)) {
+            queryforNonAdmin.rating = stars; 
+        }
+    } 
+
+    const queryforAdmin = {
+        deleted_at: null,
+    };
+    if (req?.query?.stars != null) {
+        const stars = parseInt(req.query.stars);
+        if ([1, 2, 3, 4, 5].includes(stars)) {
+            queryforAdmin.rating = stars; 
+        }
+    } 
+    /** End of Query building */
+    
+    if (req?.role != 'admin') {
+        productReviews = await ProductReview.find(queryforNonAdmin)
+                                        .sort('-created_at')
+                                        .skip(skip)
+                                        .limit(limit)
+                                        .populate({
+                                            path: 'order', 
+                                        })
+                                        .populate({
+                                            path: 'order_item', 
+                                            select: 'product', 
+                                            populate: { 
+                                                path: 'product', 
+                                            }
+                                        })
+                                        .populate({
+                                            path: 'user', 
+                                            select: 'first_name last_name username' 
+                                        })
+                                        .lean(); 
+
+        total = await ProductReview.find(queryforNonAdmin).countDocuments(); 
+
+    } else {
+        productReviews = await ProductReview.find(queryforAdmin)
+                                        .sort('-created_at')
+                                        .skip(skip)
+                                        .limit(limit)
+                                        .populate({
+                                            path: 'order', 
+                                        })
+                                        .populate({
+                                            path: 'order_item', 
+                                            select: 'product', 
+                                            populate: { 
+                                                path: 'product', 
+                                            }
+                                        })
+                                        .populate({
+                                            path: 'user', 
+                                            select: 'first_name last_name username' 
+                                        })
+                                        .lean(); 
+
+        total = await ProductReview.find(queryforAdmin).countDocuments();
+    }
+        
+    if (!productReviews?.length) return res.status(404).json({ message: "No product reviews found!" }); 
+
+    res.json({ 
+                meta: {
+                    current_page, 
+                    limit, 
+                    total_pages: Math.ceil(total / limit), 
+                    total_results: total
+                }, 
+                data: productReviews 
+            });
 });
 
 const createProductReview = asyncHandler(async (req, res) => {
     const { product, 
-            product_unit, 
+            order, 
+            order_item, 
             title, 
             content, 
             rating } = req?.body; 
@@ -19,7 +107,8 @@ const createProductReview = asyncHandler(async (req, res) => {
     const productReview = new ProductReview({
         user: req?.user_id, 
         product, 
-        product_unit, 
+        order, 
+        order_item, 
         title, 
         content, 
         rating 
