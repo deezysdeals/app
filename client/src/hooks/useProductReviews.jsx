@@ -18,11 +18,12 @@ export function useProductReviews(productReviewQuery) {
         console.log(productReviewQuery);
         // console.log(productReviewQuery?.page); 
         // const { page, limit, stars } = productReviewQuery; 
-        // console.log(page, limit, stars)
+        // console.log(page, limit, stars) 
+        setProductReviews([]); 
         return axiosInstance.get(`product-reviews?page=${productReviewQuery?.page}&limit=${productReviewQuery?.limit}&stars=${productReviewQuery?.stars}`, { signal }) 
             .then(response => setProductReviews(response?.data))
             .catch(error => console.log(error));
     } 
 
-    return { productReviews, getProductReviews }; 
+    return { productReviews, getProductReviews, setProductReviews }; 
 } 

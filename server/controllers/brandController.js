@@ -24,7 +24,7 @@ const getBrands = asyncHandler(async (req, res) => {
     let brandsList = []; 
 
     const updatePromises = brands?.map(async brand => { 
-        let foundProducts = await Product.find({ category: brand?._id }).exec(); 
+        let foundProducts = await Product.find({ brand: brand?._id }).exec(); 
         brand['products'] = foundProducts; 
 
         brandsList.push(brand);
@@ -44,9 +44,8 @@ const getBrands = asyncHandler(async (req, res) => {
 });
 
 const createBrand = asyncHandler(async (req, res) => {
-    const { title, 
+    const { name, 
             description, 
-            // logo, 
             web_address, 
             facebook, 
             instagram, 
@@ -54,19 +53,19 @@ const createBrand = asyncHandler(async (req, res) => {
             other_social, 
             other_social_handle } = req?.body; 
 
-    const duplicateBrand = await Brand.findOne({ $or: [{ title: title }, { slug: slugIt(title) }] }).lean(); 
+    const duplicateBrand = await Brand.findOne({ $or: [{ name: name }, { slug: slugIt(name) }] }).lean(); 
 
-    if (duplicateBrand) return res.status(409).json({ message: `Brand ${duplicateBrand.title} already exists` }); 
+    if (duplicateBrand) return res.status(409).json({ message: `Brand ${duplicateBrand.name} already exists` }); 
 
-    const { logo } = req?.files; 
+    const { logo_path } = req?.files; 
 
-    const brandImageUpload = await cloudinaryImageUpload(logo.tempFilePath, "tasha_best_decor_brand_images"); 
+    const brandImageUpload = await cloudinaryImageUpload(logo_path.tempFilePath, "deezysdeals_brand_images"); 
     if (!brandImageUpload) return res.status(400).json({ message: "Image upload failed" }); 
 
     const brand = new Brand({
         user: req?.user_id, 
-        slug: slugIt(title),
-        title, 
+        name, 
+        slug: slugIt(name), 
         description, 
         logo_path: { 
             public_id: brandImageUpload.public_id,
@@ -82,7 +81,7 @@ const createBrand = asyncHandler(async (req, res) => {
 
     brand.save()
         .then(() => {
-            res.status(201).json({ success: `Brand ${brand.title} added`, data: brand });
+            res.status(201).json({ success: `Brand ${brand.name} added`, data: brand });
         })
         .catch((error) => {
             if (error) return res.status(400).json({ message: "An error occured!", details: `${error}` }); 
@@ -121,7 +120,7 @@ const getBrand = asyncHandler(async (req, res) => {
 }); 
 
 const updateBrand = asyncHandler(async (req, res) => {
-    const { title, 
+    const { name, 
             description, 
             logo, 
             web_address, 
@@ -136,11 +135,11 @@ const updateBrand = asyncHandler(async (req, res) => {
     const brand = await Brand.findOne({ _id: id }).exec();
     if (!brand) return res.status(404).json({ message: "Brand not found!" }); 
 
-    if (title) brand.title = title; 
+    if (name) brand.name = name; 
     if (description) brand.description = description; 
     if (logo) brand.logo = logo; 
     if (web_address) brand.web_address = web_address; 
-    if (facebook) brand.facebook = title; 
+    if (facebook) brand.facebook = name; 
     if (instagram) brand.instagram = instagram; 
     if (twitter_x) brand.twitter_x = twitter_x; 
     if (other_social) brand.other_social = other_social; 

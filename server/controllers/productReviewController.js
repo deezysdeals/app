@@ -8,7 +8,10 @@ const getProductReviews = asyncHandler(async (req, res) => {
 
     const skip = (current_page - 1) * limit; 
 
-    // console.log(req?.query)
+    // console.log(req?.query) 
+    // console.log('cookies', req?.cookies); 
+    // console.log('decoded', jwt.verify(req?.cookies?.jwt, process.env.JWT_SECRET));
+    // console.log('Logged out')
 
     let productReviews; 
     let total; 
@@ -103,6 +106,14 @@ const createProductReview = asyncHandler(async (req, res) => {
             title, 
             content, 
             rating } = req?.body; 
+
+    const productReviewExists = await ProductReview.findOne({ product: product, 
+                                                                order: order, 
+                                                                order_item: order_item, 
+                                                                user: req?.user_id
+                                                            }).lean(); 
+
+    if (productReviewExists) return res.status(409).json({ message: "A review already exists for this item. You can delete the already existing review to create a new one!" })
 
     const productReview = new ProductReview({
         user: req?.user_id, 

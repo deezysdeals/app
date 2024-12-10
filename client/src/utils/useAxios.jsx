@@ -28,12 +28,25 @@ const useAxios = () => {
 
         if (!isExpired) return req;
 
+        // const response = await axios.post(`${ baseURL }/auth/refresh-token`, {
+        //     // refresh: authTokens?.refresh
+        // }, {
+        //     headers: {
+        //         'Authorization': `Bearer ${ authTokens?.access }`, 
+        //         'Content-Type': 'application/json', 
+        //     }
+        // }, { 
+        //     withCredentials: true 
+        // }); 
+
         const response = await axios.post(`${ baseURL }/auth/refresh-token`, {
             headers: {
                 'Authorization': `Bearer ${ authTokens?.access }`, 
-                'Content-Type': 'multipart/form-data', 
+                'Content-Type': 'application/json', 
             }
-        }, { withCredentials: true }); 
+        }, { 
+            withCredentials: true 
+        }); 
 
         localStorage?.setItem('deezysdeals_authTokens', JSON?.stringify(response?.data)); 
 
@@ -41,7 +54,7 @@ const useAxios = () => {
         setUser(jwtDecode(response?.data?.access)); 
 
         req.headers.Authorization = `Bearer ${response?.data?.access}`; 
-        req;
+        return req;
     }); 
 
     axiosInstance.interceptors.response.use(

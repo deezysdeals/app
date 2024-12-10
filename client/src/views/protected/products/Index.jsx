@@ -45,13 +45,13 @@ export default function Index() {
                 <div className="dashboard-content pt-3"> 
                     <h2 className="border-bottom pb-1 fs-4">Products</h2> 
 
-                    <section className="d-flex justify-content-end">
+                    <section className="d-flex justify-content-end pb-4">
                         <Link to={ route('home.products.create') } className="btn btn-sm btn-dark px-3 border-radius-35">
                             Add New Product
                         </Link>
                     </section>
 
-                    <div className="d-flex justify-content-between flex-wrap gap-2 pt-4"> 
+                    <div className="d-flex justify-content-between flex-wrap gap-2"> 
                         <div className="search">
                             <div className="search-container border border-dark" style={{ maxWidth: '375px' }}>
                                 { !isListening &&

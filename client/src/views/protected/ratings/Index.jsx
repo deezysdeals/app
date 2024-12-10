@@ -243,7 +243,7 @@ export default function Index() {
                                                                             <p>{ productReview?.content }</p> 
                                                                             <p className="text-end">-&nbsp;
                                                                                 { productReview?.user?.first_name + ' ' + productReview?.user?.last_name },&nbsp;
-                                                                                <small>{ dayjs.utc(productReview?.created_at).fromNow() }</small>
+                                                                                <small className=""><small>{ dayjs.utc(productReview?.created_at).fromNow() }</small></small>
                                                                             </p>
                                                                         </div>
                                                                     </section>
@@ -419,7 +419,7 @@ export default function Index() {
                                                 <p>{ productReview?.content }</p> 
                                                 <p className="text-end">-&nbsp;
                                                     { productReview?.user?.first_name + ' ' + productReview?.user?.last_name },&nbsp;
-                                                    <small>{ dayjs.utc(productReview?.created_at).fromNow() }</small>
+                                                    <small className=""><small>{ dayjs.utc(productReview?.created_at).fromNow() }</small></small>
                                                 </p>
                                             </li> 
                                         )
