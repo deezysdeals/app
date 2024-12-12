@@ -11,8 +11,8 @@ export default function Hero() {
                                 products.</p>
                         </div>
                         <div className="text py-4 carousel-item">
-                            <h2 className="fw-bold">Get Discounts!</h2>
-                            <p className="fw-semibold">Get disount on all purchases as from September 23.</p>
+                            <h2 className="fw-bold">Get Deals!</h2>
+                            <p className="fw-semibold">Get discount on purchases as from September 23.</p>
                         </div>
                     </div>
                 </div>

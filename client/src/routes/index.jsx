@@ -25,15 +25,13 @@ const routeNames = {
     'home.clients.edit': '/home/clients/:username/edit', 
     'home.clients.index': '/home/clients', 
 
+    'home.deals.show': '/home/deals/:id/show', 
     'home.deals.edit': '/home/deals/:id/edit', 
+    'home.deals.create': '/home/deals/create', 
     'home.deals.index': '/home/deals', 
 
     'home.deliveries.edit': '/home/deliveries/:id/edit', 
     'home.deliveries.index': '/home/deliveries', 
-
-    'home.discounts.show': '/home/discounts/:id/show', 
-    'home.discounts.edit': '/home/discounts/:id/edit', 
-    'home.discounts.index': '/home/discounts', 
 
     'home.favorites.show': '/home/favorites/:id/show', 
     'home.favorites.edit': '/home/favorites/:id/edit', 
@@ -74,7 +72,7 @@ const routeNames = {
 
     'home.settings.index': '/home/settings', 
 
-    'home.site-updates.index': '/home/site-updates', 
+    'home.site-configurations.index': '/home/site-configurations', 
 
     // 'home.social-media.show': '/home/social-media/:id/show', 
     'home.social-media.edit': '/home/social-media/:id/edit', 

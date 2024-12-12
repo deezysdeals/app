@@ -70,7 +70,7 @@ const createProduct = asyncHandler(async (req, res) => {
     console.log('request body', req?.body); 
 
     const { brand, 
-            discount, 
+            deal, 
             asin, 
             title, 
             category_1, category_2, category_3, category_4, category_5, category_6, category_7, 
@@ -108,7 +108,7 @@ const createProduct = asyncHandler(async (req, res) => {
         const newProduct = await Product.create({
             user: req?.user_id, 
             brand, 
-            discount, 
+            deal, 
             asin: (asin ? asin : (new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14)+(Date.now()))), 
             title, 
             slug: slugIt(title + '-' + new Date().toISOString() ),
@@ -308,13 +308,13 @@ const getProduct = asyncHandler(async (req, res) => {
  */
 const updateProduct = asyncHandler(async (req, res) => {
     const { brand, 
-            discount, 
+            deal, 
             category, 
             sub_category, 
             title, 
             description, 
             retail_price, 
-            initial_discount_value } = req?.body; 
+            initial_deal_value } = req?.body; 
 
     const { id } = req?.params; 
 
@@ -322,13 +322,13 @@ const updateProduct = asyncHandler(async (req, res) => {
     if (!product) return res.status(404).json({ message: "Product not found!" }); 
 
     if (brand) product.brand = brand; 
-    if (discount) product.discount = discount; 
+    if (deal) product.deal = deal; 
     if (category) product.category = category; 
     if (sub_category) product.sub_category = sub_category; 
     if (title) product.title = title; 
     if (description) product.description = description; 
     if (retail_price) product.retail_price = retail_price; 
-    if (initial_discount_value) product.initial_discount_value = initial_discount_value; 
+    if (initial_deal_value) product.initial_deal_value = initial_deal_value; 
 
     product.save()
         .then(() => { 

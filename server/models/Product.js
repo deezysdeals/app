@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 const productSchema = new Schema({
         user: { type: Schema.Types.ObjectId, ref: 'User' }, 
         brand: { type: Schema.Types.ObjectId, ref: 'Brand' }, 
-        // discount: { type: Schema.Types.ObjectId, ref: 'Discount' }, 
+        model: { type: String }, 
+        // deal: { type: Schema.Types.ObjectId, ref: 'Deal' }, 
         // category: { type: Schema.Types.ObjectId, ref: 'Category' }, 
         // sub_category: { type: Schema.Types.ObjectId, ref: 'SubCategory' }, 
         asin: { type: String, minLength: 1, unique: true }, 
@@ -18,6 +19,12 @@ const productSchema = new Schema({
         retail_price: { type: Number, required: true }, 
         currency: { type: String, default: 'usd' }, 
         images: [ String ], 
+        dimensions: {
+            height: { type: String },
+            width: { type: String },
+            depth: { type: String },
+            weight: { type: String }
+        },
         purchased_for_resale: { type: Boolean, default: false }, 
         purchase_price: { type: Number }, 
         sold_to_client: { type: Boolean, default: false }, 

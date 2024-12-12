@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-const discountSchema = new Schema({
-        user: { type: Schema.Types.ObjectId, ref: 'User' }, 
+const dealSchema = new Schema({ 
+        user: { type: Schema.Types.ObjectId,  ref: 'User' }, 
         title: { type: String, required: true, unique: true }, 
         description: { type: String, required: true }, 
         slug: { type: String, required: true }, 
@@ -18,7 +18,10 @@ const discountSchema = new Schema({
         usable_once: { type: Boolean, default: false }, 
         used_at: { type: String, default: null },
         used_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
+        specific_for_user: { type: Boolean, default: false }, 
+        user_specifically_for: { type: Schema.Types.ObjectId, ref: 'User' }, 
         updated_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
+        // expires_on: { type: String, default: null }, 
         deleted_at: { type: String, default: null }, 
         deleted_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
     }, 
@@ -28,5 +31,5 @@ const discountSchema = new Schema({
 );
 
 
-let Discount = mongoose.model('Discount', discountSchema);
-export default Discount; 
+let Deal = mongoose.model('Deal', dealSchema);
+export default Deal; 

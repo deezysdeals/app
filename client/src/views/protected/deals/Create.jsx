@@ -1,33 +1,30 @@
 import { useState } from 'react'; 
-import { Link, useParams } from 'react-router-dom'; 
+import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import { useDeal } from '@/hooks/useDeal.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
-export default function Edit() { 
-    const params = useParams(); 
-
+export default function Create() { 
     const [userSpecific, setUserSpecific] = useState(false); 
     const [usableOnce, setUsableOnce] = useState(false); 
 
-    const { deal, updateDeal, getDeal } = useDeal(params?.id); 
-    console.log(deal)
+    const { deal, createDeal, getDeal } = useDeal(); 
 
-    async function submitUpdateDeal(e) {
+    async function submitDeal(e) {
         e.preventDefault(); 
 
         const formData = new FormData(); 
-        formData.append('code', deal?.data?.code); 
-        formData.append('title', deal?.data?.title); 
-        formData.append('description', deal?.data?.description); 
-        deal?.data?.deal_value && formData.append('value', deal?.data?.deal_value); 
-        deal?.data?.deal_value_unit && formData.append('value_unit', deal?.data?.deal_value_unit); 
-        deal?.data?.specific_for_user && formData.append('specific_for_user', deal?.data?.specific_for_user); 
-        (deal?.data?.specific_for_user && deal?.data?.user_specifically_for) && formData.append('user_specifically_for', deal?.data?.user_specifically_for); 
-        deal?.data?.usable_once && formData.append('usable_once', deal?.data?.usable_once); 
+        formData.append('code', deal.data.code); 
+        formData.append('title', deal.data.title); 
+        formData.append('description', deal.data.description); 
+        formData.append('value', deal.data.deal_value); 
+        formData.append('value_unit', deal.data.deal_value_unit); 
+        formData.append('specific_for_user', userSpecific ? true : false); 
+        userSpecific && formData.append('user_specifically_for', deal.data.user_specifically_for); 
+        formData.append('usable_once', usableOnce ? true : false); 
 
-        await updateDeal(formData); 
+        await createDeal(formData); 
     }
 
     return (
@@ -38,10 +35,10 @@ export default function Edit() {
                         <Link to={ route('home.deals.index') } className="text-dark">
                             Deals
                         </Link>&nbsp;
-                        | Edit</h2>
+                        | Create</h2>
 
                     <section className="py-4">
-                        <form onSubmit={ submitUpdateDeal } encType='multipart/form-data' id="create-edit-form" className="create-edit-form">
+                        <form onSubmit={ submitDeal } encType='multipart/form-data' id="create-edit-form" className="create-edit-form">
                             <div className="fields"> 
 
                                 <div className="row g-2">
@@ -117,7 +114,7 @@ export default function Edit() {
                                                 <span className="input-group-text border-radius-35 fw-semibold form-field-required">Value</span>
                                                 <input 
                                                     type="number" 
-                                                    value={ deal?.data?.value ?? '' } 
+                                                    value={ deal?.data?.deal_value ?? '' } 
                                                     onChange={ e => deal.setData({
                                                         ...deal?.data,
                                                         deal_value: e.target.value,
@@ -129,7 +126,7 @@ export default function Edit() {
                                                     aria-describedby="deal value" 
                                                     required />
                                                 <select 
-                                                    value={ deal?.data?.value_unit ?? '' } 
+                                                    value={ deal?.data?.deal_value_unit ?? '' } 
                                                     onChange={ e => deal.setData({
                                                         ...deal?.data,
                                                         deal_value_unit: e.target.value,
@@ -151,28 +148,18 @@ export default function Edit() {
                                     <div className="col-md">
                                         <div className="mb-3">
                                             <div className="d-flex align-items-center gap-1 px-3 py-2">
-                                                { (deal?.data?.specific_for_user == true) 
+                                                { (userSpecific == true) 
                                                     ?   <span 
                                                             type="button" 
-                                                            onClick={ () => {
-                                                                deal.setData({
-                                                                    ...deal?.data,
-                                                                    specific_for_user: false,
-                                                                })
-                                                            }}>
+                                                            onClick={ () => setUserSpecific(false) }>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-toggle-on" viewBox="0 0 16 16">
                                                                     <path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8"/>
                                                                 </svg>
                                                         </span>
-                                                    : (deal?.data?.specific_for_user  == false) 
+                                                    : (userSpecific == false) 
                                                         ?   <span 
                                                                 type="button" 
-                                                                onClick={ () => {
-                                                                    deal.setData({
-                                                                        ...deal?.data,
-                                                                        specific_for_user: true,
-                                                                    })
-                                                                }}>
+                                                                onClick={ () => setUserSpecific(true) }>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-toggle-off" viewBox="0 0 16 16">
                                                                         <path d="M11 4a4 4 0 0 1 0 8H8a5 5 0 0 0 2-4 5 5 0 0 0-2-4zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8M0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5"/>
                                                                     </svg>
@@ -182,7 +169,7 @@ export default function Edit() {
                                             </div>
                                         </div>
                                     </div>
-                                    { deal?.data?.specific_for_user && 
+                                    { userSpecific && 
                                         <div className="col-md">
                                             <div className="mb-3">
                                                 <div className="input-group">
@@ -211,28 +198,18 @@ export default function Edit() {
                                     <div className="col-md">
                                         <div className="mb-3">
                                             <div className="d-flex align-items-center gap-1 px-3 py-2">
-                                                { (deal?.data?.usable_once == true) 
+                                                { (usableOnce == true) 
                                                     ?   <span 
                                                             type="button" 
-                                                            onClick={ () => {
-                                                                deal.setData({
-                                                                    ...deal?.data,
-                                                                    usable_once: false,
-                                                                })
-                                                            }}>
+                                                            onClick={ () => setUsableOnce(false) }>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-toggle-on" viewBox="0 0 16 16">
                                                                     <path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8"/>
                                                                 </svg>
                                                         </span>
-                                                    : (deal?.data?.usable_once == false) 
+                                                    : (usableOnce == false) 
                                                         ?   <span 
                                                                 type="button" 
-                                                                onClick={ () => {
-                                                                    deal.setData({
-                                                                        ...deal?.data,
-                                                                        usable_once: true,
-                                                                    })
-                                                                }}>
+                                                                onClick={ () => setUsableOnce(true) }>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-toggle-off" viewBox="0 0 16 16">
                                                                         <path d="M11 4a4 4 0 0 1 0 8H8a5 5 0 0 0 2-4 5 5 0 0 0-2-4zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8M0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5"/>
                                                                     </svg>
@@ -248,7 +225,7 @@ export default function Edit() {
 
                             <div className="pt-3 d-flex justify-content-end">
                                 <button type="submit" className={`btn btn-dark px-3 border-radius-35 ${deal?.loading == true && `disabled`}`}>
-                                    <span>Update</span>&nbsp;
+                                    <span>Save</span>&nbsp;
                                     <span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-arrow-right-circle"
                                             viewBox="0 0 16 16">

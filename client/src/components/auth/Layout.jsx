@@ -19,8 +19,8 @@ export default function Layout({ children }) {
                                 <p className="fw-semibold fs-2">Shop on all your favorites.</p>
                             </div>
                             <div className="text py-4 carousel-item">
-                                <h2 className="fw-bold fs-1">Get Discounts!</h2>
-                                <p className="fw-semibold fs-2">Get disount on all purchases.</p>
+                                <h2 className="fw-bold fs-1">Get Deals!</h2>
+                                <p className="fw-semibold fs-2">Get discount on purchases.</p>
                             </div>
                         </div>
                     </div>

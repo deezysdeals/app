@@ -39,15 +39,13 @@ import ProtectedClientShow from '@/views/protected/clients/Show.jsx';
 import ProtectedClientEdit from '@/views/protected/clients/Edit.jsx'; 
 import ProtectedClientsIndex from '@/views/protected/clients/Index.jsx';  
 
+import ProtectedDealShow from '@/views/protected/deals/Show.jsx'; 
 import ProtectedDealEdit from '@/views/protected/deals/Edit.jsx'; 
+import ProtectedDealCreate from '@/views/protected/deals/Create.jsx'; 
 import ProtectedDealsIndex from '@/views/protected/deals/Index.jsx'; 
 
 import ProtectedDeliveryEdit from '@/views/protected/deliveries/Edit.jsx'; 
 import ProtectedDeliveriesIndex from '@/views/protected/deliveries/Index.jsx'; 
-
-import ProtectedDiscountShow from '@/views/protected/discounts/Show.jsx'; 
-import ProtectedDiscountEdit from '@/views/protected/discounts/Edit.jsx'; 
-import ProtectedDiscountsIndex from '@/views/protected/discounts/Index.jsx'; 
 
 import ProtectedFavoriteShow from '@/views/protected/favorites/Show.jsx'; 
 import ProtectedFavoritesIndex from '@/views/protected/favorites/Index.jsx'; 
@@ -87,7 +85,7 @@ import ProtectedSalesIndex from '@/views/protected/sales/Index.jsx';
 
 import ProtectedSettingsIndex from '@/views/protected/settings/Index.jsx'; 
 
-import ProtectedSiteUpdatesIndex from '@/views/protected/site-updates/Index.jsx'; 
+import ProtectedSiteConfigurationsIndex from '@/views/protected/site-configurations/Index.jsx'; 
 
 import ProtectedSocialMediaEdit from '@/views/protected/social-media/Edit.jsx'; 
 import ProtectedSocialMediaIndex from '@/views/protected/social-media/Index.jsx'; 
@@ -148,15 +146,13 @@ function App() {
                 <Route path={ route('home.clients.edit') } element={ <ProtectedClientEdit /> } />
                 <Route path={ route('home.clients.index') } element={ <ProtectedClientsIndex /> } /> 
 
+                <Route path={ route('home.deals.show') } element={ <ProtectedDealShow /> } />
                 <Route path={ route('home.deals.edit') } element={ <ProtectedDealEdit /> } />
+                <Route path={ route('home.deals.create') } element={ <ProtectedDealCreate /> } />
                 <Route path={ route('home.deals.index') } element={ <ProtectedDealsIndex /> } /> 
 
                 <Route path={ route('home.deliveries.edit') } element={ <ProtectedDeliveryEdit /> } />
                 <Route path={ route('home.deliveries.index') } element={ <ProtectedDeliveriesIndex /> } /> 
-
-                <Route path={ route('home.discounts.show') } element={ <ProtectedDiscountShow /> } />
-                <Route path={ route('home.discounts.edit') } element={ <ProtectedDiscountEdit /> } />
-                <Route path={ route('home.discounts.index') } element={ <ProtectedDiscountsIndex /> } /> 
 
                 <Route path={ route('home.favorites.show') } element={ <ProtectedFavoriteShow /> } />
                 <Route path={ route('home.favorites.index') } element={ <ProtectedFavoritesIndex /> } /> 
@@ -195,7 +191,7 @@ function App() {
 
                 <Route path={ route('home.settings.index') } element={ <ProtectedSettingsIndex /> } /> 
 
-                <Route path={ route('home.site-updates.index') } element={ <ProtectedSiteUpdatesIndex /> } /> 
+                <Route path={ route('home.site-configurations.index') } element={ <ProtectedSiteConfigurationsIndex /> } /> 
 
                 <Route path={ route('home.social-media.edit') } element={ <ProtectedSocialMediaEdit /> } /> 
                 <Route path={ route('home.social-media.index') } element={ <ProtectedSocialMediaIndex /> } /> 

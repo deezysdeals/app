@@ -8,7 +8,7 @@ import Layout from '@/components/protected/Layout.jsx';
 export default function Create() { 
     const { product, createProduct, getProduct } = useProduct(); 
 
-    console.log(product?.data)
+    console.log(product?.data); 
 
     /** Image Section */
     const [productImageFields, setProductImageFields] = useState({

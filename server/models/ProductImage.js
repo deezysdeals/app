@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema; 
 
 const productImageSchema = new Schema({
-        added_by: { type: Schema.Types.ObjectId, ref: 'User' },   
+        user: { type: Schema.Types.ObjectId, ref: 'User' },   
         product: { type: Schema.Types.ObjectId, ref: 'Product' }, 
         // slug: { type: String, required: true }, 
         // description: { type: String, required: true }, 

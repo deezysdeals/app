@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'; 
 import { Link } from 'react-router-dom'; 
-import { route } from '@/routes';  
+import { route } from '@/routes'; 
 import { useVoiceToText } from '@/utils/useVoiceToText.jsx'; 
 import { useBrands } from '@/hooks/useBrands.jsx'; 
 import { useBrand } from '@/hooks/useBrand.jsx'; 

@@ -31,7 +31,7 @@ export default function Index() {
                             </li>
                             <li className="box-shadow-1 border-radius-25 py-3 px-4 cursor-pointer">
                                 <h3 className='fs-6 fw-semibold'>Bonus Notification</h3> 
-                                <p>You have just been awarded a discount of $10 on any item you purchase. You can use it on any item on our online shop.&nbsp;<span><Link to={ route('home.discounts.show') } className="text-warning">View details</Link></span>.</p> 
+                                <p>You have just been awarded a discount of $10 on any item you purchase. You can use it on any item on our online shop.&nbsp;<span><Link to={ route('home.deals.show') } className="text-warning">View details</Link></span>.</p> 
                             </li>
                         </ul>
                     </section>

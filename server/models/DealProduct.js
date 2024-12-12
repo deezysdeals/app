@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-const discountProductSchema = new Schema({ 
+const dealProductSchema = new Schema({ 
         user: { type: Schema.Types.ObjectId, ref: 'User' }, 
-        discount: { type: Schema.Types.ObjectId, ref: 'Discount' }, 
+        deal: { type: Schema.Types.ObjectId, ref: 'Deal' }, 
         product: { type: Schema.Types.ObjectId, ref: 'Product' }, 
         deleted_at: { type: String, default: null }, 
         deleted_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
@@ -15,5 +15,5 @@ const discountProductSchema = new Schema({
 );
 
 
-let DiscountProduct = mongoose.model("DiscountProduct", discountProductSchema);
-export default DiscountProduct; 
+let DealProduct = mongoose.model("DealProduct", dealProductSchema);
+export default DealProduct; 

@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import { useProductExt } from '@/hooks/external/useFakeStoreProduct.jsx'; 
+import { useProduct } from '@/hooks/useProduct.jsx'; 
 import Aside from '@/components/public/Aside.jsx'; 
 import Layout from '@/components/public/Layout.jsx'; 
 
@@ -8,6 +9,8 @@ import Layout from '@/components/public/Layout.jsx';
 export default function Product() { 
     const params = useParams(); 
     const { productExt, getProductExt } = useProductExt(params?.id); 
+    const { product, getProduct } = useProduct(params?.id); 
+    const { internalProduct, externalProduct } = params; 
     console.log(productExt); 
 
     return (

@@ -3,4 +3,5 @@ dev-notes.txt
 .env 
 log/access/*
 logs 
+log/access/access.log
 tmp/*
