@@ -7,7 +7,7 @@ import { getSignInAttempts,
         deleteSignInAttempt, 
         restoreSignInAttempt, 
         destroySignInAttempt
-} from '../../controllers/signInAttemptController.js'; 
+} from '../../controllers/authControllers/signInAttemptController.js'; 
 
 
 signInAttemptRouter.use(authenticated); 

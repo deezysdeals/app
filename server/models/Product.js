@@ -17,6 +17,7 @@ const productSchema = new Schema({
         featured: { type: Boolean, default: false }, 
         initial_retail_price: { type: Number }, 
         retail_price: { type: Number, required: true }, 
+        count_sold: { type: Number }, 
         currency: { type: String, default: 'usd' }, 
         images: [ String ], 
         dimensions: {

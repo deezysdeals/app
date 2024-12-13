@@ -153,8 +153,7 @@ export default function Index() {
                                                         <div className="form-text px-3" id="desription-1"><small>Brand Description.</small></div>
                                                     </div>
                                                 </div> 
-                                                <div className="logo row g-2"> 
-                                                <div className="image row g-2 ">
+                                                <div className="logo row g-2 ">
                                                     <div className="mb-3 position-relative"> 
                                                         <input
                                                             type="file"
@@ -200,7 +199,6 @@ export default function Index() {
                                                         )}
                                                     </div> 
                                                 </div> 
-                                                </div>
                                                 <div className="web row g-2">
                                                     <div className="col-md">
                                                         <div className="mb-3"> 

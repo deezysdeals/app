@@ -25,5 +25,5 @@ export function useProductReviews(productReviewQuery) {
             .catch(error => console.log(error));
     } 
 
-    return { productReviews, getProductReviews, setProductReviews }; 
+    return { productReviews, getProductReviews }; 
 } 

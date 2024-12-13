@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import { CartContext } from '@/context/CartContext.jsx'; 
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
-import CartItemMini from '@/components/public/nested-components/CartItemMini.jsx'; 
+import CartItem from '@/components/public/nested-components/CartItem.jsx'; 
 
 
 export default function Cart() { 
@@ -27,31 +27,33 @@ export default function Cart() {
                             <div className="d-flex align-items-center gap-1">
                                 <h4 className="fs-6 fw-semibold mb-0">Cart Items</h4>
                                 <span className="mb-0 badge rounded-pill text-bg-success">{ getTotalQuantity() }</span>
-                            </div>
-                            <Link 
-                                to={ route('pay') }
-                                className="cursor-pointer d-flex align-items-center gap-2 text-bg-dark rounded py-2 px-2 mb-0 text-decoration-none">
-                                <span className="fw-bold">${ getTotalPrice()?.toFixed(2) }</span>
-                                {/* <span className="fw-bold">{getTotalPrice() ? `${getTotalPrice()?.toFixed(2)}` : ''}</span> */}
-                                <span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                                        className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                        <path
-                                            d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
-                                    </svg>
-                                </span>
-                            </Link>
+                            </div> 
+                            { (cartItems?.length > 0) &&
+                                <Link 
+                                    to={ route('pay') }
+                                    className="cursor-pointer d-flex align-items-center gap-2 text-bg-dark rounded py-2 px-2 mb-0 text-decoration-none">
+                                    <span className="fw-bold">${ getTotalPrice()?.toFixed(2)?.toLocaleString('en') }</span>
+                                    {/* <span className="fw-bold">{getTotalPrice() ? `${getTotalPrice()?.toFixed(2)}` : ''}</span> */}
+                                    <span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                                            className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
+                                            <path
+                                                d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+                                        </svg>
+                                    </span>
+                                </Link> 
+                            }
                         </div>
                     </div>
                     
                     <div className="cart-items"> 
 
                         { (cartItems?.length === 0) ? (
-                            <div className="d-flex align-items-center justify-content-center py-4">Cart is empty.</div>
+                            <div className="d-flex align-items-center justify-content-center py-5">Cart is empty.&nbsp;<Link to={ route('products.index') } className="text-dark">Shop Now</Link></div>
                         ) : (
                             <section>
                                 { (cartItems?.map((item, index) => ( 
-                                    <CartItemMini 
+                                    <CartItem 
                                         key= {index} 
                                         itemId = { item?.id } 
                                         asin = { item?.id }
@@ -69,20 +71,22 @@ export default function Cart() {
                         
                     </div> 
 
-                    <div className="cart-footer bg-white border rounded py-4 px-3">
-                        <Link 
-                            to={ route('pay') }
-                            className="checkout d-flex justify-content-between align-items-center text-decoration-none text-dark">
-                            <span className="fw-bold">${ getTotalPrice()?.toFixed(2) }</span>
-                            <span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                                    className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                    <path
-                                        d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
-                                </svg>
-                            </span>
-                        </Link>
-                    </div>
+                    { (cartItems?.length > 0) &&
+                        <div className="cart-footer bg-white border rounded py-4 px-3"> 
+                            <Link 
+                                to={ route('pay') }
+                                className="checkout d-flex justify-content-between align-items-center text-decoration-none text-dark">
+                                <span className="fw-bold">${ getTotalPrice()?.toFixed(2) }</span> 
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                                        className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+                                    </svg>
+                                </span> 
+                            </Link> 
+                        </div> 
+                    }
                 </div> 
             }
 

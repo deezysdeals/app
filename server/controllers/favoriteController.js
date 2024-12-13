@@ -80,7 +80,7 @@ const createFavorite = asyncHandler(async (req, res) => {
             // Create new product (order item), if does not exist
             // const productFilter = { title: response?.data?.title }; 
             const productFilter = { asin: response?.data?.id }; 
-            const productUpdate = { added_by: req?.user_id, 
+            const productUpdate = { user: req?.user_id, 
                                     title: response?.data?.title, 
                                     retail_price: response?.data?.price, 
                                     images: [response?.data?.image] };
@@ -104,7 +104,7 @@ const createFavorite = asyncHandler(async (req, res) => {
 
             // Create new category, if does not exist 
             const categoryFilter = { name: response?.data?.category }; 
-            const categoryUpdate = { added_by: req?.user_id }; 
+            const categoryUpdate = { user: req?.user_id }; 
 
             const upsertCategory = await Category.findOneAndUpdate(categoryFilter, categoryUpdate, {
                 new: true, 
@@ -114,13 +114,13 @@ const createFavorite = asyncHandler(async (req, res) => {
 
             /** Finally, create the Favorite if it does not exist */ 
             const favoriteAlreadyExists = await Favorite.findOne({
-                added_by: req?.user_id, 
+                user: req?.user_id, 
                 product: upsertProduct?._id
             }).lean();
 
             if (!favoriteAlreadyExists) {
                 const favorite = new Favorite({
-                    added_by: req?.user_id, 
+                    user: req?.user_id, 
                     product: upsertProduct?._id 
                 }); 
 
@@ -133,7 +133,7 @@ const createFavorite = asyncHandler(async (req, res) => {
                     });
             } else if (favoriteAlreadyExists) {
                 Favorite.findOneAndDelete({
-                        added_by: req?.user_id, 
+                        user: req?.user_id, 
                         product: upsertProduct?._id
                     })
                     .then(result => {

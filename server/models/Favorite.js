@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema; 
 
 const favoriteSchema = new Schema({
-        added_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
+        user: { type: Schema.Types.ObjectId, ref: 'User' }, 
         product: { type: Schema.Types.ObjectId, ref: 'Product' },  
         deleted_at: { type: String, default: null }, 
         deleted_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
