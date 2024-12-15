@@ -76,6 +76,7 @@ const routeNames = {
 
     // 'home.social-media.show': '/home/social-media/:id/show', 
     'home.social-media.edit': '/home/social-media/:id/edit', 
+    'home.social-media.tiktok': '/home/social-media/tiktok', 
     'home.social-media.index': '/home/social-media', 
 
     'home.users.show': '/home/users/:username/show', 

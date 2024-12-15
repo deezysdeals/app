@@ -18,7 +18,9 @@ import productVariationValueRouter from './apiRoutes/productVariationValueRoutes
 import productImageRouter from './apiRoutes/productImageRoutes.js'; 
 import userRouter from './apiRoutes/userRoutes.js'; 
 import signInAttemptRouter from './apiRoutes/signInAttemptRoutes.js'; 
-import siteConfigurationRouter from './apiRoutes/siteConfigurationRoutes.js'
+import siteConfigurationRouter from './apiRoutes/siteConfigurationRoutes.js'; 
+import tiktokRouter from './apiRoutes/tiktokRoutes.js'; 
+import dashboardRouter from './apiRoutes/dashboardRoutes.js'; 
 
 
 router.use('/auth', authRouter); 
@@ -37,7 +39,10 @@ router.use('/product-variation-values', productVariationValueRouter);
 router.use('/product-images', productImageRouter); 
 router.use('/users', userRouter); 
 router.use('/sign-in-attempts', signInAttemptRouter); 
+
+router.use('/dashboard', dashboardRouter); 
 router.use('/site-configurations', siteConfigurationRouter); 
+router.use('/tiktok', tiktokRouter); 
 
 
 export default router;

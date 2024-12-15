@@ -110,4 +110,6 @@ const createUpdateSiteConfigurations = asyncHandler(async (req, res) => {
 
 
 
-export { getSiteConfigurations, createSiteConfigurations, createUpdateSiteConfigurations }; 
+export { getSiteConfigurations, 
+        createSiteConfigurations, 
+        createUpdateSiteConfigurations }; 

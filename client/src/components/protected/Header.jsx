@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import AuthContext from '@/context/AuthContext.jsx';
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
-import UserNoImage from '@/assets/images/user-icon.jpg'
+import UserNoImage from '@/assets/images/user-icon.jpg'; 
 
 
 export default function Header() { 

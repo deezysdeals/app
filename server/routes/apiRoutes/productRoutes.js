@@ -12,8 +12,7 @@ import { getProducts,
         destroyProduct, 
 
         getPurchasedProducts, 
-        getSoldProducts
-} from '../../controllers/productController.js'; 
+        getSoldProducts } from '../../controllers/productController.js'; 
 
 
 /** Additional Routes */

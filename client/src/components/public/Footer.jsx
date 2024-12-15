@@ -1,9 +1,13 @@
 import { useState } from 'react'; 
+import { useSiteConfiguration } from '@/hooks/useSiteConfiguration.jsx'; 
 import Cart from '@/components/Cart.jsx'; 
 import Help from '@/components/Help.jsx'; 
 
 
 export default function Footer() { 
+    const { siteConfiguration, updateSiteConfiguration, getSiteConfiguration } = useSiteConfiguration(); 
+    // console.log(siteConfiguration); 
+
     return (
         <footer className="footer pt-5 px-3 z-2">
             <Help />
@@ -12,7 +16,7 @@ export default function Footer() {
 
             <section className="footer-end bg-dark text-white">
                 <div className="header d-flex flex-column"
-                    style={{ background: 'url(https://plus.unsplash.com/premium_photo-1682435561654-20d84cef00eb?q=80&w=1018&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)', backgroundSize: 'cover', backgroundRepeat: 'no-repeat', height: '30vh', borderRadius: '35px 35px 0 0' }} >
+                    style={{ background: `url(${siteConfiguration?.data?.homepage_footer_image_path?.url})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', height: '30vh', borderRadius: '35px 35px 0 0' }} >
                     <div className="d-flex align-items-center justify-content-between flex-wrap column-gap-3 row-gap-1 h-100 px-3">
                         <div className="d-flex flex-column m-auto gap-2">
                             <span className="text-dark fw-bold" style={{ textShadow: '1px 1px white, -1px -1px white' }}>Get it Before Everyone Else</span>

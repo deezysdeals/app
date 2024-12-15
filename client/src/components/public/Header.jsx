@@ -61,7 +61,7 @@ export default function Header() {
             </section> 
 
             <section className="main-header d-flex justify-content-between align-items-center bg-dark bg-gradient px-4">
-                <h1 className="fs-4 fw-bold text-white mt-1">DeezysDeals</h1> 
+                <h1 className="fs-6 fw-bold text-white mt-1">DeezysDeals</h1> 
 
                 <nav className={`main-nav ${navToggle && `d-none`} d-md-flex`} id="nav"> 
                     <ul className="list-unstyled gap-3 cursor-pointer">
