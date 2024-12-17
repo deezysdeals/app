@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const productInfoSchema = new Schema({
         user: { type: Schema.Types.ObjectId, ref: 'User' }, 
         product: { type: Schema.Types.ObjectId, ref: 'Product' }, 
+        info_index: { type: Number }, 
         // dynamic_data: { type: Schema.Types.Mixed, required: true }, 
         dynamic_data: { type: Map, of: Schema.Types.Mixed}, 
         deleted_at: { type: String, default: null }, 

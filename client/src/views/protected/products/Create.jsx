@@ -1,16 +1,23 @@
 import { useState } from 'react'; 
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
+import { useBrands } from '@/hooks/useBrands.jsx'; 
+import { useCategories } from '@/hooks/useCategories.jsx'; 
+import { useDeals } from '@/hooks/useDeals.jsx'; 
 import { useProduct } from '@/hooks/useProduct.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
 export default function Create() { 
+    const { brands, getBrands } = useBrands(); 
+    const { categories, getCategories } = useCategories(); 
+    // console.log(brands);
+    // console.log(categories);
+    const { deals, getDeals } = useDeals(); 
     const { product, createProduct } = useProduct(); 
-
     // console.log(product?.data); 
 
-    /** Image Section */
+    /** Handle image file input */
     const [productImageFields, setProductImageFields] = useState({
         field_1: true, 
         field_2: false, 
@@ -22,12 +29,10 @@ export default function Create() {
 
     const [images, setImages] = useState({});
 
-    // Handle image click (trigger file input click)
     const handleImageClick = (index) => {
         document.getElementById(`image-upload-input-${index}`).click(); 
     };
 
-    // Handle image file input change
     const handleImageChange = (index, e) => {
         const file = e.target.files[0]; 
 
@@ -35,7 +40,6 @@ export default function Create() {
             const reader = new FileReader();
             // reader.onload = () => {
             reader.onloadend = () => {
-                // Dynamically create the key using the index and update the images state
                 let newIndex = `image${index}`;
                 setImages(prevImages => ({
                     ...prevImages,
@@ -45,7 +49,16 @@ export default function Create() {
             reader.readAsDataURL(file);
         }
     }; 
-    /** End of Image Section */
+
+    const handleRemoveImage = (index) => { 
+        let newIndex = `image${index}`;
+        // setImages(null); 
+        setImages(prevImages => ({
+            ...prevImages,
+            [newIndex]: {}, 
+        })); 
+    }; 
+    /** End of Handle image file input */
 
     const [productInfoFields, setProductInfoFields] = useState({
         field_1: true, 
@@ -89,6 +102,15 @@ export default function Create() {
         field_10: false, 
     }); 
 
+    const [productCategoryFields, setProductCategoryFields] = useState({
+        field_1: true, 
+        field_2: false, 
+        field_3: false, 
+        field_4: false, 
+        field_5: false, 
+        field_6: false, 
+    }); 
+
     async function submitProduct(e) {
         e.preventDefault(); 
 
@@ -113,8 +135,9 @@ export default function Create() {
         product?.data?.purchase_price_cents 
             ? formData.append('purchase_price_cents', product.data.purchase_price_cents) 
             : formData.append('purchase_price_cents', 0); 
+        product.data.brand && formData.append('brand', product.data.brand); 
+        product.data.deal && formData.append('deal', product.data.deal); 
 
-        /** Product Images */
         productImageFields?.field_1 && formData.append('image_1', product.data.image_1); 
         productImageFields?.field_2 && formData.append('image_2', product.data.image_2); 
         productImageFields?.field_3 && formData.append('image_3', product.data.image_3); 
@@ -122,7 +145,6 @@ export default function Create() {
         productImageFields?.field_5 && formData.append('image_5', product.data.image_5); 
         productImageFields?.field_6 && formData.append('image_6', product.data.image_6); 
 
-        /** Product Infos */
         if (productInfoFields?.field_1) {
             formData.append('info_1', product.data.info_1 || ''); 
             formData.append('info_1_value', product.data.info_1_value || ''); 
@@ -204,12 +226,10 @@ export default function Create() {
             formData.append('info_20_value', product.data.info_20_value || ''); 
         }
 
-        /** Product Descriptions */
         formData.append('description_1', product.data.description_1); 
         productDescriptionFields?.field_2 && formData.append('description_2', product.data.description_2); 
         productDescriptionFields?.field_3 && formData.append('description_3', product.data.description_3); 
 
-        /** Product Features */
         formData.append('feature_1', product.data.feature_1); 
         productFeatureFields?.field_2 && formData.append('feature_2', product.data.feature_2); 
         productFeatureFields?.field_3 && formData.append('feature_3', product.data.feature_3); 
@@ -220,6 +240,13 @@ export default function Create() {
         productFeatureFields?.field_8 && formData.append('feature_8', product.data.feature_8); 
         productFeatureFields?.field_9 && formData.append('feature_9', product.data.feature_9); 
         productFeatureFields?.field_10 && formData.append('feature_10', product.data.feature_10); 
+
+        productCategoryFields?.field_1 && formData.append('category_1', product.data.category_1); 
+        productCategoryFields?.field_2 && formData.append('category_2', product.data.category_2); 
+        productCategoryFields?.field_3 && formData.append('category_3', product.data.category_3); 
+        productCategoryFields?.field_4 && formData.append('category_4', product.data.category_4); 
+        productCategoryFields?.field_5 && formData.append('category_5', product.data.category_5); 
+        productCategoryFields?.field_6 && formData.append('category_6', product.data.category_6); 
 
         await createProduct(formData); 
     }
@@ -251,14 +278,14 @@ export default function Create() {
                                                         ...product?.data,
                                                         title: event.target.value,
                                                     }) }
-                                                    placeholder='e.g. "Nike Pro 5 Shoe"' 
+                                                    placeholder="e.g. Nike Pro 5 Shoe" 
                                                     id="title" 
                                                     className="form-control border-radius-35" 
                                                     aria-label="Product Title" 
                                                     aria-describedby="product title" 
                                                     required />
                                             </div>
-                                            <div className="form-text px-3" id="basic-addon4"><small>The name of your product.</small></div>
+                                            <div className="form-text px-3"><small>The name of your product.</small></div>
                                         </div>
                                     </div>
                                     <div className="col-md">
@@ -273,13 +300,13 @@ export default function Create() {
                                                         ...product?.data,
                                                         asin: event.target.value,
                                                     }) }
-                                                    placeholder='e.g. "B06Y1YD5W7"' 
+                                                    placeholder="e.g. B06Y1YD5W7" 
                                                     id="asin" 
                                                     className="form-control border-radius-35" 
                                                     aria-label="Product ASIN" 
                                                     aria-describedby="product asin" />
                                             </div>
-                                            <div className="form-text px-3" id="basic-addon4"><small>The product number from Amazon. Leave vacant if you do not have it.</small></div>
+                                            <div className="form-text px-3"><small>The product number from Amazon. Leave vacant if you do not have it.</small></div>
                                         </div>
                                     </div>
                                 </div> 
@@ -297,7 +324,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             initial_retail_price: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "12000"' 
+                                                        placeholder="e.g. 12000" 
                                                         id="initial_retail_price" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product Initial_retail_price" 
@@ -310,13 +337,13 @@ export default function Create() {
                                                             ...product?.data,
                                                             initial_retail_price_cents: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "20"' 
+                                                        placeholder="e.g. 20" 
                                                         id="initial_retail_price_cents" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product Initial_retail_price_cents" 
                                                         aria-describedby="product initial_retail_price_cents" />
                                                 </div>
-                                                <div className="form-text px-3" id="basic-addon4"><small>The previous retail price (in USD) of your product (if available).</small></div>
+                                                <div className="form-text px-3"><small>The previous retail price (in USD) of your product (if available).</small></div>
                                             </div>
                                         </div>
                                         <div className="col-md">
@@ -330,7 +357,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             retail_price: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "12000"' 
+                                                        placeholder="e.g. 12000" 
                                                         id="retail_price" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product retail_price" 
@@ -344,13 +371,13 @@ export default function Create() {
                                                             ...product?.data,
                                                             retail_price_cents: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "20"' 
+                                                        placeholder="e.g. 20"
                                                         id="retail_price_cents" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product retail_price_cents" 
                                                         aria-describedby="product retail_price_cents" />
                                                 </div>
-                                                <div className="form-text px-3" id="basic-addon4"><small>The current retail price (in USD) of your product.</small></div>
+                                                <div className="form-text px-3"><small>The current retail price (in USD) of your product.</small></div>
                                             </div>
                                         </div>
                                     </div> 
@@ -367,7 +394,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             purchase_price: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "12000"' 
+                                                        placeholder="e.g. 12000" 
                                                         id="purchase_price" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product purchase_price" 
@@ -381,17 +408,74 @@ export default function Create() {
                                                             ...product?.data,
                                                             purchase_price_cents: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "20"' 
+                                                        placeholder="e.g. 20" 
                                                         id="purchase_price_cents" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product purchase_price_cents" 
                                                         aria-describedby="product purchase_price_cents" />
                                                 </div>
-                                                <div className="form-text px-3" id="basic-addon4"><small>The price (USD) product was bought at.</small></div>
+                                                <div className="form-text px-3"><small>The price (USD) product was bought at.</small></div>
                                             </div>
                                         </div>
                                     </div> 
                                 </section>
+
+                                <div className="row g-2">
+                                    <div className="col-md">
+                                        <div className="mb-3">
+                                            <div className="input-group">
+                                                <span className="input-group-text border-radius-35 fw-semibold">Brand</span>
+                                                <select class="form-select border-radius-35" id="brand">
+                                                    <option>Choose brand...</option>
+                                                    { (brands?.data?.length > 0) && brands?.data?.map(brand => {
+                                                        return (
+                                                            <option 
+                                                                key={ brand?._id } 
+                                                                value={ brand?._id } 
+                                                                onSelect={ event => product.setData({
+                                                                    ...product?.data,
+                                                                    brand: event.target.value,
+                                                                })} 
+                                                                id="brand" 
+                                                                aria-label="Product Brand" 
+                                                                aria-describedby="product brand">
+                                                                    { brand?.name }
+                                                                </option>
+                                                        )
+                                                    })}
+                                                </select>
+                                            </div>
+                                            <div className="form-text px-3"><small>The brand of your product.</small></div>
+                                        </div>
+                                    </div> 
+                                    <div className="col-md">
+                                        <div className="mb-3">
+                                            <div className="input-group">
+                                                <span className="input-group-text border-radius-35 fw-semibold fs-6">Deal</span>
+                                                <select class="form-select border-radius-35" id="deal">
+                                                    <option>Choose deal...</option>
+                                                    { (deals?.data?.length > 0) && deals?.data?.map(deal => {
+                                                        return (
+                                                            <option 
+                                                                key={ deal?._id } 
+                                                                value={ deal?._id } 
+                                                                onSelect={ event => product.setData({
+                                                                    ...product?.data,
+                                                                    deal: event.target.value,
+                                                                })} 
+                                                                id="deal" 
+                                                                aria-label="Product Deal" 
+                                                                aria-describedby="product deal">
+                                                                    { deal?.code } - { deal?.title }
+                                                                </option>
+                                                        )
+                                                    })}
+                                                </select>
+                                            </div>
+                                            <div className="form-text px-3"><small>Default deal for product.</small></div>
+                                        </div>
+                                    </div>
+                                </div> 
 
 
 
@@ -479,7 +563,7 @@ export default function Create() {
                                         </div>
                                     </div> 
                                     <div className="d-flex flex-wrap gap-3">
-                                        <div className="mb-3"> 
+                                        <div className="mb-3 position-relative"> 
                                             {/* Hidden file input for image */}
                                             <input
                                                 type="file"
@@ -507,7 +591,25 @@ export default function Create() {
                                                         </svg>
                                                     </span>
                                                 )}
-                                            </div>
+                                            </div> 
+
+                                            {/* Remove button */}
+                                            {/* {images?.['image0'] && (
+                                                <span 
+                                                    onClick={() => handleRemoveImage(0)} 
+                                                    className="bg-transparent border-0"
+                                                    style={{
+                                                        position: 'absolute', 
+                                                        top: '0', 
+                                                        left: '190px', 
+                                                        cursor: 'pointer',
+                                                    }}
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ff0000" className="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                                                    </svg>
+                                                </span>
+                                            )} */}
                                         </div>
                                     
                                     { (productImageFields?.field_2) && 
@@ -940,7 +1042,7 @@ export default function Create() {
                                                         ...product?.data,
                                                         info_1: event.target.value,
                                                     }) }
-                                                    placeholder='e.g. "Series"' 
+                                                    placeholder="e.g. Series" 
                                                     id="info_1" 
                                                     className="form-control border-radius-35" 
                                                     aria-label="Product info_1" 
@@ -953,7 +1055,7 @@ export default function Create() {
                                                         ...product?.data,
                                                         info_1_value: event.target.value,
                                                     }) }
-                                                    placeholder='e.g. "V15"' 
+                                                    placeholder="e.g. V15" 
                                                     id="info_1_value" 
                                                     className="form-control border-radius-35" 
                                                     aria-label="Product info_1_value" 
@@ -974,7 +1076,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_2: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Series"' 
+                                                        placeholder="e.g. Series" 
                                                         id="info_2" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_2" 
@@ -987,7 +1089,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_2_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "V15"' 
+                                                        placeholder="e.g. V15" 
                                                         id="info_2_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_2_value" 
@@ -1009,7 +1111,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_3: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_3" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_3" 
@@ -1022,7 +1124,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_3_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "45kg"' 
+                                                        placeholder="e.g. 45kg" 
                                                         id="info_3_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_3_value" 
@@ -1044,7 +1146,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_4: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_4" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_4" 
@@ -1057,7 +1159,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_4_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "45kg"' 
+                                                        placeholder="e.g. 45kg" 
                                                         id="info_4_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_4_value" 
@@ -1079,7 +1181,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_5: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_5" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_5" 
@@ -1092,7 +1194,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_5_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "45kg"' 
+                                                        placeholder="e.g. 45kg" 
                                                         id="info_5_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_5_value" 
@@ -1114,7 +1216,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_6: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_6" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_6" 
@@ -1127,7 +1229,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_6_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_6_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_6_value" 
@@ -1149,7 +1251,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_7: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_7" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_7" 
@@ -1162,7 +1264,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_7_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_7_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_7_value" 
@@ -1184,7 +1286,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_8: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_8" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_8" 
@@ -1197,7 +1299,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_8_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_8_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_8_value" 
@@ -1219,7 +1321,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_9: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_9" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_9" 
@@ -1232,7 +1334,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_9_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_9_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_9_value" 
@@ -1254,7 +1356,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_10: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_10" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_10" 
@@ -1267,7 +1369,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_10_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_10_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_10_value" 
@@ -1289,7 +1391,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_11: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_11" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_11" 
@@ -1302,7 +1404,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_11_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_11_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_11_value" 
@@ -1324,7 +1426,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_12: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_12" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_12" 
@@ -1337,7 +1439,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_12_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_12_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_12_value" 
@@ -1359,7 +1461,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_13: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_13" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_13" 
@@ -1372,7 +1474,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_13_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_13_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_13_value" 
@@ -1394,7 +1496,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_14: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_14" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_14" 
@@ -1407,7 +1509,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_14_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_14_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_14_value" 
@@ -1429,7 +1531,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_15: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_15" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_15" 
@@ -1442,7 +1544,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_15_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_15_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_15_value" 
@@ -1464,7 +1566,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_16: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_16" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_16" 
@@ -1477,7 +1579,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_16_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_16_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_16_value" 
@@ -1499,7 +1601,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_17: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_17" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_17" 
@@ -1512,7 +1614,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_17_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_17_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_17_value" 
@@ -1534,7 +1636,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_18: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_18" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_18" 
@@ -1547,7 +1649,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_18_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_18_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_18_value" 
@@ -1569,7 +1671,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_19: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_19" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_19" 
@@ -1582,7 +1684,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_19_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_19_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_19_value" 
@@ -1604,7 +1706,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_20: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Weight"' 
+                                                        placeholder="e.g. Weight" 
                                                         id="info_20" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_20" 
@@ -1617,7 +1719,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             info_20_value: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "55kg"' 
+                                                        placeholder="e.g. 55kg" 
                                                         id="info_20_value" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product info_20_value" 
@@ -1686,7 +1788,7 @@ export default function Create() {
                                                         ...product?.data,
                                                         description_1: event.target.value,
                                                     }) }
-                                                    placeholder='e.g. "Size: 3-QT"' 
+                                                    placeholder="e.g. Size: 3-QT" 
                                                     id="description_1" 
                                                     className="form-control border-radius-35" 
                                                     aria-label="Product Description 1" 
@@ -1707,7 +1809,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             description_2: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Style: Duo"' 
+                                                        placeholder="e.g. Style: Duo" 
                                                         id="description_2" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product Description 2" 
@@ -1728,7 +1830,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             description_3: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "Instant Pot Duo Mini is the ideal companion to the Duo 6 Quart, 7-in-1 programmable multi-cooker replaces 7 kitchen appliances, combines the functions of a Rice Cooker ..."' 
+                                                        placeholder="e.g. Instant Pot Duo Mini is the ideal companion to the Duo 6 Quart, 7-in-1 programmable multi-cooker replaces 7 kitchen appliances, combines the functions of a Rice Cooker ..." 
                                                         id="description_3" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product Description 3" 
@@ -1884,7 +1986,7 @@ export default function Create() {
                                                         ...product?.data,
                                                         feature_1: event.target.value,
                                                     }) }
-                                                    placeholder='e.g. "7-IN-1 APPLIANCES: electric pressure cooker, rice cooker, slow cooker, yogurt maker, steamer, sauté pan and food"' 
+                                                    placeholder="e.g. 7-IN-1 APPLIANCES: electric pressure cooker, rice cooker, slow cooker, yogurt maker, steamer, sauté pan and food" 
                                                     id="feature_1" 
                                                     className="form-control border-radius-35" 
                                                     aria-label="Product Feature 1" 
@@ -1905,7 +2007,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             feature_2: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "QUICK ONE-TOUCH COOKING with 11 Smart Touch customizable programs for pressure cooking ribs, soups, beans, rice, poultry, yogurt, desserts and more on autopilot. Power: 700W, Power Supply: 120V-60Hz"' 
+                                                        placeholder="e.g. QUICK ONE-TOUCH COOKING with 11 Smart Touch customizable programs for pressure cooking ribs, soups, beans, rice, poultry, yogurt, desserts and more on autopilot. Power: 700W, Power Supply: 120V-60Hz" 
                                                         id="feature_2" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product Feature 2" 
@@ -1926,7 +2028,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             feature_3: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid"' 
+                                                        placeholder="e.g. 10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid" 
                                                         id="feature_3" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product Feature 3" 
@@ -1947,7 +2049,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             feature_4: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid"' 
+                                                        placeholder="e.g. 10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid" 
                                                         id="feature_4" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product Feature 4" 
@@ -1968,7 +2070,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             feature_5: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid"' 
+                                                        placeholder="e.g. 10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid" 
                                                         id="feature_5" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product Feature 5" 
@@ -1989,7 +2091,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             feature_6: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid"' 
+                                                        placeholder="e.g. 10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid" 
                                                         id="feature_6" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product Feature 6" 
@@ -2010,7 +2112,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             feature_7: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid"' 
+                                                        placeholder="e.g. 10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid" 
                                                         id="feature_7" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product Feature 7" 
@@ -2031,7 +2133,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             feature_8: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid"' 
+                                                        placeholder="e.g. 10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid" 
                                                         id="feature_8" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product Feature 8" 
@@ -2052,7 +2154,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             feature_9: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid"' 
+                                                        placeholder="e.g. 10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid" 
                                                         id="feature_9" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product Feature 9" 
@@ -2073,7 +2175,7 @@ export default function Create() {
                                                             ...product?.data,
                                                             feature_10: event.target.value,
                                                         }) }
-                                                        placeholder='e.g. "10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid"' 
+                                                        placeholder="e.g. 10+ PROVEN SAFETY FEATURES including overheat protection and safe-locking lid" 
                                                         id="feature_10" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product Feature 10" 
@@ -2085,6 +2187,262 @@ export default function Create() {
                                     }
                                 </section> 
                                 {/* End of Features */}
+
+
+
+
+
+                                {/* Categories */}
+                                <section className="category group-fields mt-3">
+                                    <div className="d-flex justify-content-between flex-wrap gap-1 border-bottom pb-2 my-3">
+                                        <label htmlFor="category" className="form-label fw-semibold fs-6">Product Category Section</label> 
+                                        <div className="d-flex align-items-center flex-wrap gap-2">
+                                            <span 
+                                                onClick={ () => {
+                                                     if (productCategoryFields?.field_6) {
+                                                        setProductCategoryFields(prevState => ({
+                                                            ...prevState,
+                                                            field_6: false, 
+                                                            ...Object.fromEntries(Array.from({ length: 6 }, (_, i) => [`field_${i + 1}`, true]).slice(0, 5))
+                                                        })); 
+                                                    } else if (productCategoryFields?.field_5) {
+                                                        setProductCategoryFields(prevState => ({
+                                                            ...prevState,
+                                                            field_5: false, 
+                                                            ...Object.fromEntries(Array.from({ length: 6 }, (_, i) => [`field_${i + 1}`, true]).slice(0, 4))
+                                                        })); 
+                                                    } else if (productCategoryFields?.field_4) {
+                                                        setProductCategoryFields(prevState => ({
+                                                            ...prevState,
+                                                            field_4: false, 
+                                                            ...Object.fromEntries(Array.from({ length: 6 }, (_, i) => [`field_${i + 1}`, true]).slice(0, 3))
+                                                        })); 
+                                                    } else if (productCategoryFields?.field_3) {
+                                                        setProductCategoryFields(prevState => ({
+                                                            ...prevState,
+                                                            field_3: false, 
+                                                            ...Object.fromEntries(Array.from({ length: 6 }, (_, i) => [`field_${i + 1}`, true]).slice(0, 2))
+                                                        })); 
+                                                    } else if (productCategoryFields?.field_2) {
+                                                        setProductCategoryFields(prevState => ({
+                                                            ...prevState,
+                                                            field_2: false, 
+                                                            ...Object.fromEntries(Array.from({ length: 6 }, (_, i) => [`field_${i + 1}`, true]).slice(0, 1))
+                                                        })); 
+                                                    }
+                                                } }
+                                                className={`btn btn-sm btn-dark border-left-radius-35 ${productCategoryFields?.field_2 == false && ` disabled`}`}>
+                                                    Less fields
+                                            </span>
+                                            <span 
+                                                onClick={ () => {
+                                                    if (productCategoryFields?.field_2 == false) {
+                                                        setProductCategoryFields(prevState => ({
+                                                            ...prevState,
+                                                            field_2: true,
+                                                            ...Object.fromEntries(Array.from({ length: 4 }, (_, i) => [`field_${i + 3}`, false]))
+                                                        })); 
+                                                    } else if (productCategoryFields?.field_3 == false) {
+                                                        setProductCategoryFields(prevState => ({
+                                                            ...prevState,
+                                                            field_3: true, field_2: true, 
+                                                            ...Object.fromEntries(Array.from({ length: 3 }, (_, i) => [`field_${i + 4}`, false]))
+                                                        })); 
+                                                    } else if (productCategoryFields?.field_4 == false) {
+                                                        setProductCategoryFields(prevState => ({
+                                                            ...prevState,
+                                                            field_4: true, field_3: true, field_2: true, 
+                                                            ...Object.fromEntries(Array.from({ length: 2 }, (_, i) => [`field_${i + 5}`, false]))
+                                                        })); 
+                                                    } else if (productCategoryFields?.field_5 == false) {
+                                                        setProductCategoryFields(prevState => ({
+                                                            ...prevState,
+                                                            ...Object.fromEntries([...Array(5)].map((_, i) => [`field_${i + 2}`, true])),
+                                                            ...Object.fromEntries(Array.from({ length: 1 }, (_, i) => [`field_${i + 6}`, false]))
+                                                        })); 
+                                                    } else if (productCategoryFields?.field_6 == false) {
+                                                        setProductCategoryFields(prevState => ({
+                                                            ...prevState,
+                                                            ...Object.fromEntries([...Array(6)].map((_, i) => [`field_${i + 2}`, true])),
+                                                            ...Object.fromEntries(Array.from({ length: 0 }, (_, i) => [`field_${i + 7}`, false]))
+                                                        })); 
+                                                    }
+                                                } }
+                                                className={`btn btn-sm btn-dark border-right-radius-35 ${productCategoryFields?.field_6 && ` disabled`}`}>
+                                                    More fields
+                                            </span>
+                                        </div>
+                                    </div> 
+                                    <div className="row g-2">
+                                        { (productCategoryFields?.field_1) && 
+                                            <div className="col-md">
+                                                <div className="mb-3">
+                                                    <div className="input-group">
+                                                        <span className="input-group-text border-radius-35 fw-semibold">Category 1</span>
+                                                        <select class="form-select border-radius-35" id="category-1">
+                                                            <option>Choose category 1...</option>
+                                                            { (categories?.data?.length > 0) && categories?.data?.map(category => {
+                                                                return (
+                                                                    <option 
+                                                                        key={ category?._id } 
+                                                                        value={ category?._id } 
+                                                                        onSelect={ event => product.setData({
+                                                                            ...product?.data,
+                                                                            category_1: event.target.value,
+                                                                        })} 
+                                                                        aria-label="Product Category 1" 
+                                                                        aria-describedby="product category 1">
+                                                                            { category?.name }
+                                                                    </option>
+                                                                )
+                                                            })}
+                                                        </select>
+                                                    </div>
+                                                    <div className="form-text px-3"><small>The category of your product.</small></div>
+                                                </div>
+                                            </div> } 
+                                        { (productCategoryFields?.field_2) && 
+                                            <div className="col-md">
+                                                <div className="mb-3">
+                                                    <div className="input-group">
+                                                        <span className="input-group-text border-radius-35 fw-semibold">Category 2</span>
+                                                        <select class="form-select border-radius-35" id="category-2">
+                                                            <option>Choose category 2...</option>
+                                                            { (categories?.data?.length > 0) && categories?.data?.map(category => {
+                                                                return (
+                                                                    <option 
+                                                                        key={ category?._id } 
+                                                                        value={ category?._id } 
+                                                                        onSelect={ event => product.setData({
+                                                                            ...product?.data,
+                                                                            category_2: event.target.value,
+                                                                        })} 
+                                                                        aria-label="Product Category 2" 
+                                                                        aria-describedby="product category 2">
+                                                                            { category?.name }
+                                                                    </option>
+                                                                )
+                                                            })}
+                                                        </select>
+                                                    </div>
+                                                    <div className="form-text px-3"><small>The category of your product.</small></div>
+                                                </div>
+                                            </div> } 
+                                    </div> 
+                                    <div className="row g-2">
+                                        { (productCategoryFields?.field_3) && 
+                                            <div className="col-md">
+                                                <div className="mb-3">
+                                                    <div className="input-group">
+                                                        <span className="input-group-text border-radius-35 fw-semibold">Category 3</span>
+                                                        <select class="form-select border-radius-35" id="category-3">
+                                                            <option>Choose category 3...</option>
+                                                            { (categories?.data?.length > 0) && categories?.data?.map(category => {
+                                                                return (
+                                                                    <option 
+                                                                        key={ category?._id } 
+                                                                        value={ category?._id } 
+                                                                        onSelect={ event => product.setData({
+                                                                            ...product?.data,
+                                                                            category_3: event.target.value,
+                                                                        })} 
+                                                                        aria-label="Product Category 3" 
+                                                                        aria-describedby="product category 3">
+                                                                            { category?.name }
+                                                                    </option>
+                                                                )
+                                                            })}
+                                                        </select>
+                                                    </div>
+                                                    <div className="form-text px-3"><small>The category of your product.</small></div>
+                                                </div>
+                                            </div> } 
+                                        { (productCategoryFields?.field_4) && 
+                                            <div className="col-md">
+                                                <div className="mb-3">
+                                                    <div className="input-group">
+                                                        <span className="input-group-text border-radius-35 fw-semibold">Category 4</span>
+                                                        <select class="form-select border-radius-35" id="category-4">
+                                                            <option>Choose category 4...</option>
+                                                            { (categories?.data?.length > 0) && categories?.data?.map(category => {
+                                                                return (
+                                                                    <option 
+                                                                        key={ category?._id } 
+                                                                        value={ category?._id } 
+                                                                        onSelect={ event => product.setData({
+                                                                            ...product?.data,
+                                                                            category_4: event.target.value,
+                                                                        })} 
+                                                                        aria-label="Product Category 4" 
+                                                                        aria-describedby="product category 4">
+                                                                            { category?.name }
+                                                                    </option>
+                                                                )
+                                                            })}
+                                                        </select>
+                                                    </div>
+                                                    <div className="form-text px-3"><small>The category of your product.</small></div>
+                                                </div>
+                                            </div> } 
+                                    </div> 
+                                    <div className="row g-2">
+                                        { (productCategoryFields?.field_5) && 
+                                            <div className="col-md">
+                                                <div className="mb-3">
+                                                    <div className="input-group">
+                                                        <span className="input-group-text border-radius-35 fw-semibold">Category 5</span>
+                                                        <select class="form-select border-radius-35" id="category-5">
+                                                            <option>Choose category 5...</option>
+                                                            { (categories?.data?.length > 0) && categories?.data?.map(category => {
+                                                                return (
+                                                                    <option 
+                                                                        key={ category?._id } 
+                                                                        value={ category?._id } 
+                                                                        onSelect={ event => product.setData({
+                                                                            ...product?.data,
+                                                                            category_5: event.target.value,
+                                                                        })} 
+                                                                        aria-label="Product Category 5" 
+                                                                        aria-describedby="product category 5">
+                                                                            { category?.name }
+                                                                    </option>
+                                                                )
+                                                            })}
+                                                        </select>
+                                                    </div>
+                                                    <div className="form-text px-3"><small>The category of your product.</small></div>
+                                                </div>
+                                            </div> } 
+                                        { (productCategoryFields?.field_6) && 
+                                            <div className="col-md">
+                                                <div className="mb-3">
+                                                    <div className="input-group">
+                                                        <span className="input-group-text border-radius-35 fw-semibold">Category 6</span>
+                                                        <select class="form-select border-radius-35" id="category-6">
+                                                            <option>Choose category 6...</option>
+                                                            { (categories?.data?.length > 0) && categories?.data?.map(category => {
+                                                                return (
+                                                                    <option 
+                                                                        key={ category?._id } 
+                                                                        value={ category?._id } 
+                                                                        onSelect={ event => product.setData({
+                                                                            ...product?.data,
+                                                                            category_6: event.target.value,
+                                                                        })} 
+                                                                        aria-label="Product Category 6" 
+                                                                        aria-describedby="product category 6">
+                                                                            { category?.name }
+                                                                    </option>
+                                                                )
+                                                            })}
+                                                        </select>
+                                                    </div>
+                                                    <div className="form-text px-3"><small>The category of your product.</small></div>
+                                                </div>
+                                            </div> } 
+                                    </div> 
+                                </section>
+                                {/* End of Categories */}
 
 
 

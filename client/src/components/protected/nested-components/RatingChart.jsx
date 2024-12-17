@@ -3,7 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { useRatings } from '@/hooks/dashboard/useRatings.jsx'; 
 
 
-const COLORS = ['#00FF00', '#4cdc55', '#FFBB28', '#FF8042', '#FF0000'];
+const COLORS = ['#198754', '#4cdc55', '#FFBB28', '#FF8042', '#FF0000'];
 
 const RADIAN = Math.PI / 180;
 

@@ -1,24 +1,28 @@
 import { useState, useEffect } from 'react'; 
+import axios from 'axios'; 
+import Constants from '@/utils/Constants.jsx'; 
 import useAxios from '@/utils/useAxios.jsx'; 
 
 
-export function useProducts(page = 1, limit = 10) {
+export function useProducts(productQuery) {
     const axiosInstance = useAxios(); 
     const [products, setProducts] = useState([]); 
 
     useEffect(() => {
-        if (page !== null) {
+        if (productQuery !== null) {
             const controller = new AbortController(); 
-            getProducts({page, limit}, { signal: controller.signal }); 
+            getProducts(productQuery, { signal: controller.signal }); 
             return () => { controller.abort() };
         }
-    }, [page, limit]); 
+    }, [productQuery]); 
 
-    async function getProducts(page = 1, { signal } = {}) {
-        return axiosInstance.get(`products?page=${page}&limit=${limit}`, { signal }) 
+    async function getProducts(productQuery, { signal } = {}) {
+        // return axiosInstance.get(`products?page=${page}&limit=${limit}`, { signal }) 
+        return axios.get(`${ Constants?.serverURL }/api/v1/products?page=${productQuery?.page}&limit=${productQuery?.limit}&search=${productQuery?.search}`, { signal })
             .then(response => setProducts(response?.data))
             .catch(error => console.log(error));
     } 
 
-    return { products, getProducts }; 
+    return { products, getProducts, setProducts }; 
 } 
+ 

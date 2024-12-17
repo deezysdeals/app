@@ -8,6 +8,7 @@ const productReviewSchema = new Schema({
         // product_unit: { type: Schema.Types.ObjectId, ref: 'ProductUnit' }, 
         order: { type: Schema.Types.ObjectId, ref: 'Order' }, 
         order_item: { type: Schema.Types.ObjectId, ref: 'OrderItem' }, 
+        review_index: { type: Number }, 
         title: { type: String, required: true }, 
         content: { type: String, required: true }, 
         rating: { 

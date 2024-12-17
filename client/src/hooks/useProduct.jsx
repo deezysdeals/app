@@ -74,7 +74,10 @@ export function useProduct(id = null) {
 
         return axiosInstance.put(`products/${id}`, product)
             .then(() => navigate(route('home.products.index')))
-            .catch(error => setErrors(error?.response))
+            .catch(error => {
+                setErrors(error?.response); 
+                console.log(error)
+            })
             .finally(() => setLoading(false));
     }
 

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
-import CartImage from '@/assets/images/deezysdeals_cart.png'; 
+import CartImage from '@/assets/images/deezysdeals-cart.png'; 
 
 
 export default function DealComponent({ key, id, title, description, imgSrc }) {

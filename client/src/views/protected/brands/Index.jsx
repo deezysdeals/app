@@ -84,7 +84,6 @@ export default function Index() {
                                     type="button" 
                                     onClick={ async () => {
                                         setSearchKey(voiceText); 
-                                        
                                         scrollToTop(); 
                                         // await getBrands(1); 
                                         let firstPage = 1
@@ -94,7 +93,6 @@ export default function Index() {
                                             search: searchKey
                                         })); 
                                         await getBrands(brandQuery); 
-
                                         setIsListening(false); 
                                     } }
                                     className="search-icon">
@@ -115,93 +113,99 @@ export default function Index() {
                                     total_results={ brands?.meta?.total_results } /> } 
                     </section>
 
-                    <section className="pt-5 pb-3">
-                        <ul className="list-unstyled d-flex flex-column gap-3">
-                            { (brands?.data?.length > 0) && brands?.data?.map((brandItem, index) => {
-                                return ( 
-                                    <li key={ brandItem?._id } className="card border-radius-25 box-shadow-1 mb-3 p-3">
-                                        <div className="d-flex justify-content-end align-items-center gap-3 px-3 pb-3"> 
-                                            <span className="btn btn-sm btn-dark border-radius-35 py-0">
-                                                <Link to={ route('home.brands.show', { id: brandItem?._id })} 
-                                                    className="text-decoration-none text-white fw-semibold">
-                                                        View Details
-                                                </Link>
-                                            </span> 
-                                            <div className="dropdown">
-                                                <span className="text-decoration-none text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                                    className="bi bi-three-dots" viewBox="0 0 16 16">
-                                                        <path
-                                                            d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
-                                                    </svg> 
-                                                </span>
+                    <section className="pt-5 pb-3"> 
+                        { ((brands?.data?.length > 0)) ?
+                            <ul className="list-unstyled d-flex flex-column gap-3">
+                                { (brands?.data?.length > 0) && brands?.data?.map((brandItem, index) => {
+                                    return ( 
+                                        <li key={ brandItem?._id } className="card border-radius-25 box-shadow-1 mb-3 p-3">
+                                            <div className="d-flex justify-content-end align-items-center gap-3 px-3 pb-3"> 
+                                                <span className="btn btn-sm btn-dark border-radius-35 py-0">
+                                                    <Link to={ route('home.brands.show', { id: brandItem?._id })} 
+                                                        className="text-decoration-none text-white fw-semibold">
+                                                            View Details
+                                                    </Link>
+                                                </span> 
+                                                <div className="dropdown">
+                                                    <span className="text-decoration-none text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                                        className="bi bi-three-dots" viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+                                                        </svg> 
+                                                    </span>
 
-                                                <ul className="dropdown-menu"> 
-                                                    <li>
-                                                        <Link to={ route('home.brands.edit', { id: brandItem?._id }) } className="dropdown-item d-flex align-items-center gap-1">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-vector-pen" viewBox="0 0 16 16">
-                                                                <path fillRule="evenodd" d="M10.646.646a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1 0 .708l-1.902 1.902-.829 3.313a1.5 1.5 0 0 1-1.024 1.073L1.254 14.746 4.358 4.4A1.5 1.5 0 0 1 5.43 3.377l3.313-.828zm-1.8 2.908-3.173.793a.5.5 0 0 0-.358.342l-2.57 8.565 8.567-2.57a.5.5 0 0 0 .34-.357l.794-3.174-3.6-3.6z"/>
-                                                                <path fillRule="evenodd" d="M2.832 13.228 8 9a1 1 0 1 0-1-1l-4.228 5.168-.026.086z"/>
-                                                            </svg>
-                                                            <span className="fw-semibold">Update</span>
-                                                        </Link>
-                                                    </li> 
-                                                    <li 
-                                                        onClick={ () => {
-                                                            swal.fire({
-                                                                title: "Are you sure you want to delete this?", 
-                                                                showCancelButton: true,
-                                                                confirmButtonColor: "#FF0000",
-                                                                cancelButtonColor: "#414741",
-                                                                confirmButtonText: "Yes!", 
-                                                                cancelButtonText: "No!", 
-                                                            }).then((result) => {
-                                                                if (result.isConfirmed) {
-                                                                    deleteBrand(brandItem?._id); 
-                                                                    getBrands();
-                                                                }
-                                                            });
-                                                        }}>
-                                                        <span className="dropdown-item d-flex align-items-center gap-1">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FF0000" className="bi bi-trash2" viewBox="0 0 16 16">
-                                                                <path d="M14 3a.7.7 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225A.7.7 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2M3.215 4.207l1.493 8.957a1 1 0 0 0 .986.836h4.612a1 1 0 0 0 .986-.836l1.493-8.957C11.69 4.689 9.954 5 8 5s-3.69-.311-4.785-.793"/>
-                                                            </svg>
-                                                            <span className="text-danger fw-semibold cursor-pointer">Delete</span>
-                                                        </span> 
-                                                    </li> 
-                                                </ul>
+                                                    <ul className="dropdown-menu"> 
+                                                        <li>
+                                                            <Link to={ route('home.brands.edit', { id: brandItem?._id }) } className="dropdown-item d-flex align-items-center gap-1">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-vector-pen" viewBox="0 0 16 16">
+                                                                    <path fillRule="evenodd" d="M10.646.646a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1 0 .708l-1.902 1.902-.829 3.313a1.5 1.5 0 0 1-1.024 1.073L1.254 14.746 4.358 4.4A1.5 1.5 0 0 1 5.43 3.377l3.313-.828zm-1.8 2.908-3.173.793a.5.5 0 0 0-.358.342l-2.57 8.565 8.567-2.57a.5.5 0 0 0 .34-.357l.794-3.174-3.6-3.6z"/>
+                                                                    <path fillRule="evenodd" d="M2.832 13.228 8 9a1 1 0 1 0-1-1l-4.228 5.168-.026.086z"/>
+                                                                </svg>
+                                                                <span className="fw-semibold">Update</span>
+                                                            </Link>
+                                                        </li> 
+                                                        <li 
+                                                            onClick={ () => {
+                                                                swal.fire({
+                                                                    title: "Are you sure you want to delete this?", 
+                                                                    showCancelButton: true,
+                                                                    confirmButtonColor: "#FF0000",
+                                                                    cancelButtonColor: "#414741",
+                                                                    confirmButtonText: "Yes!", 
+                                                                    cancelButtonText: "No!", 
+                                                                }).then((result) => {
+                                                                    if (result.isConfirmed) {
+                                                                        deleteBrand(brandItem?._id); 
+                                                                        getBrands();
+                                                                    }
+                                                                });
+                                                            }}>
+                                                            <span className="dropdown-item d-flex align-items-center gap-1">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FF0000" className="bi bi-trash2" viewBox="0 0 16 16">
+                                                                    <path d="M14 3a.7.7 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225A.7.7 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2M3.215 4.207l1.493 8.957a1 1 0 0 0 .986.836h4.612a1 1 0 0 0 .986-.836l1.493-8.957C11.69 4.689 9.954 5 8 5s-3.69-.311-4.785-.793"/>
+                                                                </svg>
+                                                                <span className="text-danger fw-semibold cursor-pointer">Delete</span>
+                                                            </span> 
+                                                        </li> 
+                                                    </ul>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <Link 
-                                            to={ route('home.brands.show', { id: brandItem?._id }) } 
-                                            className="text-decoration-none text-dark">
-                                                <div className="row g-0"> 
-                                                    <div className="col-md-8">
-                                                        <div className="card-body">
-                                                            <h5 className="card-title" style={{ textTransform: 'capitalize' }}>{ brandItem?.name }</h5>
-                                                            <p className="card-text">{ brandItem?.description }</p> 
+                                            <Link 
+                                                to={ route('home.brands.show', { id: brandItem?._id }) } 
+                                                className="text-decoration-none text-dark">
+                                                    <div className="row g-0"> 
+                                                        <div className="col-md-8">
+                                                            <div className="card-body">
+                                                                <h5 className="card-title" style={{ textTransform: 'capitalize' }}>{ brandItem?.name }</h5>
+                                                                <p className="card-text">{ brandItem?.description }</p> 
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            { brandItem?.logo_path?.url 
+                                                                ?   <img 
+                                                                        src={ brandItem?.logo_path?.url } 
+                                                                        className="img-fluid object-fit-cover border-radius-15" 
+                                                                        style={{ width: '100%', height: '100%' }} 
+                                                                        alt={ brandItem?.name } /> 
+                                                                :   <span className="w-100 d-flex justify-content-center">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">
+                                                                            <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                                                                            <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>
+                                                                        </svg>
+                                                                    </span> }
                                                         </div>
                                                     </div>
-                                                    <div className="col-md-4">
-                                                        { brandItem?.logo_path?.url 
-                                                            ?   <img 
-                                                                    src={ brandItem?.logo_path?.url } 
-                                                                    className="img-fluid object-fit-cover border-radius-15" 
-                                                                    style={{ width: '100%', height: '100%' }} 
-                                                                    alt={ brandItem?.name } /> 
-                                                            :   <span className="w-100 d-flex justify-content-center">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">
-                                                                        <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-                                                                        <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>
-                                                                    </svg>
-                                                                </span> }
-                                                    </div>
-                                                </div>
-                                        </Link>
-                                    </li>
-                                )
-                            })}
-                        </ul>
+                                            </Link>
+                                        </li>
+                                    )
+                                })}
+                            </ul>
+                            : (
+                                <div className="h-100 d-flex flex-column justify-content-center align-items-center">
+                                    <span className="py-4" style={{ flexGrow: '1' }}>There are no brands yet.</span>
+                                </div>
+                            )}
                     </section>
                 </div> 
 

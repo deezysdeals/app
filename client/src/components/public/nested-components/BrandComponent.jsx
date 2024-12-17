@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
-import Logo from '@/assets/images/deezysdeals_logo.png'; 
+import Logo from '@/assets/images/deezysdeals-logo.png'; 
 
 
 export default function BrandComponent({ key, id, brand, imgSrc }) {

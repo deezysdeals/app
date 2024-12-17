@@ -12,7 +12,6 @@ import Brand from '../models/Brand.js';
 const getBrands = asyncHandler(async (req, res) => { 
     const current_page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 10; 
-
     const skip = (current_page - 1) * limit; 
 
 	const brands = await Brand.find({ deleted_at: null })
@@ -126,8 +125,6 @@ const getBrand = asyncHandler(async (req, res) => {
 
     let brandObj = brand; 
 
-    // brandObj.products = products; 
-
     brandObj.products = products;
     brandObj.products.current_page = current_page;
     brandObj.products.limit = limit;
@@ -181,10 +178,6 @@ const updateBrand = asyncHandler(async (req, res) => {
 
     if (name) brand.name = name; 
     if (description) brand.description = description; 
-    // if (req?.files?.logo_path) {
-    //     brand.logo_path.public_id = brandImageUpload.public_id
-    //     brand.logo_path.url = brandImageUpload.secure_url
-    // }
     if (web_address) brand.web_address = web_address; 
     if (facebook) brand.facebook = facebook; 
     if (instagram) brand.instagram = instagram; 

@@ -7,37 +7,36 @@ import Category from '../models/Category.js';
 const getCategories = asyncHandler(async (req, res) => { 
     const current_page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 10; 
-
     const skip = (current_page - 1) * limit; 
 
-	const categories = await Category.find()
-                                    .sort('-created_at')
-                                    .skip(skip)
-                                    .limit(limit)
-                                    .lean(); 
+	const categories = await Category.find({ deleted_at: null })
+                                .sort('-created_at')
+                                .skip(skip)
+                                .limit(limit)
+                                .lean(); 
     if (!categories?.length) return res.status(404).json({ message: "No categories found!" }); 
 
-    const total = await Category.countDocuments();
+    const total = await Category.countDocuments({ deleted_at: null }); 
 
-    let categoriesList = []; 
+    // let categoriesList = []; 
 
-    const updatePromises = categories?.map(async categoryItem => { 
-        let foundSubCategories = await SubCategory.find({ category: categoryItem?._id }).exec(); 
-        categoryItem['sub_categories'] = foundSubCategories; 
+    // const updatePromises = categories?.map(async category => { 
+    //     let foundProducts = await Product.find({ category: category?._id }).exec(); 
+    //     category['products'] = foundProducts; 
 
-        categoriesList.push(categoryItem);
-    }); 
+    //     categoriesList.push(category);
+    // }); 
 
-    await Promise.all(updatePromises); 
+    // await Promise.all(updatePromises); 
 
-	res.json({ 
+    res.json({ 
                 meta: {
                     current_page, 
                     limit, 
                     total_pages: Math.ceil(total / limit), 
                     total_results: total
                 }, 
-                data: categoriesList 
+                data: categories 
             });
 });
 

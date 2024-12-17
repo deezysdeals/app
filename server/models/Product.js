@@ -26,8 +26,9 @@ const productSchema = new Schema({
             depth: { type: String },
             weight: { type: String }
         },
+        purchased_from_amazon_market: { type: Boolean, default: false }, 
         purchased_for_resale: { type: Boolean, default: false }, 
-        purchase_price: { type: Number }, 
+        purchase_price_from_vendor: { type: Number }, 
         sold_to_client: { type: Boolean, default: false }, 
         price_sold_to_client: { type: Number }, 
         order_count: { type: Number }, 

@@ -26,7 +26,7 @@ export default function Index() {
 
     const { deals, getDeals } = useDeals(dealQuery); 
     const { deleteDeal } = useDeal(); 
-    console.log(deals)
+    // console.log(deals); 
 
     return (
         <Layout>
@@ -140,7 +140,7 @@ export default function Index() {
                                                         </div>
                                                     </div>
                                             </Link>
-                                            </li> 
+                                        </li> 
                                     )
                                 }))}
                             </ul> 

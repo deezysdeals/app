@@ -6,6 +6,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(relativeTime);
 dayjs.extend(utc); 
+import swal from 'sweetalert2'; 
 import { useVoiceToText } from '@/utils/useVoiceToText.jsx'; 
 import { useProducts } from '@/hooks/useProducts.jsx'; 
 import { useProduct } from '@/hooks/useProduct.jsx'; 
@@ -14,15 +15,13 @@ import First from '@/components/protected/nested-components/pagination-links/Fir
 import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
 import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
 import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
+import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
 import ProductComponent1 from '../../../components/protected/nested-components/ProductComponent1.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
 export default function Index() { 
-    const { products, getProducts } = useProducts(); 
-    const { deleteProduct } = useProduct(); 
-
-    // Voice-to-Text Search funtionality
+    /** Voice-to-Text Search funtionality */ 
     const [searchKey, setSearchKey] = useState(''); 
 
     useEffect(() => {
@@ -32,26 +31,38 @@ export default function Index() {
     }, [searchKey]);
 
     const { handleStartListening, 
-            handleStopListening, 
+            // handleStopListening, 
             voiceText, 
             setVoiceText,
             isListening, 
             setIsListening } = useVoiceToText();
-    // End of Voice-to-Text search functionality
+    /** End of Voice-to-Text search functionality */ 
+
+    const [productQuery, setProductQuery] = useState({
+        page: 1, 
+        limit: 10, 
+    }); 
+    const { products, getProducts } = useProducts(productQuery); 
+    const { deleteProduct } = useProduct(); 
+    console.log(products); 
 
     return (
         <Layout>
             <div className="main">
                 <div className="dashboard-content pt-3"> 
-                    <h2 className="border-bottom pb-1 fs-4">Products</h2> 
+                    <section className="d-flex justify-content-between align-items-center border-bottom pb-1 mb-3">
+                        <h2 className="fs-4">Products</h2> 
 
-                    <div className="d-flex justify-content-end pb-4">
-                        <Link to={ route('home.products.create') } className="btn btn-sm btn-dark px-3 border-radius-35">
-                            Add New Product
-                        </Link>
-                    </div>
+                        <div className="">
+                            <Link to={ route('home.products.create') } className="btn btn-sm btn-dark px-3 border-radius-35">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="17.5" height="17.5" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                                </svg>
+                            </Link>
+                        </div>
+                    </section>
 
-                    <div className="d-flex justify-content-between flex-wrap gap-2"> 
+                    <section className="d-flex justify-content-between flex-wrap gap-2"> 
                         <div className="search">
                             <div className="search-container border border-dark" style={{ maxWidth: '375px' }}>
                                 { !isListening &&
@@ -78,18 +89,16 @@ export default function Index() {
                                     type="button" 
                                     onClick={ async () => {
                                         setSearchKey(voiceText); 
-                                        
                                         scrollToTop(); 
-                                        await getProducts(1); 
-                                        // let firstPage = 1
-                                        // setProductQuery(prevState => ({
-                                        //     ...prevState, 
-                                        //     page: firstPage, 
-                                        //     search: searchKey
-                                        // })); 
-                                        // await getProducts(productQuery); 
-
-                                        // setIsListening(false); 
+                                        // await getProducts(1); 
+                                        let firstPage = 1
+                                        setProductQuery(prevState => ({
+                                            ...prevState, 
+                                            page: firstPage, 
+                                            search: searchKey
+                                        })); 
+                                        await getProducts(productQuery); 
+                                        setIsListening(false); 
                                     } }
                                     className="search-icon">
                                         <svg width="16"
@@ -101,84 +110,111 @@ export default function Index() {
                                 </span>
                             </div>
                         </div>
-                        <span>
-                            { ((products?.meta?.current_page) > 1) 
-                                ? (((products?.meta?.current_page - 1) * products?.meta?.limit) + 1) 
-                                : products?.meta?.current_page }
-                                    &nbsp;-&nbsp;
-                                { ((products?.meta?.current_page * (products?.meta?.limit)) > products?.meta?.total_results) 
-                                    ? (products?.meta?.total_results)
-                                        : ((products?.meta?.current_page) != 1) 
-                                        ? (products?.meta?.current_page * products?.meta?.limit) 
-                                            : ((products?.meta?.current_page + (products?.meta?.limit - 1))) } 
-                                    &nbsp;of&nbsp; 
-                                { products?.meta?.total_results } 
-                                &nbsp;(page { products?.meta?.current_page } of { products?.meta?.total_pages })
-                        </span>
-                    </div>
+                        { (products?.data?.length > 0) 
+                            && <PaginationMeter 
+                                    current_page={ products?.meta?.current_page } 
+                                    limit={ products?.meta?.limit } 
+                                    total_pages={ products?.meta?.total_pages } 
+                                    total_results={ products?.meta?.total_results } /> } 
+                    </section>
 
-                    <section className="py-4">
-                        <ul className="list-unstyled d-flex flex-column gap-5">
-                            { (products?.data?.length > 0) && (products?.data?.map((product, index) => {
-                                return (
-                                    <li 
-                                        key={ product?._id } 
-                                        className="box-shadow-1 border-radius-25 py-3 px-2 cursor-pointer">
-                                            <ProductComponent1 
-                                                index={ (((products?.meta?.current_page) > 1) 
-                                                            ? (((products?.meta?.current_page - 1) * products?.meta?.limit) + 1) 
-                                                                : products?.meta?.current_page) + index } 
-                                                itemId={ product?._id } 
-                                                productId={ product?._id } 
-                                                asin={ product?.asin }
-                                                imgsSrc={ product?.images }
-                                                title={ product?.title } 
-                                                description='' 
-                                                oldPrice='' 
-                                                currentPrice={ product?.retail_price } 
-                                                rating={ product?.rating?.rate } 
-                                                category={ product?.category } />
-                                    </li>
-                                )
-                            })) }
-                        </ul>
+                    <section className="py-4"> 
+                        { ((products?.data?.length > 0)) ?
+                            <ul className="list-unstyled d-flex flex-column gap-5">
+                                { (products?.data?.length > 0) && (products?.data?.map((product, index) => {
+                                    return (
+                                        <li 
+                                            key={ product?._id } 
+                                            className="box-shadow-1 border-radius-25 py-3 px-2 cursor-pointer">
+                                                <ProductComponent1 
+                                                    index={ (((products?.meta?.current_page) > 1) 
+                                                                ? (((products?.meta?.current_page - 1) * products?.meta?.limit) + 1) 
+                                                                    : products?.meta?.current_page) + index } 
+                                                    itemId={ product?._id } 
+                                                    productId={ product?._id } 
+                                                    asin={ product?.asin }
+                                                    imgsSrc={ product?.images }
+                                                    title={ product?.title } 
+                                                    description='' 
+                                                    oldPrice='' 
+                                                    currentPrice={ product?.retail_price } 
+                                                    rating={ product?.rating?.rate } 
+                                                    category={ product?.category } />
+                                        </li>
+                                    )
+                                })) }
+                            </ul> 
+                            : (
+                                <div className="h-100 d-flex flex-column justify-content-center align-items-center">
+                                    <span className="py-4" style={{ flexGrow: '1' }}>There are no products yet.</span>
+                                </div>
+                            )}
                     </section>
                 </div>
 
-                <section className="pagination-links py-5 d-flex justify-content-end gap-2 pe-2"> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            await getProducts(1); 
-                        } }>
-                            <First /> 
-                    </span> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            await getProducts((products?.meta?.current_page >= 1) ? (products?.meta?.current_page - 1) : 1); 
-                        } }>
-                            <Previous /> 
-                    </span> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            await getProducts((products?.meta?.current_page < products?.meta?.total_pages) ? (products?.meta?.current_page + 1) : products?.meta?.total_pages); 
-                        } }>
-                        <Next /> 
-                    </span> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            await getProducts(products?.meta?.total_pages); 
-                        } }>
-                            <Last />
-                    </span>
-                </section>
+                { (products?.data?.length > 0) && 
+                    <section className="pagination-links py-5 d-flex justify-content-end gap-2 pe-2"> 
+                        <span 
+                            type="button" 
+                            onClick={ async () => { 
+                                scrollToTop(); 
+                                // await getProducts(1); 
+                                let firstPage = 1
+                                    setProductQuery(prevState => ({
+                                        ...prevState, 
+                                        page: firstPage
+                                    })); 
+                                    await getProducts(productQuery); 
+                                } }>
+                                <First /> 
+                        </span> 
+                        <span 
+                            type="button" 
+                            onClick={ async () => { 
+                                scrollToTop(); 
+                                // await getProducts((products?.meta?.current_page >= 1) ? (products?.meta?.current_page - 1) : 1); 
+                                let previousPage = ((products?.meta?.current_page >= 1) ? (products?.meta?.current_page - 1) : 1)
+                                setProductQuery(prevState => ({
+                                    ...prevState, 
+                                    // role: productQuery?.role, 
+                                    page: previousPage
+                                })); 
+                                await getProducts(productQuery); 
+                            } }>
+                                <Previous /> 
+                        </span> 
+                        <span 
+                            type="button" 
+                            onClick={ async () => { 
+                                scrollToTop(); 
+                                // await getProducts((products?.meta?.current_page < products?.meta?.total_pages) ? (products?.meta?.current_page + 1) : products?.meta?.total_pages); 
+                                let nextPage = ((products?.meta?.current_page < products?.meta?.total_pages) ? (products?.meta?.current_page + 1) : products?.meta?.total_pages)
+                                setProductQuery(prevState => ({
+                                    ...prevState, 
+                                    // role: productQuery?.role, 
+                                    page: nextPage
+                                })); 
+                                await getProducts(productQuery); 
+                            } }>
+                            <Next /> 
+                        </span> 
+                        <span 
+                            type="button" 
+                            onClick={ async () => { 
+                                scrollToTop(); 
+                                // await getProducts(products?.meta?.total_pages); 
+                                let lastPage = products?.meta?.total_pages
+                                setProductQuery(prevState => ({
+                                    ...prevState, 
+                                    // role: productQuery?.role, 
+                                    page: lastPage
+                                })); 
+                                await getProducts(productQuery); 
+                            } }>
+                                <Last />
+                        </span>
+                    </section> 
+                }
             </div>
         </Layout>
     )
