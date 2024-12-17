@@ -80,7 +80,6 @@ export function useDeal(id = null) {
 
     async function deleteDeal(deal) { 
         console.log('deal:', deal); 
-        // return axiosInstance.patch(`deals/${deal}`)
         return axiosInstance.patch(`deals/${deal}`)
             .then(() => {})
             .catch(error => {
@@ -90,15 +89,15 @@ export function useDeal(id = null) {
             .finally(() => setLoading(false)); 
     } 
 
-    async function destroyDeal(deal) {
-        return axiosInstance.delete(`deals/${deal?._id}`)
+    async function restoreDeal(deal) {
+        return axiosInstance.patch(`deals/${deal?._id}/restore`)
             .then(() => {})
             .catch(error => setErrors(error?.response))
             .finally(() => setLoading(false)); 
     } 
 
-    async function restoreDeal(deal) {
-        return axiosInstance.patch(`deals/${deal?._id}/restore`)
+    async function destroyDeal(deal) {
+        return axiosInstance.delete(`deals/${deal?._id}`)
             .then(() => {})
             .catch(error => setErrors(error?.response))
             .finally(() => setLoading(false)); 

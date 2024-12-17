@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'; 
+import { useNavigate } from 'react-router-dom'; 
+import { route } from '@/routes'; 
 import useAxios from '@/utils/useAxios.jsx'; 
 import swal from 'sweetalert2'; 
 
@@ -7,6 +9,7 @@ export function useBrand(id = null) {
     const [errors, setErrors] = useState({}); 
     const [loading, setLoading] = useState(false); 
     const [data, setData] = useState({}); 
+    const navigate = useNavigate(); 
     const axiosInstance = useAxios(); 
 
 
@@ -61,14 +64,42 @@ export function useBrand(id = null) {
             .finally(() => setLoading(false));
     } 
 
+    async function updateBrand(brand) {
+        setLoading(true); 
+        setErrors({}); 
+        console.log(brand);
+
+        return axiosInstance.put(`brands/${id}`, brand)
+            .then(() => navigate(route('home.brands.index')))
+            .catch(error => setErrors(error?.response))
+            .finally(() => {
+                setLoading(false); 
+                setData({}); 
+            });
+    }
+
     async function deleteBrand(brand) { 
         console.log('brand:', brand); 
         return axiosInstance.patch(`brands/${brand}`)
             .then(() => {})
             .catch(error => {
-                console.log(error?.response); 
+                // console.log(error?.response); 
                 setErrors(error?.response); 
             })
+            .finally(() => setLoading(false)); 
+    } 
+
+    async function restoreBrand(brand) {
+        return axiosInstance.patch(`brands/${brand?._id}/restore`)
+            .then(() => {})
+            .catch(error => setErrors(error?.response))
+            .finally(() => setLoading(false)); 
+    } 
+
+    async function destroyBrand(brand) {
+        return axiosInstance.delete(`brands/${brand?._id}`)
+            .then(() => {})
+            .catch(error => setErrors(error?.response))
             .finally(() => setLoading(false)); 
     } 
 
@@ -77,6 +108,9 @@ export function useBrand(id = null) {
         brand: { data, setData, errors, loading }, 
         createBrand, 
         getBrand, 
-        deleteBrand
+        updateBrand, 
+        deleteBrand, 
+        restoreBrand, 
+        destroyBrand
     }
 }

@@ -15,6 +15,10 @@ const dealSchema = new Schema({
             enum: ['percentage', 'usd'], 
             default: 'percentage' 
         }, 
+        image_path: { 
+            public_id: { type: String, default: '' },
+            url: { type: String, default: '' }
+        }, 
         usable_once: { type: Boolean, default: false }, 
         used_at: { type: String, default: null },
         used_by: { type: Schema.Types.ObjectId, ref: 'User' }, 

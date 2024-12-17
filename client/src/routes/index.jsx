@@ -16,7 +16,9 @@ const routeNames = {
     'home.admin.edit': '/home/admin/:username/edit', 
     'home.admin.index': '/home/admin', 
 
+    'home.brands.show': '/home/brands/:id/show', 
     'home.brands.edit': '/home/brands/:id/edit', 
+    'home.brands.create': '/home/brands/create', 
     'home.brands.index': '/home/brands', 
 
     'home.calendar.index': '/home/calendar', 

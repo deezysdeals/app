@@ -14,7 +14,7 @@ export function useClientsGrowth(range = 'all') {
  
     async function getClientsGrowth(range, { signal } = {}) { 
         console.log(range) 
-        return axiosInstance.get(`dashboard/cients-growth?range=${range}`, { signal }) 
+        return axiosInstance.get(`dashboard/client-growth?range=${range}`, { signal }) 
             .then(response => { 
                 console.log(response?.data)
                 setClientsGrowth(response?.data)

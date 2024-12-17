@@ -12,7 +12,7 @@ const brandSchema = new Schema({
         slug: { type: String, required: true }, 
         description: { type: String, required: true }, 
         logo_path: { 
-            public_id: { type: String, default: '' },
+            public_id: { type: String, default: '' }, 
             url: { type: String, default: '' }
         }, 
         web_address: { type: String },

@@ -1,16 +1,14 @@
 import { useState } from 'react'; 
-import { Link, useParams } from 'react-router-dom'; 
+import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import { useBrand } from '@/hooks/useBrand.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
-export default function Edit() { 
-    const params = useParams(); 
-    const { brand, updateBrand } = useBrand(params?.id); 
-    // console.log(brand); 
+export default function Create() { 
+    const { brand, createBrand } = useBrand(); 
 
-    /** Handle image file */ 
+    /** Handle image file input*/ 
     const [image, setImage] = useState(null);
 
     const handleImageClick = () => {
@@ -31,16 +29,19 @@ export default function Edit() {
             }
         }
     }; 
-    /** End of Handle image file */
 
-    /** Update Brand */
+    const handleRemoveImage = () => {
+        setImage(null);
+    }; 
+    /** End of Handle image file input*/ 
+
     async function submitBrand(e) {
         e.preventDefault(); 
 
         const formData = new FormData(); 
         formData.append('name', brand?.data?.name); 
         brand?.data?.description && formData.append('description', brand?.data?.description); 
-        (image) && formData.append('logo_path', brand?.data?.logo_path); 
+        (image) && formData.append('logo_path', brand?.data?.image); 
         brand?.data?.web_address && formData.append('web_address', brand?.data?.web_address); 
         brand?.data?.facebook && formData.append('facebook', brand?.data?.facebook); 
         brand?.data?.instagram && formData.append('instagram', brand?.data?.instagram); 
@@ -48,9 +49,9 @@ export default function Edit() {
         brand?.data?.other_social && formData.append('other_social', brand?.data?.other_social); 
         brand?.data?.other_social_handle && formData.append('other_social_handle', brand?.data?.other_social_handle); 
 
-        await updateBrand(formData); 
+        await createBrand(formData); 
+        await brand?.setData({}); 
     }; 
-    /** End of Update Brand */
 
     return (
         <Layout>
@@ -60,7 +61,7 @@ export default function Edit() {
                         <Link to={ route('home.brands.index') } className="text-dark">
                             Brands
                         </Link>&nbsp;
-                        | Edit</h2> 
+                        | Add</h2> 
 
                     <section className="py-4">
                         <form onSubmit={ submitBrand } encType="multipart/form-data" id="create-edit-form" className="create-edit-form"> 
@@ -69,7 +70,7 @@ export default function Edit() {
                                     <div className="col-md">
                                         <div className="mb-3"> 
                                             <div className="input-group">
-                                                <span className="input-group-text border-radius-35 fw-semibold">Name</span>
+                                                <span className="input-group-text border-radius-35 fw-semibold form-field-required">Name</span>
                                                 <input 
                                                     type="text" 
                                                     value={ brand?.data?.name ?? '' } 
@@ -81,7 +82,8 @@ export default function Edit() {
                                                     id="name" 
                                                     className="form-control border-radius-35" 
                                                     aria-label="Brand Name" 
-                                                    aria-describedby="brand name" />
+                                                    aria-describedby="brand name" 
+                                                    required />
                                             </div>
                                             <div className="form-text px-3" id="basic-addon4"><small>Brand Name.</small></div>
                                         </div>
@@ -90,7 +92,7 @@ export default function Edit() {
                                 <div className="description row g-2">
                                     <div className="mb-3">
                                         <div className="input-group">
-                                            <span className="input-group-text border-radius-35 fw-semibold">Description</span>
+                                            <span className="input-group-text border-radius-35 fw-semibold form-field-required">Description</span>
                                             <textarea 
                                                 value={ brand?.data?.description ?? '' } 
                                                 onChange={ e => brand.setData({
@@ -101,7 +103,8 @@ export default function Edit() {
                                                 id="description" 
                                                 className="form-control border-radius-35" 
                                                 aria-label="Brand Description" 
-                                                aria-describedby="brand description"></textarea>
+                                                aria-describedby="brand description" 
+                                                required></textarea>
                                         </div> 
                                         <div className="form-text px-3" id="desription-1"><small>Brand Description.</small></div>
                                     </div>
@@ -115,14 +118,14 @@ export default function Edit() {
                                             style={{ display: 'none' }} 
                                             onChange={ (e) => { brand.setData({
                                                                     ...brand?.data,
-                                                                    logo_path: e.target.files[0], 
+                                                                    image: e.target.files[0], 
                                                                 });
                                                                 handleImageChange(e)} }
                                         />
 
                                         <div onClick={handleImageClick} className="cursor-pointer border-radius-15 d-flex justify-content-center align-items-center" style={{ width: '200px', height: '200px', backgroundColor: '#f0f0f0' }}>
-                                            { (image || brand?.data?.logo_path?.url) ? (
-                                                <img src={image || brand?.data?.logo_path?.url} alt="Preview" className="border-radius-15" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            { image ? (
+                                                <img src={image} alt="Preview" className="border-radius-15" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                             ) : (
                                                 <span>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">
@@ -134,7 +137,7 @@ export default function Edit() {
                                         </div> 
 
                                         {/* Remove button */}
-                                        {/* {brand?.data?.logo_path?.url && (
+                                        {image && (
                                             <span 
                                             onClick={handleRemoveImage} 
                                             className="bg-transparent border-0"
@@ -149,7 +152,7 @@ export default function Edit() {
                                                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
                                                 </svg>
                                             </span>
-                                        )} */}
+                                        )}
                                     </div> 
                                 </div> 
                                 <div className="web row g-2">
@@ -307,7 +310,7 @@ export default function Edit() {
                             </div>
                             <div className="pt-3 d-flex justify-content-end">
                                 <button type="submit" className={`btn btn-dark px-3 border-radius-35 ${brand?.loading == true && `disabled`}`}>
-                                    <span>Update</span>&nbsp;
+                                    <span>Save</span>&nbsp;
                                     <span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-arrow-right-circle"
                                             viewBox="0 0 16 16">

@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'; 
+import { useNavigate } from 'react-router-dom'; 
+import { route } from '@/routes'; 
 import useAxios from '@/utils/useAxios.jsx'; 
 import swal from 'sweetalert2'; 
 
@@ -7,6 +9,7 @@ export function useProductReview(id = null) {
     const [errors, setErrors] = useState({}); 
     const [loading, setLoading] = useState(false); 
     const [data, setData] = useState({}); 
+    const navigate = useNavigate(); 
     const axiosInstance = useAxios(); 
 
 
@@ -72,11 +75,27 @@ export function useProductReview(id = null) {
             .finally(() => setLoading(false)); 
     } 
 
+    async function restoreProductReview(productReview) {
+        return axiosInstance.patch(`product-reviews/${productReview?._id}/restore`)
+            .then(() => {})
+            .catch(error => setErrors(error?.response))
+            .finally(() => setLoading(false)); 
+    } 
+
+    async function destroyProductReview(productReview) {
+        return axiosInstance.delete(`product-reviews/${productReview?._id}`)
+            .then(() => {})
+            .catch(error => setErrors(error?.response))
+            .finally(() => setLoading(false)); 
+    } 
+
 
     return {
         productReview: { data, setData, errors, loading }, 
         createProductReview, 
         getProductReview, 
-        deleteProductReview
+        deleteProductReview, 
+        restoreProductReview, 
+        destroyProductReview
     }
 }

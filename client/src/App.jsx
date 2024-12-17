@@ -30,7 +30,9 @@ import ProtectedAdminShow from '@/views/protected/admin/Show.jsx';
 import ProtectedAdminEdit from '@/views/protected/admin/Edit.jsx'; 
 import ProtectedAdminIndex from '@/views/protected/admin/Index.jsx'; 
 
+import ProtectedBrandShow from '@/views/protected/brands/Show.jsx'; 
 import ProtectedBrandEdit from '@/views/protected/brands/Edit.jsx'; 
+import ProtectedBrandCreate from '@/views/protected/brands/Create.jsx'; 
 import ProtectedBrandsIndex from '@/views/protected/brands/Index.jsx'; 
 
 import ProtectedCalendarIndex from '@/views/protected/calendar/Index.jsx'; 
@@ -138,7 +140,9 @@ function App() {
                 <Route path={ route('home.admin.edit') } element={ <ProtectedAdminEdit /> } />
                 <Route path={ route('home.admin.index') } element={ <ProtectedAdminIndex /> } /> 
 
-                <Route path={ route('home.brands.edit') } element={ <ProtectedBrandEdit /> } />
+                <Route path={ route('home.brands.show') } element={ <ProtectedBrandShow /> } /> 
+                <Route path={ route('home.brands.edit') } element={ <ProtectedBrandEdit /> } /> 
+                <Route path={ route('home.brands.create') } element={ <ProtectedBrandCreate /> } /> 
                 <Route path={ route('home.brands.index') } element={ <ProtectedBrandsIndex /> } /> 
 
                 <Route path={ route('home.calendar.index') } element={ <ProtectedCalendarIndex /> } /> 

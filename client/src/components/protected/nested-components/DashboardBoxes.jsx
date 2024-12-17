@@ -21,7 +21,7 @@ export default function DashboardBoxes() {
     const [purchaseRange, setPurchaseRange] = useState('all'); 
     const [ratingsRange, setRatingsRange] = useState('all'); 
     
-    console.log(orderRange); 
+    // console.log(orderRange); 
 
     const { checkIns, getCheckIns } = useCheckIns(checkInRange); 
     const { clientsGrowth, getClientsGrowth } = useClientsGrowth(clientGrowthRange); 
@@ -29,11 +29,11 @@ export default function DashboardBoxes() {
     const { purchases, getPurchases } = usePurchases(purchaseRange); 
     const { ratings, getRatings } = useRatings(ratingsRange); 
 
-    console.log(checkIns); 
-    console.log(clientsGrowth); 
-    console.log(orders); 
-    console.log(purchases); 
-    console.log(ratings); 
+    // console.log(checkIns); 
+    // console.log(clientsGrowth); 
+    // console.log(orders); 
+    // console.log(purchases); 
+    // console.log(ratings); 
 
     /** Compute the Percentage Difference */ 
     function calculatePercentageDifference(totalPaidThisMonth, totalPaidLastMonth) {
@@ -342,7 +342,7 @@ export default function DashboardBoxes() {
                                             setCheckInRange('all'); 
                                             await getCheckIns(checkInRange); 
                                         }}
-                                        className={`badge rounded-pill ${(checkInRange == 'all') ? `text-bg-dark` : `text-bg-secondary`}`}>
+                                        className={`badge rounded-pill ${(checkInRange == 'all') ? `text-bg-secondary` : `text-bg-dark`}`}>
                                             All
                                     </span>
                                 </li>
@@ -353,7 +353,7 @@ export default function DashboardBoxes() {
                                             setCheckInRange('today'); 
                                             await getCheckIns(checkInRange); 
                                         }}
-                                        className={`badge rounded-pill ${(checkInRange == 'today') ? `text-bg-dark` : `text-bg-secondary`}`}>
+                                        className={`badge rounded-pill ${(checkInRange == 'today') ? `text-bg-secondary` : `text-bg-dark`}`}>
                                             Today
                                     </span>
                                 </li> 
@@ -364,7 +364,7 @@ export default function DashboardBoxes() {
                                             setCheckInRange('this-week'); 
                                             await getCheckIns(checkInRange); 
                                         }}
-                                        className={`badge rounded-pill ${(checkInRange == 'this-week') ? `text-bg-dark` : `text-bg-secondary`}`}>
+                                        className={`badge rounded-pill ${(checkInRange == 'this-week') ? `text-bg-secondary` : `text-bg-dark`}`}>
                                             Week
                                     </span>
                                 </li> 
@@ -375,7 +375,7 @@ export default function DashboardBoxes() {
                                             setCheckInRange('this-month'); 
                                             await getCheckIns(checkInRange); 
                                         }}
-                                        className={`badge rounded-pill ${(checkInRange == 'this-month') ? `text-bg-dark` : `text-bg-secondary`}`}>
+                                        className={`badge rounded-pill ${(checkInRange == 'this-month') ? `text-bg-secondary` : `text-bg-dark`}`}>
                                             Month
                                     </span>
                                 </li> 
@@ -386,7 +386,7 @@ export default function DashboardBoxes() {
                                             setCheckInRange('this-year'); 
                                             await getCheckIns(checkInRange); 
                                         }}
-                                        className={`badge rounded-pill ${(checkInRange == 'this-year') ? `text-bg-dark` : `text-bg-secondary`}`}>
+                                        className={`badge rounded-pill ${(checkInRange == 'this-year') ? `text-bg-secondary` : `text-bg-dark`}`}>
                                             Year
                                     </span>
                                 </li> 
@@ -651,7 +651,7 @@ export default function DashboardBoxes() {
                                                     : '' ) }
                                     { Number(ratingPercentageDifference)?.toFixed() }%
                             </span> 
-                            <small className="w-100">{ (ratingsRange != 'all') && 'Customer satisfaction' }&nbsp;
+                            <small className="w-100">Customer satisfaction&nbsp;
                                 { ((ratingsRange!='all')&&(totalSatisfactionCurrent>totalSatisfactionPrevious)) ? 'increase from' 
                                     : ((ratingsRange!='all')&&(totalSatisfactionCurrent<totalSatisfactionPrevious)) ? 'decrease from' 
                                     : ((ratingsRange!='all')&&(totalSatisfactionCurrent==totalSatisfactionPrevious)) ? 'stagnant from' 

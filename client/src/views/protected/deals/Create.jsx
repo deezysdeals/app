@@ -6,25 +6,54 @@ import Layout from '@/components/protected/Layout.jsx';
 
 
 export default function Create() { 
+    const { deal, createDeal } = useDeal(); 
+
+    /** Handle image file input*/ 
+    const [image, setImage] = useState(null);
+
+    const handleImageClick = () => {
+        document.getElementById('image-upload-input').click();
+    }; 
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+                setImage(reader.result); 
+            };
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    }; 
+
+    const handleRemoveImage = () => {
+        setImage(null);
+    }; 
+    /** End of Handle image file input*/ 
+
     const [userSpecific, setUserSpecific] = useState(false); 
     const [usableOnce, setUsableOnce] = useState(false); 
-
-    const { deal, createDeal, getDeal } = useDeal(); 
 
     async function submitDeal(e) {
         e.preventDefault(); 
 
         const formData = new FormData(); 
-        formData.append('code', deal.data.code); 
-        formData.append('title', deal.data.title); 
-        formData.append('description', deal.data.description); 
-        formData.append('value', deal.data.deal_value); 
-        formData.append('value_unit', deal.data.deal_value_unit); 
-        formData.append('specific_for_user', userSpecific ? true : false); 
-        userSpecific && formData.append('user_specifically_for', deal.data.user_specifically_for); 
-        formData.append('usable_once', usableOnce ? true : false); 
+        deal.data.code && formData.append('code', deal.data.code); 
+        deal.data.title && formData.append('title', deal.data.title); 
+        deal.data.description && formData.append('description', deal.data.description); 
+        (image) && formData.append('image_path', deal?.data?.image_path); 
+        deal.data.deal_value && formData.append('value', deal.data.deal_value); 
+        deal.data.deal_value_unit && formData.append('value_unit', deal.data.deal_value_unit); 
+        (userSpecific) && formData.append('specific_for_user', userSpecific ? true : false); 
+        (userSpecific && deal.data.user_specifically_for) && formData.append('user_specifically_for', deal.data.user_specifically_for); 
+        (usableOnce) && formData.append('usable_once', usableOnce ? true : false); 
 
         await createDeal(formData); 
+        await deal?.setData({}); 
     }
 
     return (
@@ -40,7 +69,53 @@ export default function Create() {
                     <section className="py-4">
                         <form onSubmit={ submitDeal } encType='multipart/form-data' id="create-edit-form" className="create-edit-form">
                             <div className="fields"> 
+                                <div className="image row g-2 ">
+                                    <div className="position-relative"> 
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            id="image-upload-input"
+                                            style={{ display: 'none' }} 
+                                            onChange={ (e) => { deal.setData({
+                                                                    ...deal?.data,
+                                                                    image_path: e.target.files[0], 
+                                                                });
+                                                                handleImageChange(e)} }
+                                        />
 
+                                        <div onClick={handleImageClick} className="cursor-pointer border-radius-15 d-flex justify-content-center align-items-center" style={{ width: '200px', height: '200px', backgroundColor: '#f0f0f0' }}>
+                                            { image ? (
+                                                <img src={image} alt="Preview" className="border-radius-15" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            ) : (
+                                                <span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">
+                                                        <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                                                        <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>
+                                                    </svg>
+                                                </span>
+                                            )}
+                                        </div> 
+
+                                        {/* Remove button */}
+                                        {image && (
+                                            <span 
+                                            onClick={handleRemoveImage} 
+                                            className="bg-transparent border-0"
+                                            style={{
+                                                position: 'absolute', 
+                                                top: '0', 
+                                                left: '205px', 
+                                                cursor: 'pointer',
+                                            }}
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ff0000" className="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                                                </svg>
+                                            </span>
+                                        )}
+                                    </div> 
+                                    <div className="form-text px-3 pb-4"><small>Add logo that would represent the Deal Offer.</small></div> 
+                                </div> 
                                 <div className="row g-2">
                                     <div className="col-md">
                                         <div className="mb-3">

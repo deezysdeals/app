@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'; 
+import axios from 'axios'; 
+import Constants from '@/utils/Constants.jsx'; 
 import useAxios from '@/utils/useAxios.jsx'; 
 
 
@@ -18,7 +20,8 @@ export function useBrands(brandQuery) {
         // console.log(brandQuery);
 
         setBrands([]); 
-        return axiosInstance.get(`brands?page=${brandQuery?.page}&limit=${brandQuery?.limit}&search=${brandQuery?.search}`, { signal }) 
+        // return axiosInstance.get(`brands?page=${brandQuery?.page}&limit=${brandQuery?.limit}&search=${brandQuery?.search}`, { signal }) 
+        return axios.get(`${ Constants?.serverURL }/api/v1/brands?page=${brandQuery?.page}&limit=${brandQuery?.limit}&search=${brandQuery?.search}`, { signal }) 
             .then(response => setBrands(response?.data))
             .catch(error => console.log(error));
     } 

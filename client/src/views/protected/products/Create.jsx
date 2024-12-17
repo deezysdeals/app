@@ -6,9 +6,9 @@ import Layout from '@/components/protected/Layout.jsx';
 
 
 export default function Create() { 
-    const { product, createProduct, getProduct } = useProduct(); 
+    const { product, createProduct } = useProduct(); 
 
-    console.log(product?.data); 
+    // console.log(product?.data); 
 
     /** Image Section */
     const [productImageFields, setProductImageFields] = useState({
@@ -235,7 +235,7 @@ export default function Create() {
                         | Create</h2> 
 
                     <section className="py-4">
-                        <form onSubmit={ submitProduct } encType='multipart/form-data' id="create-edit-form" className="create-edit-form"> 
+                        <form onSubmit={ submitProduct } encType="multipart/form-data" id="create-edit-form" className="create-edit-form"> 
                             <div className="fields"> 
 
                                 <div className="row g-2">

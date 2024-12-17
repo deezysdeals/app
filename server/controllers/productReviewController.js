@@ -2,93 +2,138 @@ import asyncHandler from 'express-async-handler';
 import ProductReview from '../models/ProductReview.js'; 
 
 
+/**
+ * GET ALL PRODUCT REVIEWS
+ */
 const getProductReviews = asyncHandler(async (req, res) => { 
     const current_page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 10; 
 
     const skip = (current_page - 1) * limit; 
 
-    // console.log(req?.query) 
-    // console.log('cookies', req?.cookies); 
-    // console.log('decoded', jwt.verify(req?.cookies?.jwt, process.env.JWT_SECRET));
-    // console.log('Logged out')
-
     let productReviews; 
     let total; 
-
-    /** Query building */
-    const queryforNonAdmin = {
-        user: req?.user_id,
-        deleted_at: null,
-    };
-    if (req?.query?.stars != null) {
-        const stars = parseInt(req.query.stars);
-        if ([1, 2, 3, 4, 5].includes(stars)) {
-            queryforNonAdmin.rating = stars; 
-        }
-    } 
-
-    const queryforAdmin = {
-        deleted_at: null,
-    };
-    if (req?.query?.stars != null) {
-        const stars = parseInt(req.query.stars);
-        if ([1, 2, 3, 4, 5].includes(stars)) {
-            queryforAdmin.rating = stars; 
-        }
-    } 
-    /** End of Query building */
+    let rating;
     
-    if (req?.role != 'admin') {
-        productReviews = await ProductReview.find(queryforNonAdmin)
-                                        .sort('-created_at')
-                                        .skip(skip)
-                                        .limit(limit)
-                                        .populate({
-                                            path: 'order', 
-                                        })
-                                        .populate({
-                                            path: 'order_item', 
-                                            select: 'product', 
-                                            populate: { 
-                                                path: 'product', 
-                                            }
-                                        })
-                                        .populate({
-                                            path: 'user', 
-                                            select: 'first_name last_name username' 
-                                        })
-                                        .lean(); 
+    if (req?.role == 'admin') { 
+        if (req?.query?.stars != 'all') {
+            const stars = parseInt(req.query.stars);
+            if ([1, 2, 3, 4, 5].includes(stars)) {
+                rating = stars; 
+            } 
 
-        total = await ProductReview.find(queryforNonAdmin).countDocuments(); 
+            productReviews = await ProductReview.find({ deleted_at: null, rating: rating })
+                                                .sort('-created_at')
+                                                .skip(skip)
+                                                .limit(limit)
+                                                .populate({
+                                                    path: 'order', 
+                                                })
+                                                .populate({
+                                                    path: 'order_item', 
+                                                    select: 'product', 
+                                                    populate: { 
+                                                        path: 'product', 
+                                                    }
+                                                })
+                                                .populate({
+                                                    path: 'user', 
+                                                    select: 'first_name last_name username' 
+                                                })
+                                                .lean(); 
 
-    } else {
-        productReviews = await ProductReview.find(queryforAdmin)
-                                        .sort('-created_at')
-                                        .skip(skip)
-                                        .limit(limit)
-                                        .populate({
-                                            path: 'order', 
-                                        })
-                                        .populate({
-                                            path: 'order_item', 
-                                            select: 'product', 
-                                            populate: { 
-                                                path: 'product', 
-                                            }
-                                        })
-                                        .populate({
-                                            path: 'user', 
-                                            select: 'first_name last_name username' 
-                                        })
-                                        .lean(); 
+             total = await ProductReview.find({ deleted_at: null, rating: rating }).countDocuments();
+        } else if (req?.query?.stars == 'all') {
+            productReviews = await ProductReview.find({ deleted_at: null })
+                                                .sort('-created_at')
+                                                .skip(skip)
+                                                .limit(limit)
+                                                .populate({
+                                                    path: 'order', 
+                                                })
+                                                .populate({
+                                                    path: 'order_item', 
+                                                    select: 'product', 
+                                                    populate: { 
+                                                        path: 'product', 
+                                                    }
+                                                })
+                                                .populate({
+                                                    path: 'user', 
+                                                    select: 'first_name last_name username' 
+                                                })
+                                                .lean(); 
 
-        total = await ProductReview.find(queryforAdmin).countDocuments();
+             total = await ProductReview.find({ deleted_at: null }).countDocuments();
+        }
+
+    } else { 
+        if (req?.query?.stars != 'all') {
+            const stars = parseInt(req.query.stars);
+            if ([1, 2, 3, 4, 5].includes(stars)) {
+                rating = stars; 
+            } 
+
+            productReviews = await ProductReview.find({ deleted_at: null, 
+                                                        rating: rating, 
+                                                        user: req?.user_id })
+                                                .sort('-created_at')
+                                                .skip(skip)
+                                                .limit(limit)
+                                                .populate({
+                                                    path: 'order', 
+                                                })
+                                                .populate({
+                                                    path: 'order_item', 
+                                                    select: 'product', 
+                                                    populate: { 
+                                                        path: 'product', 
+                                                    }
+                                                })
+                                                .populate({
+                                                    path: 'user', 
+                                                    select: 'first_name last_name username' 
+                                                })
+                                                .lean(); 
+
+            total = await ProductReview.find({ deleted_at: null, rating: rating, user: req?.user_id }).countDocuments(); 
+        } else if (req?.query?.stars == 'all') {
+            const stars = parseInt(req.query.stars);
+            if ([1, 2, 3, 4, 5].includes(stars)) {
+                rating = stars; 
+            } 
+
+            productReviews = await ProductReview.find({ deleted_at: null, 
+                                                        user: req?.user_id })
+                                                .sort('-created_at')
+                                                .skip(skip)
+                                                .limit(limit)
+                                                .populate({
+                                                    path: 'order', 
+                                                })
+                                                .populate({
+                                                    path: 'order_item', 
+                                                    select: 'product', 
+                                                    populate: { 
+                                                        path: 'product', 
+                                                    }
+                                                })
+                                                .populate({
+                                                    path: 'user', 
+                                                    select: 'first_name last_name username' 
+                                                })
+                                                .lean(); 
+
+            total = await ProductReview.find({ deleted_at: null, user: req?.user_id }).countDocuments(); 
+        }
     }
         
-    if (!productReviews?.length) return res.status(404).json({ message: "No product reviews found!" }); 
-
-    res.json({ 
+    // if (!productReviews?.length) return res.status(404).json({ message: "No product reviews found!" }); 
+    // if (total === 0) {
+    if (!productReviews?.length) {
+        return res.status(404).json({ message: "No product reviews found!" }); 
+    } else {
+        res.json({ 
                 meta: {
                     current_page, 
                     limit, 
@@ -97,8 +142,12 @@ const getProductReviews = asyncHandler(async (req, res) => {
                 }, 
                 data: productReviews 
             });
+    }
 });
 
+/**
+ * CREATE PRODUCT REVIEW
+ */
 const createProductReview = asyncHandler(async (req, res) => {
     const { product, 
             order, 
@@ -110,7 +159,8 @@ const createProductReview = asyncHandler(async (req, res) => {
     const productReviewExists = await ProductReview.findOne({ product: product, 
                                                                 order: order, 
                                                                 order_item: order_item, 
-                                                                user: req?.user_id
+                                                                user: req?.user_id, 
+                                                                deleted_at: null
                                                             }).lean(); 
 
     if (productReviewExists) return res.status(409).json({ message: "A review already exists for this item. You can delete the already existing review to create a new one!" })
@@ -134,6 +184,9 @@ const createProductReview = asyncHandler(async (req, res) => {
         });
 }); 
 
+/**
+ * GET A PRODUCT REVIEW
+ */
 const getProductReview = asyncHandler(async (req, res) => { 
     const { id } = req?.params;
 	const productReview = await ProductReview.findOne({ _id: id })
@@ -144,6 +197,9 @@ const getProductReview = asyncHandler(async (req, res) => {
 	res.status(200).json({ data: productReview });
 }); 
 
+/**
+ * UPDATE A PRODUCT REVIEW
+ */
 const updateProductReview = asyncHandler(async (req, res) => {
     const { product, 
             product_unit, 
@@ -171,13 +227,16 @@ const updateProductReview = asyncHandler(async (req, res) => {
         });
 }); 
 
+/**
+ * SOFT-DELETE A PRODUCT REVIEW
+ */
 const deleteProductReview = asyncHandler(async (req, res) => {
     const { id } = req?.params; 
     const productReview = await ProductReview.findOne({ _id: id }).exec();
 
     if (!productReview) return res.status(404).json({ message: `No product review matches the product review ${id}!` }); 
 
-    if (productReview.deleted_at == '') {
+    if (productReview.deleted_at == '' || productReview.deleted_at == null) {
         productReview.deleted_at = new Date().toISOString();
         productReview.deleted_by = req?.user_id;
     }
@@ -191,13 +250,16 @@ const deleteProductReview = asyncHandler(async (req, res) => {
         });
 }); 
 
+/**
+ * RESTORE A SOFT-DELETED PRODUCT REVIEW
+ */
 const restoreProductReview = asyncHandler(async (req, res) => {
     const { id } = req?.params; 
     const productReview = await ProductReview.findOne({ _id: id }).exec();
 
     if (!productReview) return res.status(404).json({ message: `No product review matches the product review ${id}!` }); 
 
-    if (productReview.deleted_at != '') {
+    if (productReview.deleted_at != '' && productReview.deleted_at != null) {
         productReview.deleted_at = '';
         productReview.deleted_by = '';
     };
@@ -211,6 +273,9 @@ const restoreProductReview = asyncHandler(async (req, res) => {
         });
 }); 
 
+/**
+ * PERMANENTLY DELETE A PRODUCT REVIEW
+ */
 const destroyProductReview = asyncHandler(async (req, res) => {
     const { id } = req?.params;
 	const productReview = await ProductReview.findOne({ _id: id }).exec();

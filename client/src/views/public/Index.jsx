@@ -1,7 +1,10 @@
+import { useState } from 'react'; 
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import { useCategoriesExt } from '@/hooks/external/useFakeStoreCategories.jsx'; 
 import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx'; 
+import { useBrands } from '@/hooks/useBrands.jsx'; 
+import { useDeals } from '@/hooks/useDeals.jsx'; 
 import Aside from '@/components/public/Aside.jsx'; 
 import Layout from '@/components/public/Layout.jsx';
 import ProductComponent1 from '@/components/public/nested-components/ProductComponent1.jsx'; 
@@ -14,6 +17,18 @@ export default function Index() {
     const { productsExt } = useProductsExt(); 
     // console.log(categoriesExt); 
     // console.log(productsExt); 
+    const [brandQuery, setBrandQuery] = useState({ 
+        page: 1, 
+        limit: 20, 
+    }); 
+    const { brands, getBrands } = useBrands(brandQuery); 
+    console.log(brands); 
+    const [dealQuery, setDealQuery] = useState({ 
+        page: 1, 
+        limit: 20, 
+    }); 
+    const { deals, getDeals } = useDeals(dealQuery); 
+    console.log(deals); 
 
     return (
         <Layout>
@@ -162,13 +177,22 @@ export default function Index() {
 
                         <div className="nav-scroller">
                             <nav className="nav justify-content-between py-3">
-
+                                { (deals?.data?.length > 0) && deals?.data?.map((deal, index) => {
+                                    return (
+                                        <DealComponent 
+                                            key={ deal?._id } 
+                                            id={ deal?._id } 
+                                            title={ deal?.title } 
+                                            description={ deal?.description } 
+                                            imgSrc={ deal?.image_path?.url } /> 
+                                    )
+                                })}
+                                {/* <DealComponent /> 
                                 <DealComponent /> 
                                 <DealComponent /> 
                                 <DealComponent /> 
                                 <DealComponent /> 
-                                <DealComponent /> 
-                                <DealComponent /> 
+                                <DealComponent />  */}
                         
                             </nav>
                         </div>
@@ -179,8 +203,20 @@ export default function Index() {
 
                         <div className="nav-scroller py-1 mb-3">
                             <nav className="nav justify-content-between py-3">
-
-                                <BrandComponent brand='versace' imgSrc='https://1000logos.net/wp-content/uploads/2017/03/Nestle-Logo.png' />
+                                { (brands?.data?.length > 0) && brands?.data?.map((brand, index) => {
+                                    return ( 
+                                        // <span key={ brand?._id }>
+                                            <BrandComponent 
+                                                key={ brand?._id } 
+                                                id={ brand?._id } 
+                                                brand={ brand?.name } 
+                                                imgSrc={ brand?.logo_path?.url } />
+                                        // </span>
+                                    )
+                                }) }
+                                {/* <BrandComponent 
+                                    brand='versace' 
+                                    imgSrc='https://1000logos.net/wp-content/uploads/2017/03/Nestle-Logo.png' />
                                 <BrandComponent brand='apple' imgSrc='https://www.pngplay.com/wp-content/uploads/3/Apple-Logo-Transparent-Images.png' />
                                 <BrandComponent brand='p&g' imgSrc='https://logos-world.net/wp-content/uploads/2022/11/PG-Logo.png' />
                                 <BrandComponent brand='nike' imgSrc='https://www.pixelstalk.net/wp-content/uploads/2015/12/nike-logo-wallpaper-hd-white.jpg' /> 
@@ -189,7 +225,7 @@ export default function Index() {
                                 <BrandComponent brand='gucci' imgSrc='https://www.pixelstalk.net/wp-content/uploads/2016/04/Gucci-logo-wallpapers-HD-pictures-images.jpg' /> 
                                 <BrandComponent brand='versace' imgSrc='https://vectorified.com/image/versace-logo-vector-11.jpg' /> 
                                 <BrandComponent brand='adidas' imgSrc='https://i.pinimg.com/originals/57/58/22/575822c5381ea91c21bfd2c69b359e24.png' /> 
-                                <BrandComponent brand='reebok' imgSrc='https://static.vecteezy.com/system/resources/previews/023/867/293/original/reebok-logo-brand-clothes-with-name-white-symbol-design-icon-abstract-illustration-with-black-background-free-vector.jpg' /> 
+                                <BrandComponent brand='reebok' imgSrc='https://static.vecteezy.com/system/resources/previews/023/867/293/original/reebok-logo-brand-clothes-with-name-white-symbol-design-icon-abstract-illustration-with-black-background-free-vector.jpg' />  */}
                         
                             </nav>
                         </div> 
