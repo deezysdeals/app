@@ -1,5 +1,6 @@
-import cloudinaryImageUpload from '../config/imageUpload/cloudinary.js';
+import axios from 'axios'; 
 import asyncHandler from 'express-async-handler'; 
+import cloudinaryImageUpload from '../config/imageUpload/cloudinary.js';
 import slug from 'slug';
 const slugIt = slug; 
 import Brand from '../models/Brand.js';
@@ -563,11 +564,11 @@ const updateProduct = asyncHandler(async (req, res) => {
         if (validCategories?.length > 0) {
             for (let i = 0; i < validCategories.length; i++) {
                 const category = validCategories[i]; 
-                console.log(validCategories); 
-                console.log(validCategories[category]); 
+                // console.log(validCategories); 
+                console.log('category', category); 
 
                 categoryExists = await CategoryProduct.findOne({ product: product._id, 
-                                                                category: validCategories[category] }).lean();
+                                                                category: category }).lean();
 
                 if (!categoryExists) {
                     await CategoryProduct.create({
@@ -728,6 +729,68 @@ const getPurchasedProducts = asyncHandler(async (req, res) => {
 }); 
 
 /**
+ * GET ADD PRODUCT TO SHOP FROM EXTERNAL API
+ */
+const addToShop = asyncHandler(async (req, res) => {
+    const { id } = req?.params; 
+
+    async function fetchAndAddProduct() {
+        try {
+            const response = await axios.get(`https://fakestoreapi.com/products/${id}`); 
+
+            /** Create new product, if does not exist */ 
+            const productFilter = { title: response?.data?.title }; 
+            const productUpdate = { user: req?.user_id, 
+                                    title: response?.data?.title, 
+                                    retail_price: response?.data?.price, 
+                                    images: [response?.data?.image] }; 
+
+            const upsertProduct = await Product.findOneAndUpdate(productFilter, productUpdate, {
+                new: true,
+                upsert: true 
+            }); 
+            console.log(upsertProduct); 
+
+            /** Create new product Image (order item image), if does not exist */ 
+            const productImageFilter = { 'image_path.url': response?.data?.image }; 
+            const productImageUpdate = { $set: { product: upsertProduct?._id,
+                                                'image_path.$.url': response?.data?.image } }; 
+
+            const upsertProductImage = await ProductImage.findOneAndUpdate(productImageFilter, productImageUpdate, {
+                new: true,
+                upsert: true 
+            }); 
+            console.log(upsertProductImage); 
+
+            /** Create new category, if does not exist */ 
+            const categoryFilter = { name: response?.data?.category }; 
+            const categoryUpdate = { user: req?.user_id }; 
+
+            const upsertCategory = await Category.findOneAndUpdate(categoryFilter, categoryUpdate, {
+                new: true, 
+                upsert: true 
+            }); 
+            console.log(upsertCategory); 
+
+            /** Add the category product relationship if it does not exist */
+            const categoryProductFilter = { category: upsertCategory?._id, 
+                                            product: upsertProduct?._id }; 
+            const categoryProductUpdate = { user: req?.user_id }; 
+
+            const upsertCategoryProduct = await CategoryProduct.findOneAndUpdate(categoryProductFilter, categoryProductUpdate, {
+                new: true, upsert: true
+            }); 
+
+            res.status(200).json({ success: `Product ${id} add successful.` });
+
+        } catch (error)  {
+            res.status(500).json({ message: 'Failed to add product to shop' });
+        }
+    } 
+    fetchAndAddProduct()
+})
+
+/**
  * GET ALL SOLD PRODUCTS (PURCHASED PRODUCTS)
  */
 const getSoldProducts = asyncHandler(async (req, res) => { 
@@ -798,4 +861,5 @@ export { getProducts,
         destroyProduct, 
         
         getPurchasedProducts, 
+        addToShop, 
         getSoldProducts }; 

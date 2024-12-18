@@ -58,6 +58,35 @@ export function useProduct(id = null) {
             .finally(() => setLoading(false));
     } 
 
+    async function addToShop(asin) {
+        setLoading(true); 
+
+        return axiosInstance.post(`products/add-to-shop/${asin}`)
+            .then(response => {
+                setData(response?.data); 
+                // console.log(response?.data?.success); 
+                swal.fire({
+                    text: `${response?.data?.success}`, 
+                    color: '#823c03', 
+                    width: 325, 
+                    position: 'top', 
+                    showConfirmButton: false
+                }); 
+            })
+            .catch(error => {
+                setErrors(error?.response); 
+                // console.log(error?.response); 
+                swal.fire({
+                    text: `${error?.response?.status}: An error occured!`, 
+                    color: '#900000', 
+                    width: 325, 
+                    position: 'top', 
+                    showConfirmButton: false
+                });
+            })
+            .finally(() => setLoading(false)); 
+    }
+
     async function getProduct(id, { signal } = {}) {
         setLoading(true); 
 
@@ -111,6 +140,7 @@ export function useProduct(id = null) {
     return {
         product: { data, setData, errors, loading }, 
         createProduct, 
+        addToShop, 
         getProduct, 
         updateProduct, 
         deleteProduct, 

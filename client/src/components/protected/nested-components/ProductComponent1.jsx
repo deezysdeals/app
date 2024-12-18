@@ -56,7 +56,7 @@ export default function ProductComponent1({ itemId,
     const { deleteFavorite } = useFavorite(); 
     const { productReview, createProductReview } = useProductReview(); 
     const { products, getProducts } = useProducts(); 
-    const { deleteProduct } = useProduct(); 
+    const { addToShop, deleteProduct } = useProduct(); 
     const [displayComponent, setDisplayComponent] = useState(true); 
 
     const [stars, setStars] = useState({
@@ -97,7 +97,7 @@ export default function ProductComponent1({ itemId,
 
         await createProductReview(formData); 
         await productReview?.setData({}); 
-    }
+    } 
 
     return (
         <>
@@ -207,10 +207,13 @@ export default function ProductComponent1({ itemId,
                                         <div className="pb-2">
                                             <span className="btn btn-sm btn-dark border-radius-35 py-0">
                                                 <span className="d-flex align-items-center gap-1"> 
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" className="bi bi-handbag" viewBox="0 0 16 16">
-                                                        <path d="M8 1a2 2 0 0 1 2 2v2H6V3a2 2 0 0 1 2-2m3 4V3a3 3 0 1 0-6 0v2H3.36a1.5 1.5 0 0 0-1.483 1.277L.85 13.13A2.5 2.5 0 0 0 3.322 16h9.355a2.5 2.5 0 0 0 2.473-2.87l-1.028-6.853A1.5 1.5 0 0 0 12.64 5zm-1 1v1.5a.5.5 0 0 0 1 0V6h1.639a.5.5 0 0 1 .494.426l1.028 6.851A1.5 1.5 0 0 1 12.678 15H3.322a1.5 1.5 0 0 1-1.483-1.723l1.028-6.851A.5.5 0 0 1 3.36 6H5v1.5a.5.5 0 1 0 1 0V6z"/>
-                                                    </svg>
-                                                    <span className="fw-semibold">Buy for Shop at ${ Number(currentPrice)?.toFixed(2) }</span> 
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" className="bi bi-boxes" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M7.752.066a.5.5 0 0 1 .496 0l3.75 2.143a.5.5 0 0 1 .252.434v3.995l3.498 2A.5.5 0 0 1 16 9.07v4.286a.5.5 0 0 1-.252.434l-3.75 2.143a.5.5 0 0 1-.496 0l-3.502-2-3.502 2.001a.5.5 0 0 1-.496 0l-3.75-2.143A.5.5 0 0 1 0 13.357V9.071a.5.5 0 0 1 .252-.434L3.75 6.638V2.643a.5.5 0 0 1 .252-.434zM4.25 7.504 1.508 9.071l2.742 1.567 2.742-1.567zM7.5 9.933l-2.75 1.571v3.134l2.75-1.571zm1 3.134 2.75 1.571v-3.134L8.5 9.933zm.508-3.996 2.742 1.567 2.742-1.567-2.742-1.567zm2.242-2.433V3.504L8.5 5.076V8.21zM7.5 8.21V5.076L4.75 3.504v3.134zM5.258 2.643 8 4.21l2.742-1.567L8 1.076zM15 9.933l-2.75 1.571v3.134L15 13.067zM3.75 14.638v-3.134L1 9.933v3.134z" />
+                                                </svg>
+                                                    <span 
+                                                        onClick={ async () => await addToShop(asin) }
+                                                        className="fw-semibold">Add to Shop</span> 
                                                 </span>
                                             </span> 
                                         </div>
@@ -355,13 +358,17 @@ export default function ProductComponent1({ itemId,
                                                                         </small>
                                                                     </span> 
                                                                 } 
-                                                                { (deliveryStatus != 'delivered') && <span className="text-warning fw-semibold pt-1">Not yet delivered</span> }
+                                                                { (deliveryStatus == 'undelivered') 
+                                                                    ? <span className="text-warning fw-semibold pt-1">Not yet delivered</span> 
+                                                                        : '' }
                                                                 <span className="card-text">
-                                                                    { (deliveryStatus == 'delivered') ? 'Delivered' : 'Delivery on' }&nbsp;
+                                                                    { (deliveryStatus == 'delivered') ? 'Delivered' 
+                                                                        : (deliveryStatus == 'undelivered') ? 'Delivery on' 
+                                                                            : '' }&nbsp;
                                                                     <span className="fw-semibold">
-                                                                        { (deliveryStatus == 'delivered') 
-                                                                            ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY h:mm A') 
-                                                                            : dayjs(deliveryDate).format('dddd, MMMM D, YYYY') } 
+                                                                        { (deliveryStatus == 'delivered') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY h:mm A') 
+                                                                            : (deliveryStatus == 'undelivered') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY') 
+                                                                                : '' } 
                                                                     </span>
                                                                 </span> 
                                                                 <span>
@@ -524,31 +531,19 @@ export default function ProductComponent1({ itemId,
                                                         </small>
                                                     </span> 
                                                 } 
-                                                { (deliveryStatus != 'delivered') && <span className="text-warning fw-semibold pt-1">Not yet delivered</span> }
-                                                <span className="card-text">
-                                                    { (deliveryStatus == 'delivered') ? 'Delivered' : 'Delivery on' }&nbsp;
-                                                    <span className="fw-semibold">
-                                                        { (deliveryStatus == 'delivered') 
-                                                            ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY h:mm A') 
-                                                            : dayjs(deliveryDate).format('dddd, MMMM D, YYYY') } 
-                                                    </span>
+                                                { (deliveryStatus == 'undelivered') 
+                                                        ? <span className="text-warning fw-semibold pt-1">Not yet delivered</span> 
+                                                            : '' }
+                                                    <span className="card-text">
+                                                        { (deliveryStatus == 'delivered') ? 'Delivered' 
+                                                            : (deliveryStatus == 'undelivered') ? 'Delivery on' 
+                                                                : '' }&nbsp;
+                                                        <span className="fw-semibold">
+                                                            { (deliveryStatus == 'delivered') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY h:mm A') 
+                                                                : (deliveryStatus == 'undelivered') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY') 
+                                                                    : '' } 
+                                                        </span>
                                                 </span> 
-                                                <div className="pt-2 d-flex gap-2">
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                                                            className="bi bi-bookmark" viewBox="0 0 16 16">
-                                                            <path
-                                                                d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z" />
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                                                            className="bi bi-heart" viewBox="0 0 16 16">
-                                                            <path
-                                                                d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15" />
-                                                        </svg>
-                                                    </span>
-                                                </div> 
                                             </div>
                                         </div>
                                     </div> 

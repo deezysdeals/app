@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const productSchema = new Schema({
         user: { type: Schema.Types.ObjectId, ref: 'User' }, 
         brand: { type: Schema.Types.ObjectId, ref: 'Brand' }, 
+        deal: { type: Schema.Types.ObjectId, ref: 'Deal' }, 
         model: { type: String }, 
         // deal: { type: Schema.Types.ObjectId, ref: 'Deal' }, 
         // category: { type: Schema.Types.ObjectId, ref: 'Category' }, 

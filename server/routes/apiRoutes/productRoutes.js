@@ -12,6 +12,7 @@ import { getProducts,
         destroyProduct, 
 
         getPurchasedProducts, 
+        addToShop, 
         getSoldProducts } from '../../controllers/productController.js'; 
 
 
@@ -21,6 +22,8 @@ productRouter.get('/sales-of-purchases', getSoldProducts);
 
 
 /** Main Routes */
+productRouter.post('/add-to-shop/:id', authenticated, addToShop); 
+
 productRouter.patch('/:id/restore', authenticated, restoreProduct); 
 
 productRouter.route('/:id')
@@ -28,6 +31,7 @@ productRouter.route('/:id')
                 .put(authenticated, updateProduct)
                 .patch(authenticated, deleteProduct)
                 .delete(authenticated, destroyProduct); 
+                // .post(authenticated, addToShop)
 
 productRouter.route('/')
                 .get(getProducts)

@@ -425,22 +425,25 @@ export default function Edit() {
                                         <div className="mb-3">
                                             <div className="input-group">
                                                 <span className="input-group-text border-radius-35 fw-semibold">Brand</span>
-                                                <select class="form-select border-radius-35" id="brand">
-                                                    <option>Choose brand...</option>
-                                                    { (brands?.data?.length > 0) && brands?.data?.map(brand => {
-                                                        return (
-                                                            <option 
-                                                                key={ brand?._id } 
-                                                                value={ product?.data?.brand ?? brand?._id } 
-                                                                onChange={ event => product.setData({
-                                                                    ...product?.data,
-                                                                    brand: event.target.value,
-                                                                })} 
-                                                                id="brand" 
-                                                                aria-label="Product Brand" 
-                                                                aria-describedby="product brand">
-                                                                    { brand?.name }
-                                                                </option>
+                                                <select 
+                                                    value={ product?.data?.brand ?? '' } 
+                                                    onChange={ event => product.setData({
+                                                        ...product?.data,
+                                                        brand: event.target.value,
+                                                    })} 
+                                                    id="brand" 
+                                                    class="form-select border-radius-35">
+                                                        <option>Choose brand...</option>
+                                                        { (brands?.data?.length > 0) && brands?.data?.map(brand => {
+                                                            return (
+                                                                <option 
+                                                                    key={ brand?._id } 
+                                                                    value={ brand?._id } 
+                                                                    id="brand" 
+                                                                    aria-label="Product Brand" 
+                                                                    aria-describedby="product brand">
+                                                                        { brand?.name }
+                                                                    </option>
                                                         )
                                                     })}
                                                 </select>
@@ -452,22 +455,25 @@ export default function Edit() {
                                         <div className="mb-3">
                                             <div className="input-group">
                                                 <span className="input-group-text border-radius-35 fw-semibold fs-6">Deal</span>
-                                                <select class="form-select border-radius-35" id="deal">
-                                                    <option>Choose deal...</option>
-                                                    { (deals?.data?.length > 0) && deals?.data?.map(deal => {
-                                                        return (
-                                                            <option 
-                                                                key={ deal?._id } 
-                                                                value={ product?.data?.deal ?? deal?._id } 
-                                                                onChange={ event => product.setData({
-                                                                    ...product?.data,
-                                                                    deal: event.target.value,
-                                                                })} 
-                                                                id="deal" 
-                                                                aria-label="Product Deal" 
-                                                                aria-describedby="product deal">
-                                                                    { deal?.code } - { deal?.title }
-                                                            </option>
+                                                <select 
+                                                    value={ product?.data?.deal ?? '' } 
+                                                    onChange={ event => product.setData({
+                                                        ...product?.data,
+                                                        deal: event.target.value,
+                                                    })} 
+                                                    class="form-select border-radius-35" 
+                                                    id="deal">
+                                                        <option>Choose deal...</option>
+                                                        { (deals?.data?.length > 0) && deals?.data?.map(deal => {
+                                                            return (
+                                                                <option 
+                                                                    key={ deal?._id } 
+                                                                    value={ deal?._id } 
+                                                                    id="deal" 
+                                                                    aria-label="Product Deal" 
+                                                                    aria-describedby="product deal">
+                                                                        { deal?.code } - { deal?.title }
+                                                                </option>
                                                         )
                                                     })}
                                                 </select>
@@ -2280,23 +2286,28 @@ export default function Edit() {
                                                 <div className="mb-3">
                                                     <div className="input-group">
                                                         <span className="input-group-text border-radius-35 fw-semibold">Category 1</span>
-                                                        <select class="form-select border-radius-35" id="category-1">
+                                                        <select 
+                                                            value={ (product?.data?.categories?.find(category => category?.category?._id == category?._id)?._id) ?? '' } 
+                                                            onChange={ event => product.setData({
+                                                                ...product?.data,
+                                                                category_1: event.target.value,
+                                                            })} 
+                                                            id="category-1"
+                                                            class="form-select border-radius-35"> 
                                                             <option>Choose category 1...</option>
                                                             { (categories?.data?.length > 0) && categories?.data?.map(category => {
                                                                 return (
                                                                     <option 
                                                                         key={ category?._id } 
-                                                                        value={ product?.data?.category_1 ?? category?._id }  
-                                                                        onChange={ event => product.setData({
-                                                                            ...product?.data,
-                                                                            category_1: event.target.value,
-                                                                        })} 
+                                                                        value={ category?._id } 
+                                                                        id="category-1" 
                                                                         aria-label="Product Category 1" 
                                                                         aria-describedby="product category 1">
                                                                             { category?.name }
                                                                     </option>
                                                                 )
                                                             })}
+                                                            {/* { console.log(product?.data?.categories?.find(category => category?._id == category?._id)?._id) } */}
                                                         </select>
                                                     </div>
                                                     <div className="form-text px-3"><small>The category of your product.</small></div>
@@ -2307,21 +2318,25 @@ export default function Edit() {
                                                 <div className="mb-3">
                                                     <div className="input-group">
                                                         <span className="input-group-text border-radius-35 fw-semibold">Category 2</span>
-                                                        <select class="form-select border-radius-35" id="category-2">
-                                                            <option>Choose category 2...</option>
-                                                            { (categories?.data?.length > 0) && categories?.data?.map(category => {
-                                                                return (
-                                                                    <option 
-                                                                        key={ category?._id } 
-                                                                        value={ product?.data?.category_2 ?? category?._id } 
-                                                                        onChange={ event => product.setData({
-                                                                            ...product?.data,
-                                                                            category_2: event.target.value,
-                                                                        })} 
-                                                                        aria-label="Product Category 2" 
-                                                                        aria-describedby="product category 2">
-                                                                            { category?.name }
-                                                                    </option>
+                                                        <select 
+                                                            value={ product?.data?.category_2 ?? '' } 
+                                                            onChange={ event => product.setData({
+                                                                ...product?.data,
+                                                                category_2: event.target.value,
+                                                            })} 
+                                                            id="category-2" 
+                                                            class="form-select border-radius-35"> 
+                                                                <option>Choose category 2...</option>
+                                                                { (categories?.data?.length > 0) && categories?.data?.map(category => {
+                                                                    return (
+                                                                        <option 
+                                                                            key={ category?._id } 
+                                                                            value={ category?._id } 
+                                                                            id="category-2" 
+                                                                            aria-label="Product Category 2" 
+                                                                            aria-describedby="product category 2">
+                                                                                { category?.name }
+                                                                        </option>
                                                                 )
                                                             })}
                                                         </select>
@@ -2336,21 +2351,25 @@ export default function Edit() {
                                                 <div className="mb-3">
                                                     <div className="input-group">
                                                         <span className="input-group-text border-radius-35 fw-semibold">Category 3</span>
-                                                        <select class="form-select border-radius-35" id="category-3">
-                                                            <option>Choose category 3...</option>
-                                                            { (categories?.data?.length > 0) && categories?.data?.map(category => {
-                                                                return (
-                                                                    <option 
-                                                                        key={ category?._id } 
-                                                                        value={ product?.data?.category_3 ?? category?._id } 
-                                                                        onChange={ event => product.setData({
-                                                                            ...product?.data,
-                                                                            category_3: event.target.value,
-                                                                        })} 
-                                                                        aria-label="Product Category 3" 
-                                                                        aria-describedby="product category 3">
-                                                                            { category?.name }
-                                                                    </option>
+                                                        <select 
+                                                            value={ product?.data?.category_3 ?? '' } 
+                                                            onChange={ event => product.setData({
+                                                                ...product?.data,
+                                                                category_3: event.target.value,
+                                                            })} 
+                                                            id="category-3" 
+                                                            class="form-select border-radius-35"> 
+                                                                <option>Choose category 3...</option>
+                                                                { (categories?.data?.length > 0) && categories?.data?.map(category => {
+                                                                    return (
+                                                                        <option 
+                                                                            key={ category?._id } 
+                                                                            value={ category?._id } 
+                                                                            id="category-3" 
+                                                                            aria-label="Product Category 3" 
+                                                                            aria-describedby="product category 3">
+                                                                                { category?.name }
+                                                                        </option>
                                                                 )
                                                             })}
                                                         </select>
@@ -2363,17 +2382,21 @@ export default function Edit() {
                                                 <div className="mb-3">
                                                     <div className="input-group">
                                                         <span className="input-group-text border-radius-35 fw-semibold">Category 4</span>
-                                                        <select class="form-select border-radius-35" id="category-4">
+                                                        <select 
+                                                            value={ product?.data?.category_4 ?? '' } 
+                                                            onChange={ event => product.setData({
+                                                                ...product?.data,
+                                                                category_4: event.target.value,
+                                                            })} 
+                                                            id="category-4" 
+                                                            class="form-select border-radius-35"> 
                                                             <option>Choose category 4...</option>
                                                             { (categories?.data?.length > 0) && categories?.data?.map(category => {
                                                                 return (
                                                                     <option 
                                                                         key={ category?._id } 
-                                                                        value={ product?.data?.category_4 ?? category?._id } 
-                                                                        onChange={ event => product.setData({
-                                                                            ...product?.data,
-                                                                            category_4: event.target.value,
-                                                                        })} 
+                                                                        value={ category?._id } 
+                                                                        id="category-4"
                                                                         aria-label="Product Category 4" 
                                                                         aria-describedby="product category 4">
                                                                             { category?.name }
@@ -2392,21 +2415,25 @@ export default function Edit() {
                                                 <div className="mb-3">
                                                     <div className="input-group">
                                                         <span className="input-group-text border-radius-35 fw-semibold">Category 5</span>
-                                                        <select class="form-select border-radius-35" id="category-5">
-                                                            <option>Choose category 5...</option>
-                                                            { (categories?.data?.length > 0) && categories?.data?.map(category => {
-                                                                return (
-                                                                    <option 
-                                                                        key={ category?._id } 
-                                                                        value={ product?.data?.category_5 ?? category?._id } 
-                                                                        onChange={ event => product.setData({
-                                                                            ...product?.data,
-                                                                            category_5: event.target.value,
-                                                                        })} 
-                                                                        aria-label="Product Category 5" 
-                                                                        aria-describedby="product category 5">
-                                                                            { category?.name }
-                                                                    </option>
+                                                        <select 
+                                                            value={ product?.data?.category_5 ?? '' } 
+                                                            onChange={ event => product.setData({
+                                                                ...product?.data,
+                                                                category_5: event.target.value,
+                                                            })} 
+                                                            id="category-5" 
+                                                            class="form-select border-radius-35"> 
+                                                                <option>Choose category 5...</option>
+                                                                { (categories?.data?.length > 0) && categories?.data?.map(category => {
+                                                                    return (
+                                                                        <option 
+                                                                            key={ category?._id } 
+                                                                            value={ category?._id } 
+                                                                            id="category-5" 
+                                                                            aria-label="Product Category 5" 
+                                                                            aria-describedby="product category 5">
+                                                                                { category?.name }
+                                                                        </option>
                                                                 )
                                                             })}
                                                         </select>
@@ -2419,17 +2446,21 @@ export default function Edit() {
                                                 <div className="mb-3">
                                                     <div className="input-group">
                                                         <span className="input-group-text border-radius-35 fw-semibold">Category 6</span>
-                                                        <select class="form-select border-radius-35" id="category-6">
+                                                        <select 
+                                                            value={ product?.data?.category_6 ?? '' } 
+                                                            onChange={ event => product.setData({
+                                                                ...product?.data,
+                                                                category_6: event.target.value,
+                                                            })} 
+                                                            id="category-6" 
+                                                            class="form-select border-radius-35"> 
                                                             <option>Choose category 6...</option>
                                                             { (categories?.data?.length > 0) && categories?.data?.map(category => {
                                                                 return (
                                                                     <option 
                                                                         key={ category?._id } 
-                                                                        value={ product?.data?.category_6 ?? category?._id } 
-                                                                        onChange={ event => product.setData({
-                                                                            ...product?.data,
-                                                                            category_6: event.target.value,
-                                                                        })} 
+                                                                        value={ category?._id } 
+                                                                        id="category-6" 
                                                                         aria-label="Product Category 6" 
                                                                         aria-describedby="product category 6">
                                                                             { category?.name }
