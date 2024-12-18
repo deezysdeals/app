@@ -57,8 +57,7 @@ const getProducts = asyncHandler(async (req, res) => {
     await Promise.all(updateProductPromises); 
 
 	// res.json({ data: products }); 
-    res.json({ 
-                meta: {
+    res.json({ meta: {
                     current_page, 
                     limit, 
                     total_pages: Math.ceil(total / limit), 
@@ -675,24 +674,20 @@ const destroyProduct = asyncHandler(async (req, res) => {
 const getPurchasedProducts = asyncHandler(async (req, res) => { 
     const current_page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 10; 
-
     const skip = (current_page - 1) * limit; 
 
 	const products = await Product.find({ purchased_for_resale: true, 
-                                            deleted_at: null })
-                                    .sort('-created_at')
-                                    .skip(skip)
-                                    .limit(limit)
-                                    .populate({
-                                        path: 'brand', 
-                                        select: 'name web_address logo_path.url' 
-                                    })
-                                    .lean(); 
+                                        deleted_at: null })
+                                .sort('-created_at')
+                                .skip(skip)
+                                .limit(limit)
+                                .populate({
+                                    path: 'brand', 
+                                })
+                                .lean(); 
     if (!products?.length) return res.status(404).json({ message: "No products found!" }); 
 
-    const total = await Product.find({ purchased_for_resale: true, 
-                                        deleted_at: null })
-                                .countDocuments(); 
+    const total = await Product.countDocuments({ purchased_for_resale: true, deleted_at: null }); 
 
     let productsList = []; 
 
@@ -704,9 +699,9 @@ const getPurchasedProducts = asyncHandler(async (req, res) => {
                                                         .select('-product -deleted_at')
                                                         .populate({
                                                             path: 'category', 
-                                                            select: '_id title description'
+                                                            select: 'title description'
                                                         })
-                                                        .exec(); 
+                                                        .lean(); 
         productItem['product_categories'] = foundProductCategories; 
 
 
@@ -716,9 +711,7 @@ const getPurchasedProducts = asyncHandler(async (req, res) => {
     await Promise.all(updateProductPromises); 
 
 	// res.json({ data: products }); 
-
-    res.json({ 
-                meta: {
+    res.json({ meta: {
                     current_page, 
                     limit, 
                     total_pages: Math.ceil(total / limit), 

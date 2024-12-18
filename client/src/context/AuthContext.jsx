@@ -13,13 +13,13 @@ export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
     const [authTokens, setAuthTokens] = useState(() => 
-        localStorage?.getItem('deezysdeals_authTokens') 
-            ? JSON.parse(localStorage?.getItem('deezysdeals_authTokens')) 
+        localStorage?.getItem('deezysdeals_auth_tokens') 
+            ? JSON.parse(localStorage?.getItem('deezysdeals_auth_tokens')) 
             : null); 
     
     const [user, setUser] = useState(() => 
-        localStorage?.getItem('deezysdeals_authTokens') 
-            ? jwtDecode(localStorage?.getItem('deezysdeals_authTokens')) 
+        localStorage?.getItem('deezysdeals_auth_tokens') 
+            ? jwtDecode(localStorage?.getItem('deezysdeals_auth_tokens')) 
             : null); 
 
     const [loading, setLoading] = useState(true); 
@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }) => {
                 // console.log(response); 
                 setAuthTokens(response?.data); 
                 setUser(jwtDecode(response?.data?.access)); 
-                localStorage?.setItem('deezysdeals_authTokens', JSON?.stringify(response?.data)); 
+                localStorage?.setItem('deezysdeals_auth_tokens', JSON?.stringify(response?.data)); 
                 navigate(route('home.index')); 
             })
             .catch(error => { 
@@ -114,11 +114,11 @@ export const AuthProvider = ({ children }) => {
                     setUser(jwtDecode(response?.data?.access)); 
                     // console.log(user);
                     // console.log(authTokens);
-                    localStorage.setItem('deezysdeals_authTokens', JSON.stringify(response?.data)); 
+                    localStorage.setItem('deezysdeals_auth_tokens', JSON.stringify(response?.data)); 
                     // If Sign-in is successful
                     // navigate(route('home.index')); 
-                    const lastVisitedPage = localStorage.getItem('deezysdeals_lastVisitedPage') || route('home.index');
-                    localStorage.removeItem('deezysdeals_lastVisitedPage'); 
+                    const lastVisitedPage = localStorage.getItem('deezysdeals_last_visited_page') || route('home.index');
+                    // localStorage.removeItem('deezysdeals_last_visited_page'); 
                     navigate(lastVisitedPage); 
 
                 })
@@ -193,7 +193,7 @@ export const AuthProvider = ({ children }) => {
                 // console.log(response); 
                 setAuthTokens(response?.data); 
                 setUser(jwtDecode(response?.data?.access)); 
-                localStorage?.setItem('deezysdeals_authTokens', JSON?.stringify(response?.data)); 
+                localStorage?.setItem('deezysdeals_auth_tokens', JSON?.stringify(response?.data)); 
                 navigate(route('home.index')); 
             })
             .catch(error => { 
@@ -220,7 +220,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     const signOut = async () => { 
-        // localStorage.removeItem('deezysdeals_lastVisitedPage');
+        // localStorage.removeItem('deezysdeals_last_visited_page');
         await axios.post(`${ Constants?.serverURL }/api/v1/auth/sign-out`, { withCredentials: true })
             .then(response => {
                 console.log(response);
@@ -231,7 +231,7 @@ export const AuthProvider = ({ children }) => {
             .finally(() => {
                 setAuthTokens(null); 
                 setUser(null); 
-                localStorage?.removeItem('deezysdeals_authTokens'); 
+                localStorage?.removeItem('deezysdeals_auth_tokens'); 
                 // navigate(route('sign-in'));
             })
     } 

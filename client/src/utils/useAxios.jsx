@@ -48,7 +48,7 @@ const useAxios = () => {
             withCredentials: true 
         }); 
 
-        localStorage?.setItem('deezysdeals_authTokens', JSON?.stringify(response?.data)); 
+        localStorage?.setItem('deezysdeals_auth_tokens', JSON?.stringify(response?.data)); 
 
         setAuthTokens(response?.data); 
         setUser(jwtDecode(response?.data?.access)); 

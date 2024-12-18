@@ -1,4 +1,5 @@
-import { useContext, useState } from 'react';
+import { useContext, useState } from 'react'; 
+import AuthContext from '@/context/AuthContext.jsx'; 
 import { CartContext } from '@/context/CartContext.jsx'; 
 import { Link, useLocation } from 'react-router-dom'; 
 import { route } from '@/routes'; 
@@ -51,6 +52,8 @@ export default function ProductComponent1({ itemId,
                                             deliveryStatus, 
                                             deliveryDate }) { 
     const location = useLocation(); 
+    const { user, signOut } = useContext(AuthContext); 
+    console.log(user)
     const { cartItems, addToCart, removeFromCart } = useContext(CartContext); 
     const { getFavorites } = useFavorites(); 
     const { deleteFavorite } = useFavorite(); 
@@ -371,33 +374,34 @@ export default function ProductComponent1({ itemId,
                                                                                 : '' } 
                                                                     </span>
                                                                 </span> 
-                                                                <span>
-                                                                    { (cartItems?.length > 0) && cartItems?.find(item => item?.id == asin) ? 
-                                                                        <svg 
-                                                                            type="button"
-                                                                            onClick={ () => removeFromCart(asin) }
-                                                                            xmlns="http://www.w3.org/2000/svg" 
-                                                                            width="20" 
-                                                                            height="20" 
-                                                                            fill="currentColor" 
-                                                                            className="bi bi-handbag-fill" 
-                                                                            viewBox="0 0 16 16">
-                                                                            <path d="M8 1a2 2 0 0 0-2 2v2H5V3a3 3 0 1 1 6 0v2h-1V3a2 2 0 0 0-2-2M5 5H3.36a1.5 1.5 0 0 0-1.483 1.277L.85 13.13A2.5 2.5 0 0 0 3.322 16h9.355a2.5 2.5 0 0 0 2.473-2.87l-1.028-6.853A1.5 1.5 0 0 0 12.64 5H11v1.5a.5.5 0 0 1-1 0V5H6v1.5a.5.5 0 0 1-1 0z"/>
-                                                                        </svg> :
-                                                                        <svg 
-                                                                            type="button" 
-                                                                            onClick={ () => {addToCart(itemId, 
-                                                                                                        asin, 
-                                                                                                        imgsSrc, 
-                                                                                                        title, 
-                                                                                                        description, 
-                                                                                                        oldPrice, 
-                                                                                                        currentPrice
-                                                                            )} }
-                                                                            xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-handbag" viewBox="0 0 16 16">
-                                                                            <path d="M8 1a2 2 0 0 1 2 2v2H6V3a2 2 0 0 1 2-2m3 4V3a3 3 0 1 0-6 0v2H3.36a1.5 1.5 0 0 0-1.483 1.277L.85 13.13A2.5 2.5 0 0 0 3.322 16h9.355a2.5 2.5 0 0 0 2.473-2.87l-1.028-6.853A1.5 1.5 0 0 0 12.64 5zm-1 1v1.5a.5.5 0 0 0 1 0V6h1.639a.5.5 0 0 1 .494.426l1.028 6.851A1.5 1.5 0 0 1 12.678 15H3.322a1.5 1.5 0 0 1-1.483-1.723l1.028-6.851A.5.5 0 0 1 3.36 6H5v1.5a.5.5 0 1 0 1 0V6z"/>
-                                                                        </svg> } 
-                                                                </span>
+                                                                { !(user && user?.user?.role == 'admin') && 
+                                                                    <span>
+                                                                        { (cartItems?.length > 0) && cartItems?.find(item => item?.id == asin) ? 
+                                                                            <svg 
+                                                                                type="button"
+                                                                                onClick={ () => removeFromCart(asin) }
+                                                                                xmlns="http://www.w3.org/2000/svg" 
+                                                                                width="20" 
+                                                                                height="20" 
+                                                                                fill="currentColor" 
+                                                                                className="bi bi-handbag-fill" 
+                                                                                viewBox="0 0 16 16">
+                                                                                <path d="M8 1a2 2 0 0 0-2 2v2H5V3a3 3 0 1 1 6 0v2h-1V3a2 2 0 0 0-2-2M5 5H3.36a1.5 1.5 0 0 0-1.483 1.277L.85 13.13A2.5 2.5 0 0 0 3.322 16h9.355a2.5 2.5 0 0 0 2.473-2.87l-1.028-6.853A1.5 1.5 0 0 0 12.64 5H11v1.5a.5.5 0 0 1-1 0V5H6v1.5a.5.5 0 0 1-1 0z"/>
+                                                                            </svg> :
+                                                                            <svg 
+                                                                                type="button" 
+                                                                                onClick={ () => {addToCart(itemId, 
+                                                                                                            asin, 
+                                                                                                            imgsSrc, 
+                                                                                                            title, 
+                                                                                                            description, 
+                                                                                                            oldPrice, 
+                                                                                                            currentPrice
+                                                                                )} }
+                                                                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-handbag" viewBox="0 0 16 16">
+                                                                                <path d="M8 1a2 2 0 0 1 2 2v2H6V3a2 2 0 0 1 2-2m3 4V3a3 3 0 1 0-6 0v2H3.36a1.5 1.5 0 0 0-1.483 1.277L.85 13.13A2.5 2.5 0 0 0 3.322 16h9.355a2.5 2.5 0 0 0 2.473-2.87l-1.028-6.853A1.5 1.5 0 0 0 12.64 5zm-1 1v1.5a.5.5 0 0 0 1 0V6h1.639a.5.5 0 0 1 .494.426l1.028 6.851A1.5 1.5 0 0 1 12.678 15H3.322a1.5 1.5 0 0 1-1.483-1.723l1.028-6.851A.5.5 0 0 1 3.36 6H5v1.5a.5.5 0 1 0 1 0V6z"/>
+                                                                            </svg> } 
+                                                                    </span> }
                                                             </div> 
                                                                 :   <div className="d-flex flex-wrap gap-2">
                                                                         <span 
@@ -550,7 +554,14 @@ export default function ProductComponent1({ itemId,
 
                                     <div className="d-flex justify-content-end px-4 pt-4 pb-2">
                                         <span className="btn btn-sm btn-dark border-radius-35 d-flex align-items-center">
-                                            <Link to={ route('products.show', { id: productId }) } target="_blank"  className="text-decoration-none ps-1 fw-semibold text-white">
+                                            <Link 
+                                                to={ route('products.show', 
+                                                        { source: ((location?.pathname)?.startsWith('/home/market') 
+                                                            ? 'market' 
+                                                                : 'shop'), 
+                                                        id: productId }) } 
+                                                target="_blank"  
+                                                className="text-decoration-none ps-1 fw-semibold text-white">
                                                 <span className="fw-semibold">See full details</span>&nbsp;
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                                     className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">

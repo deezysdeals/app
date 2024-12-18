@@ -99,7 +99,7 @@ const routeNames = {
     'pay': '/pay', 
     'paid': '/paid', 
 
-    'products.show': '/products/:id/show', 
+    'products.show': '/products/:source/:id/show', 
     'products.index': '/products', 
 
     'index': '/'

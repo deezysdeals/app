@@ -27,7 +27,7 @@ const TrackPage = () => {
 
         useEffect(() => {
             // Store the current page in local storage
-            localStorage.setItem('deezysdeals_lastVisitedPage', pageToRedirectTo);
+            localStorage.setItem('deezysdeals_last_visited_page', pageToRedirectTo);
         }, [location]); 
     }
 

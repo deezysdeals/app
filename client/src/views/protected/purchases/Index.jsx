@@ -14,6 +14,7 @@ import First from '@/components/protected/nested-components/pagination-links/Fir
 import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
 import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
 import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
+import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
 import ProductComponent1 from '../../../components/protected/nested-components/ProductComponent1.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
@@ -44,15 +45,19 @@ export default function Index() {
         <Layout>
             <div className="main">
                 <div className="dashboard-content pt-3"> 
-                    <h2 className="border-bottom pb-1 fs-4">Purchased Products for Re-Sale</h2> 
+                    <section className="d-flex justify-content-between align-items-center border-bottom pb-1 mb-3">
+                        <h2 className="fs-4">Purchased Products for Re-Sale</h2> 
 
-                    <section className="d-flex justify-content-end">
-                        <Link to={ route('home.products.create') } className="btn btn-sm btn-dark px-3 border-radius-35">
-                            Add New Product
-                        </Link>
+                        <div className="">
+                            <Link to={ route('home.products.create') } className="btn btn-sm btn-dark px-3 border-radius-35">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="17.5" height="17.5" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                                </svg>
+                            </Link>
+                        </div>
                     </section>
 
-                    <div className="d-flex justify-content-between flex-wrap gap-2 pt-4"> 
+                    <section className="d-flex justify-content-between flex-wrap gap-2"> 
                         <div className="search">
                             <div className="search-container border border-dark" style={{ maxWidth: '375px' }}>
                                 { !isListening &&
@@ -94,20 +99,14 @@ export default function Index() {
                             </div>
                         </div>
                         <span>
-                            { ((purchases?.meta?.current_page) > 1) 
-                                ? (((purchases?.meta?.current_page - 1) * purchases?.meta?.limit) + 1) || 0 
-                                : purchases?.meta?.current_page || 0 }
-                                    &nbsp;-&nbsp;
-                                { ((purchases?.meta?.current_page * (purchases?.meta?.limit)) > purchases?.meta?.total_results) 
-                                    ? (purchases?.meta?.total_results || 0)
-                                        : ((purchases?.meta?.current_page) != 1) 
-                                        ? (purchases?.meta?.current_page * purchases?.meta?.limit) || 0 
-                                            : ((purchases?.meta?.current_page + (purchases?.meta?.limit - 1))) || 0 } 
-                                    &nbsp;of&nbsp; 
-                                { purchases?.meta?.total_results || 0 } 
-                                &nbsp;(page { purchases?.meta?.current_page || 0 } of { purchases?.meta?.total_pages || 0 })
+                            { (purchases?.data?.length > 0) 
+                                && <PaginationMeter 
+                                        current_page={ purchases?.meta?.current_page } 
+                                        limit={ purchases?.meta?.limit } 
+                                        total_pages={ purchases?.meta?.total_pages } 
+                                        total_results={ purchases?.meta?.total_results } /> } 
                         </span>
-                    </div>
+                    </section>
 
                     <section className="py-4">
                         <ul className="list-unstyled d-flex flex-column gap-5">
