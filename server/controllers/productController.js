@@ -1,18 +1,18 @@
 import axios from 'axios'; 
 import asyncHandler from 'express-async-handler'; 
 import cloudinaryImageUpload from '../config/imageUpload/cloudinary.js';
+import mongoose from 'mongoose'; 
 import slug from 'slug';
 const slugIt = slug; 
 import Brand from '../models/Brand.js';
 import Deal from '../models/Deal.js';
+import Category from '../models/Category.js'; 
 import Product from '../models/Product.js'; 
 import CategoryProduct from '../models/CategoryProduct.js';
 import ProductDescription from '../models/ProductDescription.js'; 
 import ProductFeature from '../models/ProductFeature.js';
 import ProductImage from '../models/ProductImage.js'; 
 import ProductInfo from '../models/ProductInfo.js'; 
-import mongoose from 'mongoose';
-import Category from '../models/Category.js';
 
 
 /**
@@ -236,7 +236,6 @@ const createProduct = asyncHandler(async (req, res) => {
         for (let i = 0; i < validFeatures.length; i++) {
             const feature = validFeatures[i];
 
-            // Save the valid feature to the ProductFeature model
             await ProductFeature.create({
                 user: req?.user_id,
                 product: newProduct._id,

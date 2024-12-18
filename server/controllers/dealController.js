@@ -4,7 +4,7 @@ import slug from 'slug';
 const slugIt = slug; 
 import User from '../models/User.js'; 
 import Deal from '../models/Deal.js'; 
-// import Product from '../models/Product.js'; 
+import Product from '../models/Product.js'; 
 import DealProduct from '../models/DealProduct.js';
 
 
@@ -125,20 +125,26 @@ const getDeal = asyncHandler(async (req, res) => {
 
 	if (!deal) return res.status(404).json({ message: `No deal matches deal ${req?.params?.id}!` }); 
 
-    const products = await DealProduct.find({ deal: deal?._id })
+    // const products = await DealProduct.find({ deal: deal?._id })
+    //                                 .sort('-created_at')
+    //                                 .skip(skip)
+    //                                 .limit(limit)
+    //                                 .populate({
+    //                                     path: 'product', 
+    //                                 })
+    //                                 .lean(); 
+
+    // const total = await DealProduct.countDocuments({ deal: deal?._id }); 
+
+    const products = await Product.find({ deal: deal?._id })
                                     .sort('-created_at')
                                     .skip(skip)
                                     .limit(limit)
-                                    .populate({
-                                        path: 'product', 
-                                    })
                                     .lean(); 
 
-    const total = await DealProduct.countDocuments({ deal: deal?._id }); 
+    const total = await Product.countDocuments({ deal: deal?._id }); 
 
     let dealObj = deal; 
-
-    // dealObj.products = products; 
 
     dealObj.products = products;
     dealObj.products.current_page = current_page;

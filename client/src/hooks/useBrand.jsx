@@ -55,11 +55,12 @@ export function useBrand(id = null) {
             .finally(() => setLoading(false));
     } 
 
-    async function getBrand(id, { signal } = {}) {
-        setLoading(true); 
+    async function getBrand(id, page, limit) {
+        // setLoading(true); 
+        // console.log(id, page, limit);
 
-        return axiosInstance.get(`brands/${id}`, { signal })
-            .then(response => setData(response?.data?.data))
+        return axiosInstance.get(`brands/${id}?page=${page}&limit=${limit}`)
+            .then(response => setData(response?.data))
             .catch(error => setErrors(error?.response))
             .finally(() => setLoading(false));
     } 

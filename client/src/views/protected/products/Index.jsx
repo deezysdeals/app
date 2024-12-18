@@ -44,7 +44,7 @@ export default function Index() {
     }); 
     const { products, getProducts } = useProducts(productQuery); 
     const { deleteProduct } = useProduct(); 
-    console.log(products); 
+    // console.log(products); 
 
     return (
         <Layout>
@@ -148,7 +148,7 @@ export default function Index() {
                                 <div className="h-100 d-flex flex-column justify-content-center align-items-center">
                                     <span className="py-4" style={{ flexGrow: '1' }}>There are no products yet.</span>
                                 </div>
-                            )}
+                            ) }
                     </section>
                 </div>
 

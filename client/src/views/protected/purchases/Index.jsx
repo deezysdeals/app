@@ -109,30 +109,36 @@ export default function Index() {
                     </section>
 
                     <section className="py-4">
-                        <ul className="list-unstyled d-flex flex-column gap-5">
-                            { (purchases?.data?.length > 0) && (purchases?.data?.map((product, index) => {
-                                return (
-                                    <li 
-                                        key={ product?._id } 
-                                        className="box-shadow-1 border-radius-25 py-3 px-2 cursor-pointer">
-                                            <ProductComponent1 
-                                                index={ (((purchases?.meta?.current_page) > 1) 
-                                                            ? (((purchases?.meta?.current_page - 1) * purchases?.meta?.limit) + 1) 
-                                                                : purchases?.meta?.current_page) + index } 
-                                                itemId={ product?._id } 
-                                                productId={ product?._id } 
-                                                asin={ product?.asin }
-                                                imgsSrc={ product?.images }
-                                                title={ product?.title } 
-                                                description='' 
-                                                oldPrice='' 
-                                                currentPrice={ product?.retail_price } 
-                                                rating={ product?.rating?.rate } 
-                                                category={ product?.category } />
-                                    </li>
-                                )
-                            })) }
-                        </ul>
+                        { (purchases?.data?.length > 0) ?
+                            <ul className="list-unstyled d-flex flex-column gap-5">
+                                { (purchases?.data?.length > 0) && (purchases?.data?.map((product, index) => {
+                                    return (
+                                        <li 
+                                            key={ product?._id } 
+                                            className="box-shadow-1 border-radius-25 py-3 px-2 cursor-pointer">
+                                                <ProductComponent1 
+                                                    index={ (((purchases?.meta?.current_page) > 1) 
+                                                                ? (((purchases?.meta?.current_page - 1) * purchases?.meta?.limit) + 1) 
+                                                                    : purchases?.meta?.current_page) + index } 
+                                                    itemId={ product?._id } 
+                                                    productId={ product?._id } 
+                                                    asin={ product?.asin }
+                                                    imgsSrc={ product?.images }
+                                                    title={ product?.title } 
+                                                    description='' 
+                                                    oldPrice='' 
+                                                    currentPrice={ product?.retail_price } 
+                                                    rating={ product?.rating?.rate } 
+                                                    category={ product?.category } />
+                                        </li>
+                                    )
+                                })) }
+                            </ul> 
+                            : (
+                                <div className="h-100 d-flex flex-column justify-content-center align-items-center">
+                                    <span className="py-4" style={{ flexGrow: '1' }}>There are no purchased products yet.</span>
+                                </div>
+                            ) }
                     </section>
                 </div>
 

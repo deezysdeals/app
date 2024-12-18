@@ -7,7 +7,9 @@ import { route } from '@/routes';
 const AuthRoute = () => {
     let { user } = useContext(AuthContext); 
 
-    return user ? <Navigate to={ route('home.index') } /> : <Outlet />; 
+    const lastVisitedPage = localStorage.getItem('deezysdeals_last_visited_page') || route('home.index');
+
+    return user ? <Navigate to={ lastVisitedPage } /> : <Outlet />; 
 }; 
 
 

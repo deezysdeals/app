@@ -307,7 +307,7 @@ export default function Edit() {
                                                     aria-label="Product ASIN" 
                                                     aria-describedby="product asin" />
                                             </div>
-                                            <div className="form-text px-3"><small>The product number from Amazon. Leave vacant if you do not have it.</small></div>
+                                            <div className="form-text px-3"><small>The Amazon Standard Identification Number. Leave vacant if you do not have it.</small></div>
                                         </div>
                                     </div>
                                 </div> 

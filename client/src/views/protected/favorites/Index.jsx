@@ -9,12 +9,13 @@ import First from '@/components/protected/nested-components/pagination-links/Fir
 import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
 import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
 import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
+import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
 import ProductComponent1 from '../../../components/protected/nested-components/ProductComponent1';
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
 export default function Index() { 
-    // Voice-to-Text Search funtionality
+    /** Voice-to-Text Search funtionality */ 
     const [searchKey, setSearchKey] = useState(''); 
 
     useEffect(() => {
@@ -29,7 +30,7 @@ export default function Index() {
             setVoiceText,
             isListening, 
             setIsListening } = useVoiceToText();
-    // End of Voice-to-Text search functionality
+    /** End of Voice-to-Text search functionality */ 
 
     const [favoriteQuery, setFavoriteQuery] = useState({ 
         page: 1, 
@@ -44,7 +45,17 @@ export default function Index() {
         <Layout>
             <div className="main">
                 <div className="dashboard-content pt-3"> 
-                    <h2 className="border-bottom pb-1 fs-4">Favorites</h2> 
+                    <section className="d-flex justify-content-between align-items-center border-bottom pb-1 mb-3">
+                        <h2 className="fs-4">Favorites</h2> 
+
+                        <div className="">
+                            <Link to={ route('home.products.create') } className="btn btn-sm btn-dark px-3 border-radius-35">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="17.5" height="17.5" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                                </svg>
+                            </Link>
+                        </div>
+                    </section>
 
                     <div className="d-flex justify-content-between flex-wrap gap-2"> 
                         <div className="search">
@@ -97,112 +108,107 @@ export default function Index() {
                             </div>
                         </div>
                         <span>
-                            { ((favorites?.meta?.current_page) > 1) 
-                                ? (((favorites?.meta?.current_page - 1) * favorites?.meta?.limit) + 1) 
-                                : favorites?.meta?.current_page }
-                                    &nbsp;-&nbsp;
-                                { ((favorites?.meta?.current_page * (favorites?.meta?.limit)) > favorites?.meta?.total_results) 
-                                    ? (favorites?.meta?.total_results)
-                                        : ((favorites?.meta?.current_page) != 1) 
-                                        ? (favorites?.meta?.current_page * favorites?.meta?.limit) 
-                                            : ((favorites?.meta?.current_page + (favorites?.meta?.limit - 1))) } 
-                                    &nbsp;of&nbsp; 
-                                { favorites?.meta?.total_results } 
-                                &nbsp;(page { favorites?.meta?.current_page } of { favorites?.meta?.total_pages })
+                            { (favorites?.data?.length > 0) 
+                                && <PaginationMeter 
+                                        current_page={ favorites?.meta?.current_page } 
+                                        limit={ favorites?.meta?.limit } 
+                                        total_pages={ favorites?.meta?.total_pages } 
+                                        total_results={ favorites?.meta?.total_results } /> }
                         </span> 
                     </div>
 
-                    <section className="py-4">
-                        <ul className="list-unstyled d-flex flex-column gap-5">
-                            { (favorites?.data?.length > 0) && favorites?.data?.map((favorite, index) => { 
-                                // {console.log(favorite)}
-                                return ( 
-                                    <li 
-                                        key={ favorite?._id } 
-                                        className="box-shadow-1 border-radius-25 py-3 px-2 cursor-pointer">
-                                            <ProductComponent1 
-                                                // key={ favorite?._id } 
-                                                index={ (((favorites?.meta?.current_page) > 1) 
-                                                            ? (((favorites?.meta?.current_page - 1) * favorites?.meta?.limit) + 1) 
-                                                                : favorites?.meta?.current_page) + index } 
-                                                itemId={ favorite?._id } 
-                                                productId={ favorite?.product?._id } 
-                                                asin={ favorite?.product?.asin }
-                                                imgsSrc={ favorite?.product?.images }
-                                                title={ favorite?.product?.title } 
-                                                description='' 
-                                                oldPrice='' 
-                                                currentPrice={ favorite?.product?.retail_price } 
-                                                rating={ favorite?.product?.rating?.rate } 
-                                                category={ favorite?.product?.category } />
-                                    </li>
-                                )
-                            }) }
-                        </ul>
+                    <section className="py-4"> 
+                        { ((favorites?.data?.length > 0)) ?
+                            <ul className="list-unstyled d-flex flex-column gap-5">
+                                { (favorites?.data?.length > 0) && favorites?.data?.map((favorite, index) => { 
+                                    // {console.log(favorite)}
+                                    return ( 
+                                        <li 
+                                            key={ favorite?._id } 
+                                            className="box-shadow-1 border-radius-25 py-3 px-2 cursor-pointer">
+                                                <ProductComponent1 
+                                                    // key={ favorite?._id } 
+                                                    index={ (((favorites?.meta?.current_page) > 1) 
+                                                                ? (((favorites?.meta?.current_page - 1) * favorites?.meta?.limit) + 1) 
+                                                                    : favorites?.meta?.current_page) + index } 
+                                                    itemId={ favorite?._id } 
+                                                    productId={ favorite?.product?._id } 
+                                                    asin={ favorite?.product?.asin }
+                                                    imgsSrc={ favorite?.product?.images }
+                                                    title={ favorite?.product?.title } 
+                                                    description='' 
+                                                    oldPrice='' 
+                                                    currentPrice={ favorite?.product?.retail_price } 
+                                                    rating={ favorite?.product?.rating?.rate } 
+                                                    category={ favorite?.product?.category } />
+                                        </li>
+                                    )
+                                }) }
+                            </ul>
+                            : (
+                                <div className="h-100 d-flex flex-column justify-content-center align-items-center">
+                                    <span className="py-4" style={{ flexGrow: '1' }}>There are no favorited products yet.</span>
+                                </div>
+                            )}
                     </section>
                 </div>
 
-                <section className="pagination-links py-5 d-flex justify-content-end gap-2 pe-2"> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            // await getFavorites(1); 
-                            let firstPage = 1
+                { (favorites?.data?.length > 0) && 
+                    <section className="pagination-links py-5 d-flex justify-content-end gap-2 pe-2"> 
+                        <span 
+                            type="button" 
+                            onClick={ async () => { 
+                                scrollToTop(); 
+                                let firstPage = 1
+                                    setFavoriteQuery(prevState => ({
+                                        ...prevState, 
+                                        page: firstPage
+                                    })); 
+                                    await getFavorites(favoriteQuery); 
+                                } }>
+                                <First /> 
+                        </span> 
+                        <span 
+                            type="button" 
+                            onClick={ async () => { 
+                                scrollToTop(); 
+                                let previousPage = ((favorites?.meta?.current_page >= 1) ? (favorites?.meta?.current_page - 1) : 1)
                                 setFavoriteQuery(prevState => ({
                                     ...prevState, 
-                                    page: firstPage
+                                    page: previousPage
                                 })); 
-                                await getFavorites(); 
+                                await getFavorites(favoriteQuery); 
                             } }>
-                            <First /> 
-                    </span> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            // await getFavorites((favorites?.meta?.current_page >= 1) ? (favorites?.meta?.current_page - 1) : 1); 
-                            let previousPage = ((favorites?.meta?.current_page >= 1) ? (favorites?.meta?.current_page - 1) : 1)
-                            setFavoriteQuery(prevState => ({
-                                ...prevState, 
-                                // role: favoriteQuery?.role, 
-                                page: previousPage
-                            })); 
-                            await getFavorites(); 
-                        } }>
-                            <Previous /> 
-                    </span> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            // await getFavorites((favorites?.meta?.current_page < favorites?.meta?.total_pages) ? (favorites?.meta?.current_page + 1) : favorites?.meta?.total_pages); 
-                            let nextPage = ((favorites?.meta?.current_page < favorites?.meta?.total_pages) ? (favorites?.meta?.current_page + 1) : favorites?.meta?.total_pages)
-                            setFavoriteQuery(prevState => ({
-                                ...prevState, 
-                                // role: favoriteQuery?.role, 
-                                page: nextPage
-                            })); 
-                            await getFavorites(); 
-                        } }>
-                        <Next /> 
-                    </span> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            // await getFavorites(favorites?.meta?.total_pages); 
-                            let lastPage = favorites?.meta?.total_pages
-                            setFavoriteQuery(prevState => ({
-                                ...prevState, 
-                                // role: favoriteQuery?.role, 
-                                page: lastPage
-                            })); 
-                            await getFavorites(); 
-                        } }>
-                            <Last />
-                    </span>
-                </section>
+                                <Previous /> 
+                        </span> 
+                        <span 
+                            type="button" 
+                            onClick={ async () => { 
+                                scrollToTop(); 
+                                let nextPage = ((favorites?.meta?.current_page < favorites?.meta?.total_pages) ? (favorites?.meta?.current_page + 1) : favorites?.meta?.total_pages)
+                                setFavoriteQuery(prevState => ({
+                                    ...prevState, 
+                                    page: nextPage
+                                })); 
+                                await getFavorites(favoriteQuery); 
+                            } }>
+                            <Next /> 
+                        </span> 
+                        <span 
+                            type="button" 
+                            onClick={ async () => { 
+                                scrollToTop(); 
+                                let lastPage = favorites?.meta?.total_pages
+                                setFavoriteQuery(prevState => ({
+                                    ...prevState, 
+                                    page: lastPage
+                                })); 
+                                await getFavorites(favoriteQuery); 
+                            } }>
+                                <Last />
+                        </span>
+                    </section> 
+                }
             </div>
         </Layout>
     )

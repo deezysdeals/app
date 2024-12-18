@@ -110,13 +110,14 @@ export default function ProductComponent1({ itemId,
                     <div className="text-dark">
                         <div className="d-flex justify-content-between align-items-center flex-wrap pb-2 px-3">
                             <span className="fw-semibold">#{ index }</span>
-                            <div className="d-flex align-items-center gap-3 flex-wrap">
-                                <span 
-                                    type="button" 
-                                    data-bs-toggle="modal" data-bs-target={ `#productModal${itemId}` }
-                                    className="btn btn-sm btn-dark border-radius-35 py-0 fw-semibold">
-                                        View { (location?.pathname)?.startsWith('/home/ordered-items') && `Item` } Details
-                                </span>
+                            <div className="d-flex align-items-center gap-3 flex-wrap"> 
+                                { !((location?.pathname)?.startsWith('/home/brands') || (location?.pathname)?.startsWith('/home/deals')) && 
+                                    <span 
+                                        type="button" 
+                                        data-bs-toggle="modal" data-bs-target={ `#productModal${itemId}` }
+                                        className="btn btn-sm btn-dark border-radius-35 py-0 fw-semibold"> 
+                                            View { (location?.pathname)?.startsWith('/home/ordered-items') && `Item` } Details
+                                    </span> }
                                 { (location?.pathname)?.startsWith('/home/products') &&
                                     <div className="dropdown">
                                         <span className="text-decoration-none text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">

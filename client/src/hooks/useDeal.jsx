@@ -58,11 +58,11 @@ export function useDeal(id = null) {
             .finally(() => setLoading(false));
     } 
 
-    async function getDeal(id, { signal } = {}) {
+    async function getDeal(id, page, limit) {
         setLoading(true); 
 
-        return axiosInstance.get(`deals/${id}`, { signal })
-            .then(response => setData(response?.data?.data))
+        return axiosInstance.get(`deals/${id}?page=${page}&limit=${limit}`)
+            .then(response => setData(response?.data))
             .catch(error => setErrors(error?.response))
             .finally(() => setLoading(false));
     }
