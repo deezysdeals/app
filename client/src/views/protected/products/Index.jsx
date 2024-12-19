@@ -50,7 +50,7 @@ export default function Index() {
         <Layout>
             <div className="main">
                 <div className="dashboard-content pt-3"> 
-                    <section className="d-flex justify-content-between align-items-center border-bottom pb-1 mb-3">
+                    <section className="d-flex justify-content-between align-items-center border-bottom pb-1">
                         <h2 className="fs-4">Products</h2> 
 
                         <div className="">
@@ -62,7 +62,7 @@ export default function Index() {
                         </div>
                     </section>
 
-                    <section className="d-flex justify-content-between flex-wrap gap-2"> 
+                    <section className="d-flex justify-content-between flex-wrap gap-2 py-3"> 
                         <div className="search">
                             <div className="search-container border border-dark" style={{ maxWidth: '375px' }}>
                                 { !isListening &&
@@ -110,15 +110,17 @@ export default function Index() {
                                 </span>
                             </div>
                         </div>
-                        { (products?.data?.length > 0) 
-                            && <PaginationMeter 
-                                    current_page={ products?.meta?.current_page } 
-                                    limit={ products?.meta?.limit } 
-                                    total_pages={ products?.meta?.total_pages } 
-                                    total_results={ products?.meta?.total_results } /> } 
+                        <span>
+                            { (products?.data?.length > 0) 
+                                && <PaginationMeter 
+                                        current_page={ products?.meta?.current_page } 
+                                        limit={ products?.meta?.limit } 
+                                        total_pages={ products?.meta?.total_pages } 
+                                        total_results={ products?.meta?.total_results } /> } 
+                        </span>
                     </section>
 
-                    <section className="py-4"> 
+                    <section className="py-3"> 
                         { ((products?.data?.length > 0)) ?
                             <ul className="list-unstyled d-flex flex-column gap-5">
                                 { (products?.data?.length > 0) && (products?.data?.map((product, index) => {

@@ -100,9 +100,9 @@ const createProduct = asyncHandler(async (req, res) => {
             info_20, info_20_value, 
             description_1, description_2, description_3, 
             feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, 
-            initial_retail_price, initial_retail_price_cents, 
-            retail_price, retail_price_cents, 
-            purchase_price, purchase_price_cents } = req?.body; 
+            initial_retail_price, 
+            retail_price, 
+            purchase_price } = req?.body; 
 
     const session = await mongoose.startSession(); 
     session.startTransaction(); 
@@ -116,9 +116,9 @@ const createProduct = asyncHandler(async (req, res) => {
             asin: (asin ? asin : (new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14)+(Date.now()))), 
             title, 
             slug: slugIt(title + '-' + new Date().toISOString() ),
-            initial_retail_price: ((initial_retail_price * 100) + (initial_retail_price_cents)), 
-            retail_price: ((retail_price * 100) + (retail_price_cents)), 
-            purchase_price: ((purchase_price * 100) + (purchase_price_cents)), 
+            purchase_price_virtual: purchase_price, 
+            initial_retail_price_virtual: initial_retail_price, 
+            retail_price_virtual: retail_price, 
             purchased_for_resale: ((purchase_price > 0) ? true : false),
         }); 
         /** End of Main Product Section */
@@ -366,9 +366,9 @@ const updateProduct = asyncHandler(async (req, res) => {
             info_20, info_20_value, 
             description_1, description_2, description_3, 
             feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, 
-            purchase_price, purchase_price_cents, 
-            initial_retail_price, initial_retail_price_cents, 
-            retail_price, retail_price_cents } = req?.body; 
+            purchase_price, 
+            initial_retail_price, 
+            retail_price } = req?.body; 
 
     const { id } = req?.params; 
 
@@ -396,9 +396,9 @@ const updateProduct = asyncHandler(async (req, res) => {
         if (asin) product.asin = asin; 
         if (title) product.title = title; 
         if (slug) product.slug = slugIt(title + '-' + new Date().toISOString() );
-        if (purchase_price) product.purchase_price = ((purchase_price * 100) + (purchase_price_cents?purchase_price_cents:0)); 
-        if (initial_retail_price) product.initial_retail_price = ((initial_retail_price * 100) + (initial_retail_price_cents?initial_retail_price_cents:0)); 
-        if (retail_price) product.retail_price = ((retail_price * 100) + (retail_price_cents?retail_price_cents:0)); 
+        if (purchase_price) product.purchase_price = purchase_price; 
+        if (initial_retail_price) product.initial_retail_price = initial_retail_price; 
+        if (retail_price) product.retail_price = retail_price; 
 
         /** Images Section */ 
         let imagesArray = []; 

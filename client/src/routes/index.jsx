@@ -81,6 +81,15 @@ const routeNames = {
     'home.social-media.tiktok': '/home/social-media/tiktok', 
     'home.social-media.index': '/home/social-media', 
 
+    'home.users.show.orders': '/home/users/:username/orders', 
+    'home.users.show.ordered-items': '/home/users/:username/ordered-items', 
+    'home.users.show.payments': '/home/users/:username/payments', 
+    'home.users.show.product-reviews': '/home/users/:username/product-reviews', 
+    'home.users.show.deliveries': '/home/users/:username/deliveries', 
+    'home.users.show.purchases': '/home/users/:username/purchases', 
+    'home.users.show.client-queries': '/home/users/:username/client-queries', 
+    'home.users.show.query-responses': '/home/users/:username/query-responses', 
+
     'home.users.show': '/home/users/:username/show', 
     'home.users.edit': '/home/users/:username/edit', 
     'home.users.index': '/home/user-management', 

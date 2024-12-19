@@ -316,7 +316,7 @@ export default function Create() {
                                         <div className="col-md">
                                             <div className="mb-3">
                                                 <div className="input-group">
-                                                    <span className="input-group-text border-radius-35 fw-semibold">Old Price</span>
+                                                    <span className="input-group-text border-radius-35 fw-semibold">Old Price (USD)</span>
                                                     <input 
                                                         type="number" 
                                                         value={ product?.data?.initial_retail_price ?? '' } 
@@ -324,24 +324,11 @@ export default function Create() {
                                                             ...product?.data,
                                                             initial_retail_price: event.target.value,
                                                         }) }
-                                                        placeholder="e.g. 12000" 
+                                                        placeholder="e.g. 12.34" 
                                                         id="initial_retail_price" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product Initial_retail_price" 
-                                                        aria-describedby="product initial_retail_price"  />
-                                                    <input 
-                                                        type="number" 
-                                                        min="00" max="99" 
-                                                        value={ product?.data?.initial_retail_price_cents ?? '' } 
-                                                        onChange={ event => product.setData({
-                                                            ...product?.data,
-                                                            initial_retail_price_cents: event.target.value,
-                                                        }) }
-                                                        placeholder="e.g. 20" 
-                                                        id="initial_retail_price_cents" 
-                                                        className="form-control border-radius-35" 
-                                                        aria-label="Product Initial_retail_price_cents" 
-                                                        aria-describedby="product initial_retail_price_cents" />
+                                                        aria-describedby="product initial_retail_price"  /> 
                                                 </div>
                                                 <div className="form-text px-3"><small>The previous retail price (in USD) of your product (if available).</small></div>
                                             </div>
@@ -349,7 +336,7 @@ export default function Create() {
                                         <div className="col-md">
                                             <div className="mb-3">
                                                 <div className="input-group">
-                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">Price</span>
+                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">Price (USD)</span>
                                                     <input 
                                                         type="number"  
                                                         value={ product?.data?.retail_price ?? '' } 
@@ -357,25 +344,12 @@ export default function Create() {
                                                             ...product?.data,
                                                             retail_price: event.target.value,
                                                         }) }
-                                                        placeholder="e.g. 12000" 
+                                                        placeholder="e.g. 12.34" 
                                                         id="retail_price" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product retail_price" 
                                                         aria-describedby="product retail_price" 
-                                                        required />
-                                                    <input 
-                                                        type="number" 
-                                                        min="00" max="99"  
-                                                        value={ product?.data?.retail_price_cents ?? '' } 
-                                                        onChange={ event => product.setData({
-                                                            ...product?.data,
-                                                            retail_price_cents: event.target.value,
-                                                        }) }
-                                                        placeholder="e.g. 20"
-                                                        id="retail_price_cents" 
-                                                        className="form-control border-radius-35" 
-                                                        aria-label="Product retail_price_cents" 
-                                                        aria-describedby="product retail_price_cents" />
+                                                        required /> 
                                                 </div>
                                                 <div className="form-text px-3"><small>The current retail price (in USD) of your product.</small></div>
                                             </div>
@@ -386,33 +360,20 @@ export default function Create() {
                                         <div className="col-md-6">
                                             <div className="mb-3">
                                                 <div className="input-group">
-                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">Purchase Price</span>
+                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">Purchase Price (USD)</span>
                                                     <input 
                                                         type="number" 
                                                         value={ product?.data?.purchase_price ?? '' } 
                                                         onChange={ event => product.setData({
                                                             ...product?.data,
                                                             purchase_price: event.target.value,
-                                                        }) }
-                                                        placeholder="e.g. 12000" 
+                                                        }) } 
+                                                        placeholder="e.g. 12.34" 
                                                         id="purchase_price" 
                                                         className="form-control border-radius-35" 
                                                         aria-label="Product purchase_price" 
                                                         aria-describedby="product purchase_price" 
                                                         required />
-                                                    <input 
-                                                        type="number" 
-                                                        min="00" max="99"  
-                                                        value={ product?.data?.purchase_price_cents ?? '' } 
-                                                        onChange={ event => product.setData({
-                                                            ...product?.data,
-                                                            purchase_price_cents: event.target.value,
-                                                        }) }
-                                                        placeholder="e.g. 20" 
-                                                        id="purchase_price_cents" 
-                                                        className="form-control border-radius-35" 
-                                                        aria-label="Product purchase_price_cents" 
-                                                        aria-describedby="product purchase_price_cents" />
                                                 </div>
                                                 <div className="form-text px-3"><small>The price (USD) product was bought at.</small></div>
                                             </div>

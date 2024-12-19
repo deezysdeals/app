@@ -1,4 +1,4 @@
-import cloudinaryImageUpload from '../config/imageUpload/cloudinary.js';
+import cloudinaryImageUpload from '../config/imageUpload/cloudinary.js'; 
 import asyncHandler from 'express-async-handler'; 
 import slug from 'slug';
 const slugIt = slug; 

@@ -93,6 +93,15 @@ import ProtectedSocialMediaEdit from '@/views/protected/social-media/Edit.jsx';
 import ProtectedSocialMediaTikTok from '@/views/protected/social-media/TikTok.jsx'; 
 import ProtectedSocialMediaIndex from '@/views/protected/social-media/Index.jsx'; 
 
+import ProtectedUserManagementClientQueries from '@/views/protected/user-management/show/ClientQueries.jsx'; 
+import ProtectedUserManagementDeliveries from '@/views/protected/user-management/show/Deliveries.jsx'; 
+import ProtectedUserManagementOrderItems from '@/views/protected/user-management/show/OrderItems.jsx'; 
+import ProtectedUserManagementOrders from '@/views/protected/user-management/show/Orders.jsx'; 
+import ProtectedUserManagementPayments from '@/views/protected/user-management/show/Payments.jsx'; 
+import ProtectedUserManagementProductReviews from '@/views/protected/user-management/show/ProductReviews.jsx'; 
+import ProtectedUserManagementPurchases from '@/views/protected/user-management/show/Purchases.jsx'; 
+import ProtectedUserManagementQueryResponses from '@/views/protected/user-management/show/QueryResponses.jsx'; 
+
 import ProtectedUserManagementShow from '@/views/protected/user-management/Show.jsx'; 
 import ProtectedUserManagementEdit from '@/views/protected/user-management/Edit.jsx'; 
 import ProtectedUserManagementIndex from '@/views/protected/user-management/Index.jsx'; 
@@ -201,6 +210,15 @@ function App() {
                 <Route path={ route('home.social-media.edit') } element={ <ProtectedSocialMediaEdit /> } /> 
                 <Route path={ route('home.social-media.tiktok') } element={ <ProtectedSocialMediaTikTok /> } /> 
                 <Route path={ route('home.social-media.index') } element={ <ProtectedSocialMediaIndex /> } /> 
+
+                <Route path={ route('home.users.show.orders') } element={ <ProtectedUserManagementOrders /> } /> 
+                <Route path={ route('home.users.show.ordered-items') } element={ <ProtectedUserManagementOrderItems /> } /> 
+                <Route path={ route('home.users.show.payments') } element={ <ProtectedUserManagementPayments /> } /> 
+                <Route path={ route('home.users.show.product-reviews') } element={ <ProtectedUserManagementProductReviews /> } /> 
+                <Route path={ route('home.users.show.deliveries') } element={ <ProtectedUserManagementDeliveries /> } /> 
+                <Route path={ route('home.users.show.purchases') } element={ <ProtectedUserManagementPurchases /> } /> 
+                <Route path={ route('home.users.show.client-queries') } element={ <ProtectedUserManagementClientQueries /> } /> 
+                <Route path={ route('home.users.show.query-responses') } element={ <ProtectedUserManagementQueryResponses /> } /> 
 
                 <Route path={ route('home.users.show') } element={ <ProtectedUserManagementShow /> } />
                 <Route path={ route('home.users.edit') } element={ <ProtectedUserManagementEdit /> } />

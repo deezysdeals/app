@@ -204,7 +204,7 @@ export default function Pay() {
                                 }} 
                                 onApprove={async (data, actions) => { 
                                     console.log(data); 
-                                    console.log(actions); 
+                                    // console.log(actions); 
                                     try { 
                                         const response = await fetch(
                                             `${Constants.serverURL}/api/v1/orders/${data?.orderID}/${data?.payerID}/${data?.paymentID}/${data?.paymentSource}/capture`,
@@ -232,14 +232,14 @@ export default function Pay() {
                                         } else if (errorDetail) {
                                             // (2) Other non-recoverable errors -> Show a failure message
                                             throw new Error(
-                                            `${errorDetail.description} (${orderData.debug_id})`,
+                                            `${errorDetail?.description} (${orderData?.debug_id})`,
                                             );
                                         } else {
                                             // (3) Successful transaction -> Show confirmation or thank you message
                                             // Or go to another URL:  actions.redirect('thank_you.html');
-                                            const transaction = orderData.purchase_units[0].payments.captures[0];
+                                            const transaction = orderData?.purchase_units[0]?.payments?.captures[0];
                                             setMessage(
-                                                `Transaction ${transaction.status}: ${transaction.id}. See console for all available details`,
+                                                `Transaction ${transaction?.status}: ${transaction.id}. See console for all available details`,
                                             );
                                             console.log(
                                                 "Capture result",
@@ -260,7 +260,7 @@ export default function Pay() {
                                                     } else {
                                                         const errorDetail = orderData?.details?.[0];
                                                         const errorMessage = errorDetail
-                                                            ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
+                                                            ? `${errorDetail.issue} ${errorDetail?.description} (${orderData?.debug_id})`
                                                             : JSON.stringify(orderData?.data);
 
                                                         throw new Error(errorMessage);
@@ -269,14 +269,28 @@ export default function Pay() {
                                                 .catch(error => {
                                                     console.log(error); 
                                                     // setMessage(`Could not initiate PayPal Checkout...${error}`);
-                                                    setMessage(`Could not initiate PayPal Checkout`);
+                                                    // setMessage(`Could not initiate PayPal Checkout`); 
+                                                    swal.fire({
+                                                        text: `Could not initiate PayPal Checkout`, 
+                                                        color: '#900000', 
+                                                        width: 325, 
+                                                        position: 'top', 
+                                                        showConfirmButton: false
+                                                    })
                                                 })
                                         }
                                     } catch (error) {
                                         console.error(error);
-                                        setMessage(
-                                            `Sorry, your transaction could not be processed...${error}`,
-                                        );
+                                        // setMessage(
+                                        //     `Sorry, your transaction could not be processed...${error}`,
+                                        // ); 
+                                        swal.fire({
+                                                    text: `Sorry, your transaction could not be processed...${error}`, 
+                                                    color: '#900000', 
+                                                    width: 325, 
+                                                    position: 'top', 
+                                                    showConfirmButton: false
+                                                })
                                     }
                                 }}
                             />

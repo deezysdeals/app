@@ -25,4 +25,3 @@ export function useProducts(productQuery) {
 
     return { products, getProducts, setProducts }; 
 } 
- 

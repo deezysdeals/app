@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import AuthContext from '@/context/AuthContext.jsx'; 
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
+import useImageHandler from '@/utils/useImageHandler';
 import { useAddresses } from '@/hooks/useAddresses.jsx'; 
 import { useAddress } from '@/hooks/useAddress.jsx'; 
 import { useUser } from '@/hooks/useUser.jsx'; 
@@ -15,11 +16,28 @@ export default function Index() {
     const { retrievedUser, getUser, updateUser } = useUser(user?.user?.username); 
     console.log(retrievedUser); 
     console.log(user?.user?.username); 
+    const { image, handleImageClick, handleImageChange } = useImageHandler();
     // console.log(addresses); 
 
-    const handleUpdateProfile = async e => {
-        await updateUser(retrievedUser?.data);
+    async function handleProfileUpdate(event) {
+        event.preventDefault(); 
+
+        const formData = new FormData(); 
+        (image) && formData.append('user_image', retrievedUser?.data?.user_image); 
+        retrievedUser?.data?.first_name && 
+            formData.append('first_name', retrievedUser?.data?.first_name); 
+        retrievedUser?.data?.last_name && 
+            formData.append('last_name', retrievedUser?.data?.last_name); 
+        retrievedUser?.data?.username && 
+            formData.append('username', retrievedUser?.data?.username); 
+        
+        await updateUser(formData); 
+        await getUser(user?.user?.username); 
     }
+
+    // const handleProfileUpdate = async e => {
+    //     await updateUser(retrievedUser?.data);
+    // }; 
 
     const handleAddAddress  = async e => {
         e.preventDefault(); 
@@ -37,75 +55,132 @@ export default function Index() {
                     <h2 className="border-bottom pb-1 fs-4">Profile</h2> 
 
                     <div className="py-3"> 
-                        <section className="d-flex align-items-center flex-wrap column-gap-5 row-gap-3">
-                            <div className="d-flex align-items-end gap-3">
-                                <span>
-                                    <img src="https://images.unsplash.com/photo-1517090186835-e348b621c9ca?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="object-fit-cover border border-secondary border-2 border-radius-35 box-shadow-1" style={{ width: '200px', height: '225px' }} alt="" />
-                                </span> 
-                                <span className="btn btn-dark border-radius-35 py-0 mb-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-cloud-arrow-up-fill" viewBox="0 0 16 16">
-                                        <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 5.146a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0z"/>
-                                    </svg>
-                                </span>
-                            </div>
-                            <div className="d-flex flex-column">
-                                <h3>{ retrievedUser?.data?.first_name + ' ' + retrievedUser?.data?.last_name }</h3> 
-                                <span className="fw-semibold">@{ retrievedUser?.data?.username }</span>
-                                <span className="pt-0 mt-0">{ retrievedUser?.data?.email }</span> 
-                            </div>
-                        </section> 
+                        <form onSubmit={ handleProfileUpdate } encType="multipart/form-data" id="profile-form"> 
+                            <section className="d-flex align-items-center flex-wrap column-gap-5 row-gap-3">
+                                <div className="logo row g-2 ">
+                                        <div className="mb-3 position-relative"> 
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                id="image-upload-input"
+                                                style={{ display: 'none' }} 
+                                                onChange={ (e) => { retrievedUser.setData({
+                                                                        ...retrievedUser?.data,
+                                                                        user_image: e.target.files[0], 
+                                                                    });
+                                                                    handleImageChange(e)} }
+                                            />
 
-                        <section className="pt-5"> 
-                            <form onSubmit={ handleUpdateProfile } id="profile-form" className="profile-form"> 
+                                            <div onClick={handleImageClick} className="cursor-pointer border-radius-15 d-flex justify-content-center align-items-center" style={{ width: '200px', height: '200px', backgroundColor: '#f0f0f0' }}>
+                                                { (image || retrievedUser?.data?.user_image_path?.url) ? (
+                                                    <img src={image || retrievedUser?.data?.user_image_path?.url} alt="Preview" className="border-radius-15" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                ) : (
+                                                    <span>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">
+                                                            <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                                                            <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>
+                                                        </svg>
+                                                    </span>
+                                                )}
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                <div className="d-flex flex-column">
+                                    <h3>{ retrievedUser?.data?.first_name + ' ' + retrievedUser?.data?.last_name }</h3> 
+                                    <span className="fw-semibold">@{ retrievedUser?.data?.username }</span>
+                                    <span className="pt-0 mt-0">{ retrievedUser?.data?.email }</span> 
+                                </div>
+                            </section> 
+
+                            <section className="pt-5"> 
                                 <div className="fields">
-                                    <div className="row mb-3 gap-3">
-                                        <div className="form border border-dark col-sm-12 col-md-5 col-lg-6">
-                                            <label htmlFor="" className="label" id="first_name">First Name:</label>
-                                            <input 
-                                                type="text" 
-                                                value={ retrievedUser?.data?.first_name ?? '' } 
-                                                onChange={ event => retrievedUser.setData({
-                                                    ...retrievedUser?.data,
-                                                    first_name: event.target.value,
-                                                }) }
-                                                placeholder="e.g. Pae" 
-                                                data-target="first_name" />
+                                    <div className="row g-2">
+                                        <div className="col-md">
+                                            <div className="mb-3">
+                                                <div className="input-group">
+                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">First Name</span>
+                                                    <input 
+                                                        type="text" 
+                                                        value={ retrievedUser?.data?.first_name ?? '' } 
+                                                        onChange={ event => retrievedUser.setData({
+                                                            ...retrievedUser?.data,
+                                                            first_name: event.target.value,
+                                                        }) }
+                                                        placeholder="e.g. Pae" 
+                                                        id="first_name" 
+                                                        className="form-control border-radius-35" 
+                                                        aria-label="First Name" 
+                                                        aria-describedby="first name" 
+                                                        required />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md">
+                                            <div className="mb-3"> 
+                                                <div className="input-group">
+                                                    <span className="input-group-text border-radius-35 fw-semibold fs-6 form-field-required">Last Name</span>
+                                                    <input 
+                                                        type="text" 
+                                                        value={ retrievedUser?.data?.last_name ?? '' } 
+                                                        onChange={ event => retrievedUser.setData({
+                                                            ...retrievedUser?.data,
+                                                            last_name: event.target.value,
+                                                        }) }
+                                                        placeholder="e.g. Daezi" 
+                                                        id="last_name" 
+                                                        className="form-control border-radius-35" 
+                                                        aria-label="Last Name" 
+                                                        aria-describedby="last name" 
+                                                        required />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div> 
-                                    <div className="row mb-3 gap-3">
-                                        <div className="form border border-dark col-sm-12 col-md-5 col-lg-6">
-                                            <label htmlFor="" className="label" id="last_name">Last Name:</label>
-                                            <input 
-                                                type="text" 
-                                                value={ retrievedUser?.data?.last_name ?? '' } 
-                                                onChange={ event => retrievedUser.setData({
-                                                    ...retrievedUser?.data,
-                                                    last_name: event.target.value,
-                                                }) } 
-                                                placeholder="e.g. Daezi" 
-                                                data-target="last_name" />
+
+                                    <div className="row g-2">
+                                        <div className="col-md">
+                                            <div className="mb-3">
+                                                <div className="input-group">
+                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">E-Mail</span>
+                                                    <input 
+                                                        type="email" 
+                                                        value={ retrievedUser?.data?.email ?? '' } 
+                                                        onChange={ event => retrievedUser.setData({
+                                                            ...retrievedUser?.data,
+                                                            email: event.target.value,
+                                                        }) }
+                                                        placeholder="e.g. pae@daezi.com" 
+                                                        id="email" 
+                                                        className="form-control border-radius-35" 
+                                                        aria-label="E-Mail" 
+                                                        aria-describedby="e-mail" 
+                                                        required />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md">
+                                            <div className="mb-3"> 
+                                                <div className="input-group">
+                                                    <span className="input-group-text border-radius-35 fw-semibold fs-6">Username</span>
+                                                    <input 
+                                                        type="text" 
+                                                        value={ retrievedUser?.data?.username ?? '' } 
+                                                        onChange={ event => retrievedUser.setData({
+                                                            ...retrievedUser?.data,
+                                                            username: event.target.value,
+                                                        }) }
+                                                        placeholder="e.g. paedaezi" 
+                                                        id="username" 
+                                                        className="form-control border-radius-35" 
+                                                        aria-label="Usernamee" 
+                                                        aria-describedby="username" 
+                                                        required 
+                                                        disabled />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div> 
-                                    <div className="row mb-3 gap-3">
-                                        <div className="form border border-dark col-sm-12 col-md-5 col-lg-6">
-                                            <label htmlFor="" className="label" id="email">Email:</label>
-                                            <input 
-                                                type="email" 
-                                                value={ retrievedUser?.data?.email ?? '' } 
-                                                onChange={ event => retrievedUser.setData({
-                                                    ...retrievedUser?.data,
-                                                    email: event.target.value,
-                                                }) } 
-                                                placeholder="e.g. paedaezi@deezysdeals.com" 
-                                                data-target="email" />
-                                        </div>
-                                    </div> 
-                                    <div className="row mb-3 gap-3">
-                                        <div className="form border border-dark col-sm-12 col-md-5 col-lg-6">
-                                            <label htmlFor="" className="label" id="username-label">Username:</label>
-                                            <input type="text" defaultValue={ retrievedUser?.data?.username } placeholder="e.g. @paedaezi" data-target="username-label" disabled />
-                                        </div>
-                                    </div> 
+                                    
                                     {/* <div className="row mb-3 gap-3">
                                         <div className="form border border-dark">
                                             <label htmlFor="" className="label" id="password">Password:</label>
@@ -140,8 +215,8 @@ export default function Index() {
                                         </span>
                                     </button>
                                 </div>
-                            </form>
-                        </section> 
+                            </section> 
+                        </form>
 
                         <section className="pt-5 pe-3">
                             <h3 className="border-bottom pb-1 fs-5">Addresses (Shipping)</h3> 
@@ -164,6 +239,50 @@ export default function Index() {
                                             </div> 
                                             <form onSubmit={ handleAddAddress }>
                                                 <div className="modal-body" style={{ paddingRight: '2rem', paddingLeft: '2rem' }}>
+                                                    {/* <div className="row g-2">
+                                                        <div className="col-md">
+                                                            <div className="mb-3">
+                                                                <div className="input-group">
+                                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">Full Name</span>
+                                                                    <input 
+                                                                        type="text" 
+                                                                        value={ address?.data?.full_name ?? '' } 
+                                                                        onChange={ event => address.setData({
+                                                                            ...address?.data,
+                                                                            full_name: event.target.value,
+                                                                        }) }
+                                                                        placeholder="e.g. Pae Daezi" 
+                                                                        id="full_name" 
+                                                                        className="form-control border-radius-35" 
+                                                                        aria-label="Full name" 
+                                                                        aria-describedby="full name" 
+                                                                        required />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row g-2">
+                                                        <div className="col-md">
+                                                            <div className="mb-3">
+                                                                <div className="input-group">
+                                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">Address Line 1</span>
+                                                                    <input 
+                                                                        type="text" 
+                                                                        value={ address?.data?.address_line_1 ?? '' } 
+                                                                        onChange={ event => address.setData({
+                                                                            ...address?.data,
+                                                                            address_line_1: event.target.value,
+                                                                        }) }
+                                                                        placeholder="e.g. 123 Boulevard Street" 
+                                                                        id="address_line_1" 
+                                                                        className="form-control border-radius-35" 
+                                                                        aria-label="Address Line 1" 
+                                                                        aria-describedby="address line 1" 
+                                                                        required />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div> */}
                                                     <div className="row mb-3 gap-3">
                                                         <div className="form border border-dark col-sm-12 col-md-5 col-lg-6">
                                                             <label htmlFor="" className="label" id="full_name">Full Name:</label>

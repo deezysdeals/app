@@ -71,8 +71,9 @@ const userSchema = new Schema({
         last_time_active: String, 
         active: { type: Boolean, default: true }, 
         total_amount_spent_on_orders: { type: Number }, 
-        blacklisted: { type: Boolean, default: false }, 
-        blacklisted_at: { type: String, default: null }, 
+        total_orders: { type: Number }, 
+        banned: { type: Boolean, default: false }, 
+        banned_at: { type: String, default: null }, 
         deleted_at: { type: String, default: null } 
     }, 
     {

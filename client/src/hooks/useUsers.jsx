@@ -2,21 +2,21 @@ import { useState, useEffect } from 'react';
 import useAxios from '@/utils/useAxios.jsx'; 
 
 
-export function useUsers(userRange = 'all', role = 'all',  page = 1, limit = 10) {
+export function useUsers(userQuery) {
     const axiosInstance = useAxios(); 
     const [users, setUsers] = useState([]); 
 
     useEffect(() => {
-        if (page !== null) {
+        if (userQuery !== null) {
             const controller = new AbortController(); 
-            getUsers({userRange}, { signal: controller.signal }); 
+            getUsers(userQuery, { signal: controller.signal }); 
             return () => { controller.abort() };
         }
-    }, [userRange, role, page, limit]); 
+    }, [userQuery]); 
 
-    async function getUsers(obj, { signal } = {}) { 
-        console.log(obj);
-        return axiosInstance.get(`users?role=${obj?.userRange?.role}&range=${obj?.userRange?.range}&page=${obj?.userRange?.page}&limit=${obj?.userRange?.limit}`, { signal }) 
+    async function getUsers(userQuery, { signal } = {}) { 
+        console.log(userQuery);
+        return axiosInstance.get(`users?role=${userQuery?.role}&range=${userQuery?.range}&page=${userQuery?.page}&limit=${userQuery?.limit}`, { signal }) 
             .then(response => setUsers(response?.data))
             .catch(error => console.log(error));
     } 

@@ -4,19 +4,36 @@ import authenticated from '../../middleware/authenticated.js';
 import roles from '../../config/allowedRoles.js'; 
 import checkRoles from '../../middleware/checkRoles.js'; 
 import { getUsers, 
-        // getAdmins, 
-        // getClients, 
         createUser, 
         getUser, 
-        // getAdmin, 
-        // getClient, 
         updateUser, 
         deleteUser,
         restoreUser, 
-        destroyUser
+        destroyUser, 
+
+        getUserClientQueries, 
+        getUserDeliveries, 
+        getUserOrderItems, 
+        getUserOrders, 
+        getUserPayments, 
+        getUserProductReviews, 
+        getUserPurchases, 
+        getUserQueryResponses
 } from '../../controllers/userController.js'; 
 
 
+/** Additional Routes */
+userRouter.get('/:username/client-queries', getUserClientQueries); 
+userRouter.get('/:username/deliveries', getUserDeliveries); 
+userRouter.get('/:username/ordered-items', getUserOrderItems); 
+userRouter.get('/:username/orders', getUserOrders); 
+userRouter.get('/:username/payments', getUserPayments); 
+userRouter.get('/:username/product-reviews', getUserProductReviews); 
+userRouter.get('/:username/purchases', getUserPurchases); 
+userRouter.get('/:username/query-responses', getUserQueryResponses); 
+
+
+/** Main Routes */
 userRouter.use(authenticated); 
 
 userRouter.route('/')

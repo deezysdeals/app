@@ -1,13 +1,5 @@
 import axios from 'axios'; 
 import asyncHandler from 'express-async-handler'; 
-import { getYesterdayDateRange, 
-        getTodayDateRange, 
-        getPreviousWeekDateRange, 
-        getCurrentWeekDateRange, 
-        getPreviousMonthDateRange,
-        getCurrentMonthDateRange, 
-        getPreviousYearDateRange, 
-        getCurrentYearDateRange } from '../utils/date_range.js'; 
 import { paypalCreateOrder, paypalCaptureOrder } from '../utils/paypal-api.js'; 
 import Category from '../models/Category.js'; 
 import Product from '../models/Product.js'; 
@@ -18,196 +10,23 @@ import User from '../models/User.js';
 import Address from '../models/Address.js';
 
 
-
-
-
-
+/**
+ * GET ALL ORDERS
+ */
 const getOrders = asyncHandler(async (req, res) => { 
-    // console.log('user', req?.user_id)
-    // console.log('cookies', req?.cookies); 
-    // console.log('req', req); 
-    // console.log('cookies', req?.cookies); 
-    // console.log(req?.query) 
-    const range = req?.query?.range 
-    console.log(range);
-    const type = req?.query?.type
-    // const { range, type } = req?.query; 
-    const current_page = parseInt(req?.query?.page) || 1;
+    const deliveryStatus = req?.query?.delivery_status
     const limit = parseInt(req?.query?.limit) || 10; 
-    const userQuery = req?.query?.user
-    const deliveryStatus = req?.query?.deliverystatus
-    console.log(range, current_page, limit)
+    const current_page = parseInt(req?.query?.page) || 1;
+    // console.log(deliveryStatus, limit, current_page);
     const skip = (current_page - 1) * limit; 
 
-    console.log('delivery status', deliveryStatus)
+    // console.log('delivery status', deliveryStatus);
 
-    if (userQuery != '') {
-        // Find user first
-        const userFound = await User.findOne({ username: userQuery }).lean();
+    let orders, ordersCount; 
+    let ordersList = [];
 
-        // Proceed to main logic
-        let orders, ordersCount; 
-        let ordersList = [];
-
-        if (deliveryStatus != 'all') {
-            orders = await Order.find({ user: userFound?._id, delivery_status: deliveryStatus })
-                            .sort('-created_at')
-                            .skip(skip)
-                            .limit(limit)
-                            .populate({
-                                path: 'user', 
-                                select: 'first_name last_name username' 
-                            })
-                            .lean(); 
-            if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
-
-            ordersCount = await Order.find({ deleted_at: null, user: userFound?._id, delivery_status: deliveryStatus }).countDocuments(); 
-        } else {
-            orders = await Order.find({ user: userFound?._id })
-                            .sort('-created_at')
-                            .skip(skip)
-                            .limit(limit)
-                            .populate({
-                                path: 'user', 
-                                select: 'first_name last_name username' 
-                            })
-                            .lean(); 
-            if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
-
-            ordersCount = await Order.find({ deleted_at: null, user: userFound?._id }).countDocuments(); 
-        }
-
-        const updatePromises = orders?.map(async order => { 
-            let foundOrderItems = await OrderItem.find({ order: order?._id })
-                                                .sort('-created_at')
-                                                .populate({
-                                                    path: 'product', 
-                                                })
-                                                .exec(); 
-            order['orderItems'] = foundOrderItems; 
-
-            ordersList.push(order);
-        }); 
-        await Promise.all(updatePromises); 
-        // End of Order Items within Orders
-
-        // Orders sum 
-        let totalPaid;
-        async function calculateTotalAmount() {
-            try {
-                let total;
-
-                if (deliveryStatus != '') {
-                    total = await Order.aggregate([
-                        {
-                            $match: { deleted_at: null, user: userFound?._id, delivery_status: deliveryStatus }
-                        },
-                        {
-                            $group: {
-                                _id: null,
-                                // totalAmount: { $sum: "$total_paid" }
-                                totalAmount: { $sum: "$total_to_be_paid" }
-                            }
-                        }
-                    ]);
-                } else {
-                    total = await Order.aggregate([
-                        {
-                            $match: { deleted_at: null, user: userFound?._id }
-                        },
-                        {
-                            $group: {
-                                _id: null,
-                                // totalAmount: { $sum: "$total_paid" }
-                                totalAmount: { $sum: "$total_to_be_paid" }
-                            }
-                        }
-                    ]); 
-                }
-                
-                totalPaid = total?.length > 0 ? total[0].totalAmount : 0;
-                console.log('Total Amount:', totalPaid);
-            } catch (error) {
-                console.error('Error calculating total amount:', error);
-            }
-        } 
-        await calculateTotalAmount(); 
-        // End of Order Sum 
-
-        res.json({ 
-                meta: {
-                    current_page, 
-                    limit, 
-                    total_pages: Math.ceil(ordersCount / limit), 
-                    total_results: ordersCount, 
-                    total_amount: {
-                        total_paid: totalPaid,
-                        // total_paid_last_month: totalPaidLastMonth,  
-                        // total_paid_this_month: totalPaidThisMonth,  
-                    }, 
-                    // top_3: topThreeOrders
-                }, 
-                data: ordersList 
-            });
-
-
-
-    } else {
-
-        /** */
-        /** Logic for when userQuery is '' */
-        /** */
-
-        // Importing Date Range Manipulation Functions
-        const { weekStart, weekEnd } = getCurrentWeekDateRange(); 
-        const { lastMonthStart, lastMonthEnd } = getPreviousMonthDateRange();
-        const { monthStart, monthEnd } = getCurrentMonthDateRange(); 
-        const { yearStart, yearEnd } = getCurrentYearDateRange(); 
-        // End of Importing Date Range Manipulation Functions 
-
-
-        // Monthly percentage difference 
-        // Last Month
-        const totalLastMonth = await Order.aggregate([
-            {
-                $match: { deleted_at: null, created_at: {
-                                        $gte: lastMonthStart,
-                                        $lte: lastMonthEnd
-                                    } }
-            },
-            {
-                $group: {
-                    _id: null,
-                    // totalAmount: { $sum: "$total_paid" }
-                    totalAmount: { $sum: "$total_to_be_paid" }
-                }
-            }
-        ]); 
-        const totalPaidLastMonth = totalLastMonth.length > 0 ? totalLastMonth[0].totalAmount : 0;
-        console.log('Total Amount Last Month:', totalPaidLastMonth); 
-
-        // This Month
-        const totalThisMonth = await Order.aggregate([
-            {
-                $match: { deleted_at: null, created_at: {
-                                        $gte: monthStart,
-                                        $lte: monthEnd
-                                    } }
-            },
-            {
-                $group: {
-                    _id: null,
-                    // totalAmount: { $sum: "$total_paid" }
-                    totalAmount: { $sum: "$total_to_be_paid" }
-                }
-            }
-        ]); 
-        const totalPaidThisMonth = totalThisMonth.length > 0 ? totalThisMonth[0].totalAmount : 0;
-        console.log('Total Amount This Month:', totalPaidThisMonth); 
-
-
-        // Orders
-        const orders = await Order.find({ deleted_at: null }).sort('-created_at')
+    if (deliveryStatus == 'all') {
+        orders = await Order.find({ deleted_at: null })
                                     .sort('-created_at')
                                     .skip(skip)
                                     .limit(limit)
@@ -216,44 +35,28 @@ const getOrders = asyncHandler(async (req, res) => {
                                         select: 'first_name last_name username' 
                                     })
                                     .lean(); 
-
         if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
-        // End Orders
 
-        // Orders Count
-        let ordersCount;
+        ordersCount = await Order.countDocuments({ deleted_at: null });
 
-        if (range == 'this-week') {
-            ordersCount = await Order.find({ deleted_at: null,
-                                            created_at: { 
-                                                $gte: weekStart, 
-                                                $lte: weekEnd  
-                                            }
-                                        }).countDocuments(); 
-        } else if (range == 'this-month') {
-            ordersCount = await Order.find({
-                                                deleted_at: null,
-                                                created_at: {
-                                                    $gte: monthStart,
-                                                    $lte: monthEnd
-                                                }
-                                            }).countDocuments();
-        } else if (range == 'this-year') {
-            ordersCount = await Order.find({
-                                                deleted_at: null,
-                                                created_at: {
-                                                    $gte: yearStart,
-                                                    $lte: yearEnd
-                                                }
-                                            }).countDocuments();
-        } else if (range == 'all') {
-            ordersCount = await Order.find({ deleted_at: null }).countDocuments(); 
-        } 
-        // End Orders Count
+    } else {
 
-        // Order Items within Orders
-        let ordersList = []; 
+        orders = await Order.find({ deleted_at: null, delivery_status: deliveryStatus }) 
+                                    .sort('-created_at')
+                                    .skip(skip)
+                                    .limit(limit)
+                                    .populate({
+                                        path: 'user', 
+                                        select: 'first_name last_name username' 
+                                    })
+                                    .lean(); 
+        if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
 
+        ordersCount = await Order.countDocuments({ deleted_at: null, delivery_status: deliveryStatus });
+    }
+
+    /** Order Items within Orders */ 
+    if (orders?.length) {
         const updatePromises = orders?.map(async order => { 
             let foundOrderItems = await OrderItem.find({ order: order?._id })
                                                 .sort('-created_at')
@@ -265,146 +68,25 @@ const getOrders = asyncHandler(async (req, res) => {
 
             ordersList.push(order);
         }); 
-        // End of Order Items within Orders
-
         await Promise.all(updatePromises); 
-
-        // Orders sum 
-        let totalPaid;
-        async function calculateTotalAmount() {
-            try {
-                let total;
-
-                if (range == 'this-week') {
-                    total = await Order.aggregate([
-                        {
-                            $match: { deleted_at: null, created_at: {
-                                                    $gte: weekStart,
-                                                    $lte: weekEnd
-                                                } }
-                        },
-                        {
-                            $group: {
-                                _id: null,
-                                // totalAmount: { $sum: "$total_paid" }
-                                totalAmount: { $sum: "$total_to_be_paid" }
-                            }
-                        }
-                    ]);
-                } else if (range == 'this-month') {
-                    total = await Order.aggregate([
-                        {
-                            $match: { deleted_at: null, created_at: {
-                                                    $gte: monthStart,
-                                                    $lte: monthEnd
-                                                } }
-                        },
-                        {
-                            $group: {
-                                _id: null,
-                                // totalAmount: { $sum: "$total_paid" }
-                                totalAmount: { $sum: "$total_to_be_paid" }
-                            }
-                        }
-                    ]);
-                } else if (range == 'this-year') {
-                    total = await Order.aggregate([
-                        {
-                            $match: { deleted_at: null, created_at: {
-                                                    $gte: yearStart,
-                                                    $lte: yearEnd
-                                                } }
-                        },
-                        {
-                            $group: {
-                                _id: null,
-                                // totalAmount: { $sum: "$total_paid" }
-                                totalAmount: { $sum: "$total_to_be_paid" }
-                            }
-                        }
-                    ]);
-                } else if (range == 'all') {
-                    total = await Order.aggregate([
-                        {
-                            // $match: { paid: true, deleted_at: { $exists: false } }
-                            // $match: { deleted_at: { $exists: false } }
-                            $match: { deleted_at: null }
-                        },
-                        {
-                            $group: {
-                                _id: null,
-                                // totalAmount: { $sum: "$total_paid" }
-                                totalAmount: { $sum: "$total_to_be_paid" }
-                            }
-                        }
-                    ]);
-                }
-                
-
-                totalPaid = total?.length > 0 ? total[0].totalAmount : 0;
-                console.log('Total Amount:', totalPaid);
-            } catch (error) {
-                console.error('Error calculating total amount:', error);
-            }
-        } 
-        await calculateTotalAmount(); 
-        // End of Order Sum 
-
-
-        // Getting the top Orders
-        async function getTopThreeHighestValues() {
-            try {
-                const topThreeOrders = await Order.find()
-                    .sort({ total_to_be_paid: -1 }) // Sort in descending order by the 'total_to_be_paid' field
-                    .limit(3) // Limit the results to the top 3 orders
-                    .populate({
-                        path: 'user', 
-                        select: 'first_name last_name username' 
-                    })
-                    .lean(); 
-                
-                return topThreeOrders;
-            } catch (error) {
-                console.error('Error retrieving top three highest total_to_be_paid values:', error);
-            }
-        }
-
-        let topThreeOrders; 
-        
-        await getTopThreeHighestValues().then(orders => {
-            topThreeOrders = orders; 
-        });
-        getTopThreeHighestValues(); 
-        // console.log('yes',topThreeOrders)
-        // End of Getting the top Orders
-
-        // res.json({ data: orders, count: ordersCount, total_amount: totalPaid }); 
-        res.json({ 
-                    meta: {
-                        current_page, 
-                        limit, 
-                        total_pages: Math.ceil(ordersCount / limit), 
-                        total_results: ordersCount, 
-                        total_amount: {
-                            total_paid: totalPaid,
-                            total_paid_last_month: totalPaidLastMonth,  
-                            total_paid_this_month: totalPaidThisMonth,  
-                        }, 
-                        top_3: topThreeOrders
-                    }, 
-                    data: ordersList 
-                });
-    
-        /** */
-        /** End of Logic for when userQuery is '' */
-        /** */
     }
+
+    // res.json({ data: orders, count: ordersCount, total_amount: totalPaid }); 
+    res.json({ 
+                meta: {
+                    current_page, 
+                    limit, 
+                    total_pages: Math.ceil(ordersCount / limit), 
+                    total_results: ordersCount
+                }, 
+                data: ordersList 
+            });
+
 });
 
-
-
-
-
+/**
+ * CREATE ORDER
+ */
 const createOrder = asyncHandler(async (req, res) => {
     const { cart, 
             delivery_mode, 
@@ -423,7 +105,7 @@ const createOrder = asyncHandler(async (req, res) => {
             delivery_instructions } = req?.body; 
 
     // console.log(req?.body); 
-    console.log(req); 
+    // console.log(req); 
 
     // Internal record for Order
     // let proposed_delivery_start_date; 
@@ -487,7 +169,7 @@ const createOrder = asyncHandler(async (req, res) => {
                         new: true,
                         upsert: true 
                     }); 
-                    console.log(upsertProduct); 
+                    // console.log(upsertProduct); 
 
                     // Create new product Image (order item image), if does not exist
                     const productImageFilter = { 'image_path.url': response?.data?.image }; 
@@ -498,7 +180,7 @@ const createOrder = asyncHandler(async (req, res) => {
                         new: true,
                         upsert: true 
                     }); 
-                    console.log(upsertProductImage); 
+                    // console.log(upsertProductImage); 
 
                     const newOrderItem = await OrderItem.create({
                         user: req?.user_id, 
@@ -517,7 +199,7 @@ const createOrder = asyncHandler(async (req, res) => {
                     // console.log({'Index': index}); 
 
                     if ((cart?.length) == index+1) { 
-                        console.log({ 'totaltobe': totalToBePaid }); 
+                        // console.log({ 'totaltobe': totalToBePaid }); 
                         await Order.findOneAndUpdate({ _id: newOrder?._id }, { total_to_be_paid: totalToBePaid }); 
                         
                         async function paypalOrderCreate() { 
@@ -552,7 +234,7 @@ const createOrder = asyncHandler(async (req, res) => {
                         new: true, 
                         upsert: true 
                     }); 
-                    console.log(upsertCategory); 
+                    // console.log(upsertCategory); 
 
                 } catch (error) {
                     console.error('Error:', error);
@@ -598,9 +280,10 @@ const updatePayPalOrderID = asyncHandler(async (req, res) => {
 
 const captureOrder = asyncHandler(async (req, res) => {
     const { orderID, payerID, paymentID, paymentSource } = req.params; 
+    console.log(orderID, payerID, paymentID, paymentSource)
 
-    function paypalOrderCapture() {
-        paypalCaptureOrder(id)
+    async function paypalOrderCapture() {
+        await paypalCaptureOrder()
             .then(({ jsonResponse, httpStatusCode }) => { 
                 // Update database with updated order record 
                 const orderFilter = { paypal_order_id: orderID }; 
@@ -618,11 +301,12 @@ const captureOrder = asyncHandler(async (req, res) => {
                                                             : 'cash' };
                 async function updateOrder() {
                     await Order.findOneAndUpdate(orderFilter, orderUpdate, {
+                        new: true, 
                         upsert: true 
                     })
                         .then(order => {
                             if (order) { 
-                                res.status(200).json({ success: `Order updated with PayPal Payment details`, data: order });
+                                // res.status(200).json({ success: `Order updated with PayPal Payment details`, data: order });
                             } else {
                                 // console.log('No order found to proceed with payment processing.'); 
                                 res.status(404).json({ message: 'No order found to proceed with payment processing.' });
@@ -658,7 +342,8 @@ const markAsPaidOrder = asyncHandler(async (req, res) => {
     const orderUpdate = { paid: true };
 
     // const upsertOrderByPaypalID = await Order.findOneAndUpdate(orderFilter, orderUpdate, {
-    await Order.findOneAndUpdate(orderFilter, orderUpdate, {
+    await Order.findOneAndUpdate(orderFilter, orderUpdate, { 
+        new: true, 
         upsert: true 
     })
         .then(order => {

@@ -141,12 +141,16 @@ export default function ProductComponent1({ itemId,
                                             <li 
                                                 onClick={ () => {
                                                     swal.fire({
-                                                        title: "Are you sure you want to delete this?", 
+                                                        text: "Are you sure you want to delete this?", 
                                                         showCancelButton: true,
                                                         confirmButtonColor: "#FF0000",
                                                         cancelButtonColor: "#414741",
                                                         confirmButtonText: "Yes!", 
                                                         cancelButtonText: "No!", 
+                                                        customClass: {
+                                                            confirmButton: 'swal2-button', 
+                                                            cancelButton: 'swal2-button'
+                                                        }, 
                                                     }).then((result) => {
                                                         if (result.isConfirmed) {
                                                             deleteProduct(productId); 

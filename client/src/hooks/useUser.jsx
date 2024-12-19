@@ -60,12 +60,12 @@ export function useUser(username = null) {
 
         return axiosInstance.get(`users/${username}`, { signal })
             .then(response => {
-                console.log(response?.data?.data); 
+                // console.log(response?.data?.data); 
                 setData(response?.data?.data); 
             })
             .catch(error => {
-                console.error(error?.response)
-                setErrors(error?.response)
+                // console.error(error?.response);
+                setErrors(error?.response); 
             })
             .finally(() => setLoading(false));
     }
@@ -75,9 +75,20 @@ export function useUser(username = null) {
         setErrors({}); 
         console.log(user);
 
-        return axiosInstance.put(`users/${username}`, user)
-            .then(() => navigate(route('home.users.index')))
-            .catch(error => setErrors(error?.response))
+        return axiosInstance.putForm(`users/${username}`, user)
+            .then(response => {
+                swal.fire({
+                    text: `${response?.data?.success}`,
+                    color: "#820303",
+                    width: 350,
+                    position: 'top',
+                    showConfirmButton: false,
+                });
+            })
+            .catch(error => {
+                setErrors(error?.response); 
+                console.error(error?.response); 
+            })
             .finally(() => setLoading(false));
     }
 
