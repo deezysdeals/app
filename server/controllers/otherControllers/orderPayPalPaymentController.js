@@ -4,7 +4,8 @@ import { createOrder,
         captureOrder, 
         authorizeOrder, 
         captureAuthorize 
-} from '../../utils/paypal-api.js'
+} from '../../utils/paypal-api.js'; 
+import orderPlacedNoticationMailTemplate from '../../mails/templates/orderNotificationMail.js'; 
 import Category from '../../models/Category.js'; 
 import Product from '../../models/Product.js'; 
 import ProductImage from '../../models/ProductImage.js'; 
@@ -12,6 +13,8 @@ import Order from '../../models/Order.js';
 import OrderItem from '../../models/OrderItem.js'; 
 import User from '../../models/User.js'; 
 import Address from '../../models/Address.js'; 
+import Notification from '../../models/Notification.js'; 
+
 
 const createOrderPayment = async (req, res) => {
     try {
@@ -102,12 +105,57 @@ const createOrderPayment = async (req, res) => {
                         // console.log({'Index': index}); 
 
                         if ((cart?.length) == index+1) { 
+                            const { jsonResponse, httpStatusCode } = await createOrder(totalToBePaid); 
+
+                            console.log('status 1', httpStatusCode); 
+                            console.log('json 1', jsonResponse); 
+                            console.log('order id', newOrder?._id)
                             // console.log({ 'totaltobe': totalToBePaid }); 
-                            await Order.findOneAndUpdate({ _id: newOrder?._id }, { total_to_be_paid: totalToBePaid }); 
+                            async function updateOrderWithOrderIDUserAndNotification(jsonResponse) {
+                                try { 
+                                    const orderFilter = { _id: newOrder?._id }; 
+                                    const orderUpdate = { paypal_order_id: jsonResponse?.id,  
+                                                        total_to_be_paid: totalToBePaid }; 
+
+                                    const updatedOrder = await Order.findOneAndUpdate(orderFilter, orderUpdate, {
+                                        new: true,  
+                                    }) 
+                                    if (!updatedOrder) return res.status(404).json({ message: 'Order not found' });
+                                    console.log('updated order', updatedOrder); 
+
+                                    const updateUserWithOrdersPlaced = await User.findOneAndUpdate(
+                                        { _id: req?.user_id }, 
+                                        { $inc: { total_amount_spent_on_orders: totalToBePaid, total_orders: 1 } }, 
+                                        { new: true }
+                                    );
+                                    if (!updateUserWithOrdersPlaced) return res.status(404).json({ message: 'User not found' });
+
+                                    const newNotification = await Notification.create({
+                                        user: req?.user_id, 
+                                        type: 'order', 
+                                        order: newOrder?._id
+                                    }); 
+
+                                    // console.log('updated user', updateUserWithOrdersPlaced)
+
+                                    /** Send mail notification for placed order if user wants */ 
+                                    // if (userPlacingOrder?.receive_notifications == true) {
+                                    if (updateUserWithOrdersPlaced?.receive_notifications == true) {
+                                        // (async function () {
+                                            await orderPlacedNoticationMailTemplate(updateUserWithOrdersPlaced, updatedOrder)
+                                        // })();
+                                    }
+
+                                } catch (error) {
+                                    console.error('Error updating order and user:', error);
+                                    return res.status(500).json({ message: 'Internal server error' });
+                                }
+
+                            }
+                            await updateOrderWithOrderIDUserAndNotification(jsonResponse);
 
                             // console.log('total within function', totalToBePaid); 
 
-                            const { jsonResponse, httpStatusCode } = await createOrder(totalToBePaid); 
                             res.status(httpStatusCode).json(jsonResponse);
                         }
 
@@ -131,30 +179,32 @@ const createOrderPayment = async (req, res) => {
 
 const captureOrderPayment = async (req, res) => {
     try {
-        // const { orderID, paymentSource } = req.params; 
         const { orderID } = req.params; 
-        // const { paymentSource } = req.body 
-        // console.log('payment source', paymentSource); 
-        console.log('order id', orderID)
+        // console.log('order id', orderID); 
 
-        const { jsonResponse, httpStatusCode } = await captureOrder(req?.params?.orderID);
+        const { jsonResponse, httpStatusCode } = await captureOrder(orderID); 
+        console.log('status', httpStatusCode); 
+        console.log('json', jsonResponse); 
+        // jsonResponse?.payment_source == 'paypal'
+        // jsonResponse?.payment_source?.paypal?.account_id 
 
         const orderFilter = { paypal_order_id: orderID }; 
-        const orderUpdate = { billing_status: (paymentSource == 'paypal') 
+        // const orderUpdate = { paid: true }; 
+        const orderUpdate = { billing_status: (jsonResponse?.payment_source?.paypal) 
                                                 ? 'paying-with-paypal' 
-                                                    : (paymentSource == 'card') 
+                                                    : (jsonResponse?.payment_source?.card) 
                                                     ? 'paying-with-card' 
                                                         : 'pay-on-delivery', 
-                                payment_mode: (paymentSource == 'paypal') 
+                                payment_mode: (jsonResponse?.payment_source?.paypal) 
                                                 ? 'paypal' 
-                                                    : (paymentSource == 'card') 
+                                                    : (jsonResponse?.payment_source?.card) 
                                                     ? 'card' 
                                                         : 'cash', 
+                                paypal_payer_id: (jsonResponse?.payment_source?.paypal?.account_id && jsonResponse?.payment_source?.paypal?.account_id),
                                 paid: true }; 
 
         await Order.findOneAndUpdate(orderFilter, orderUpdate, {
-            new: true, 
-            upsert: true 
+            new: true
         })
             .then(async order => {
                 if (order) { 

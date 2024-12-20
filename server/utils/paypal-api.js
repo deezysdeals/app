@@ -76,8 +76,7 @@ export async function createOrder(cartTotalAmount) {
  * @see https://developer.paypal.com/docs/api/orders/v2/#orders_capture
  */ 
 // const captureOrder = async (orderID) => {
-export async function captureOrder(orderID) { 
-    console.log('order id from paypal-api', orderID)
+export async function captureOrder(orderID) {
     const collect = {
         id: orderID,
         prefer: "return=minimal",

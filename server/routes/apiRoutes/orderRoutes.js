@@ -18,7 +18,7 @@ import { createOrderPayment,
         captureOrderPayment, 
         authorizeOrderPayment, 
         captureAuthorisedOrderPayment
-} from '../../controllers/functionalityControllers/orderPayPalPaymentController.js'
+} from '../../controllers/otherControllers/orderPayPalPaymentController.js'
 
 
 orderRouter.use(authenticated); 

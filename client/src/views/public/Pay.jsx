@@ -31,14 +31,6 @@ export default function Pay() {
     const axiosInstance = useAxios(); 
     const navigate = useNavigate(); 
 
-    const [paymentSource, setPaymentSource] = useState(''); 
-
-    useEffect(() => {
-        if (paymentSource) {
-            console.log('search for:', paymentSource);
-        }
-    }, [paymentSource]);
-
     /** PayPal logic */
     const [isPaying, setIsPaying] = useState(false);
     const initialOptions = {
@@ -126,21 +118,21 @@ export default function Pay() {
     }
 
     async function onApprove(data, actions) { 
-        const details = await actions?.order?.capture();
-        console.log('payment source client-side', details);
-        console.log('payment source client-side', details?.payer?.payer_id); 
+        // const details = await actions?.order?.capture();
+        // console.log('payment source client-side', details);
+        // console.log('payment source client-side', details?.payer?.payer_id); 
 
-        let paymentInstrument; 
-        if (details?.payer?.payer_id) {
-            paymentInstrument = 'paypal';
-        } else {
-            paymentInstrument = 'card';
-        }
+        // let paymentInstrument; 
+        // if (details?.payer?.payer_id) {
+        //     paymentInstrument = 'paypal';
+        // } else {
+        //     paymentInstrument = 'card';
+        // }
 
         try {
             const response = await axiosInstance.post(
-                // `orders/payments/${data?.orderID}/${paymentInstrument}/capture`,
                 `orders/payments/${data?.orderID}/capture`,
+                // `orders/payments/${data?.orderID}/${paymentInstrument}/capture`,
                 {}, // Empty body as it's a POST request without data payload 
                 {
                     headers: {
@@ -247,7 +239,6 @@ export default function Pay() {
                                     onInit={() => {
                                         setIsPayPalLoaded(true); // Set state to show the OR text once PayPal is ready
                                     }} 
-                                    onClick={() => setPaymentSource('paypal')}
                                 />
                             </div>
 
@@ -388,7 +379,6 @@ const SubmitPayment = ({ isPaying, setIsPaying, billingAddress }) => {
             return alert("The payment form is invalid");
         }
         setIsPaying(true); 
-        setPaymentSource('card')
 
         cardFieldsForm.submit({ billingAddress }).catch((err) => {
             setIsPaying(false);

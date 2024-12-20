@@ -55,7 +55,8 @@ const orderSchema = new Schema({
         refunded_at: { type: String, default: null }, 
         proposed_delivery_start_date: { type: Date }, 
         proposed_delivery_destination_reach_date: { type: Date }, 
-        delivery_date: { type: Date }, 
+        // delivery_reach_date: { type: Date }, 
+        delivery_arrival_at: { type: String }, 
         delivery_confirmed_by_recipient_at: { type: String, default: null }, 
         delivered_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
         full_name: { 

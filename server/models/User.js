@@ -70,8 +70,9 @@ const userSchema = new Schema({
         show_online_status: { type: Boolean, default: true }, 
         last_time_active: String, 
         active: { type: Boolean, default: true }, 
-        total_amount_spent_on_orders: { type: Number }, 
+        total_amount_spent_on_orders: { type: Number },  
         total_orders: { type: Number }, 
+        receive_notifications: { type: Boolean, default: false }, 
         banned: { type: Boolean, default: false }, 
         banned_at: { type: String, default: null }, 
         deleted_at: { type: String, default: null } 

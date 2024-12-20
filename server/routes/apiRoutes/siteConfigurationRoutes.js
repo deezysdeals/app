@@ -6,7 +6,7 @@ import checkRoles from '../../middleware/checkRoles.js';
 import { getSiteConfigurations, 
         createSiteConfigurations, 
         createUpdateSiteConfigurations
-} from '../../controllers/functionalityControllers/siteConfigurationController.js'; 
+} from '../../controllers/otherControllers/siteConfigurationController.js'; 
 
 
 // siteConfigurationRouter.use(authenticated); 

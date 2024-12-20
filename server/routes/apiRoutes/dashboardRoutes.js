@@ -7,7 +7,7 @@ import { getOrders,
         getPurchases, 
         getCheckIns, 
         getClientsGrowth, 
-        getRatings } from '../../controllers/functionalityControllers/dashboardController.js'; 
+        getRatings } from '../../controllers/otherControllers/dashboardController.js'; 
 
 
 dashboardRouter.use(authenticated); 

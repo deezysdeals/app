@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config(); 
 import nodemailer from 'nodemailer'; 
 import { fileURLToPath } from 'url'; 
 import { dirname, join, resolve } from 'path'; 

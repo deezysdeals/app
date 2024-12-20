@@ -117,7 +117,7 @@ const createOrder = asyncHandler(async (req, res) => {
     // if (delivery_mode == 'casual') proposed_delivery_destination_reach_date = Date.now(); 
 
     const userPlacingOrder = await User.findOne({ _id: req?.user_id }).lean(); 
-    const addressOfUser = await Address.findOne({ user: req?.user_id, default: true }).lean();
+    const addressOfUser = await Address.findOne({ user: req?.user_id, default: true }).lean(); 
 
     const newOrder = await Order.create({
         user: req?.user_id, 
