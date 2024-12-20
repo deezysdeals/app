@@ -21,7 +21,7 @@ export function useOrder(id = null) {
         }
     }, [id]);
 
-    async function createOrder(order) {
+    async function createOrderPayOnDelivery(order) {
         setLoading(true); 
         setErrors({}); 
 
@@ -100,7 +100,7 @@ export function useOrder(id = null) {
     return {
         order: { data, setData, errors, loading }, 
         getOrder, 
-        createOrder, 
+        createOrderPayOnDelivery, 
         updateOrder, 
         deleteOrder, 
         destroyOrder, 

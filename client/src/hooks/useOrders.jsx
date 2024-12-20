@@ -18,6 +18,8 @@ export function useOrders(orderQuery) {
     // async function getOrders(range = 'all', type = 'all', page = 1, { signal } = {}) { 
     async function getOrders(orderQuery, { signal } = {}) { 
         console.log(orderQuery); 
+        setOrders([]); 
+        // console.log(orders);
         return axiosInstance.get(`orders?page=${orderQuery?.page}&limit=${orderQuery?.limit}&delivery_status=${orderQuery?.delivery_status}`, { signal }) 
             .then(response => { 
                 console.log(response?.data)

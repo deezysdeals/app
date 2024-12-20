@@ -218,7 +218,7 @@ export default function Index() {
                             </section> 
                         </form>
 
-                        <section className="pt-5 pe-3">
+                        <section id="addresses" className="pt-5 pe-3">
                             <h3 className="border-bottom pb-1 fs-5">Addresses (Shipping)</h3> 
 
                             <section className="d-flex justify-content-end">

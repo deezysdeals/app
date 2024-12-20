@@ -130,7 +130,7 @@ export default function Index() {
                                     type="text" 
                                     value={ voiceText } 
                                     onChange={ (e) => setVoiceText(e.target.value) }
-                                    placeholder="Search product ..." 
+                                    placeholder="Search by code ..." 
                                     className="" />
 
                                 <span 

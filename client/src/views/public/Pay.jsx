@@ -1,20 +1,27 @@
-import { useContext, useState } from 'react'; 
+import { useContext, useEffect, useState } from 'react'; 
 import AuthContext from '@/context/AuthContext.jsx'; 
 import { CartContext } from '@/context/CartContext.jsx'; 
+import { useNavigate } from 'react-router-dom'; 
+import { route } from '@/routes'; 
 import axios from 'axios'; 
 import useAxios from '@/utils/useAxios.jsx'; 
 import swal from 'sweetalert2'; 
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import {
+    PayPalScriptProvider,
+    usePayPalCardFields,
+    PayPalCardFieldsProvider,
+    PayPalButtons,
+    PayPalNameField,
+    PayPalNumberField,
+    PayPalExpiryField,
+    PayPalCVVField,
+} from "@paypal/react-paypal-js";
 // import { Link } from 'react-router-dom'; 
 // import { route } from '@/routes'; 
 import Constants from '@/utils/Constants.jsx'; 
+import { useOrder } from '@/hooks/useOrder.jsx'; 
 import Aside from '@/components/public/Aside.jsx'; 
 import Layout from '@/components/public/Layout.jsx'; 
-
-// Renders errors or successfull transactions on the screen.
-function Message({ content }) {
-    return <p className="w-100">{content}</p>;
-}
 
 
 export default function Pay() { 
@@ -22,19 +29,177 @@ export default function Pay() {
     const { cartItems, getTotalPrice } = useContext(CartContext); 
     console.log(cartItems); 
     const axiosInstance = useAxios(); 
-    
+    const navigate = useNavigate(); 
+
+    const [paymentSource, setPaymentSource] = useState(''); 
+
+    useEffect(() => {
+        if (paymentSource) {
+            console.log('search for:', paymentSource);
+        }
+    }, [paymentSource]);
+
+    /** PayPal logic */
+    const [isPaying, setIsPaying] = useState(false);
     const initialOptions = {
         "client-id": `${Constants?.paypalClientID}`,
+            // "AYOeyCQvilLVKJGjslZfFSi_Nkl7A6OfXNarj5lS55iUcQXMhpp3AypVjAVkS_qvPcO5D415b9SnBFuN",
         "enable-funding": "venmo",
-        "disable-funding": "",
+        "disable-funding": "paylater",
         "buyer-country": "US",
         currency: "USD",
         "data-page-type": "product-details",
-        components: "buttons",
+        components: "buttons,card-fields",
         "data-sdk-integration-source": "developer-studio",
     };
-    const [message, setMessage] = useState(""); 
 
+    const [billingAddress, setBillingAddress] =
+        useState({
+            addressLine1: "",
+            addressLine2: "",
+            adminArea1: "",
+            adminArea2: "",
+            countryCode: "",
+            postalCode: "",
+        });
+
+    function handleBillingAddressChange(field, value) {
+        setBillingAddress((prev) => ({
+            ...prev,
+            [field]: value,
+        }));
+    } 
+    async function createOrder() {
+
+        try {
+            const response = await axiosInstance.post(
+                `orders/payments`, 
+                {
+                    cart: cartItems, // The request body
+                }, 
+                {
+                    headers: {
+                        'Content-Type': 'application/json', 
+                    }
+                }
+            );
+
+            const orderData = response?.data; 
+            console.log(orderData);
+
+            if (orderData.id) {
+                return orderData.id;
+            } else {
+                const errorDetail = orderData?.details?.[0];
+                const errorMessage = errorDetail
+                    ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
+                    : JSON.stringify(orderData);
+
+                throw new Error(errorMessage);
+            }
+        } catch (error) {
+            console.error(error);
+            if (error?.stack.startsWith('InvalidTokenError: Invalid token specified: must be a string') || error?.name == 'InvalidTokenError') {
+                navigate(route('sign-in')); 
+                swal.fire({ 
+                    text: `You must be signed in to proceed!`, 
+                    color: '#900000', 
+                    width: 325, 
+                    position: 'top', 
+                    showConfirmButton: false
+                })
+            } else if ((error?.response?.data?.message == 'You must have an address before you can pay') || (error?.response?.status == 409)) { 
+                navigate(`${route('home.profile.index')}#addresses`);
+
+                swal.fire({ 
+                    text: `${ error?.response?.data?.message + ` Add one now and proceed back to your shopping cart for payment.` }.`, 
+                    color: '#900000', 
+                    width: 325, 
+                    position: 'top', 
+                    showConfirmButton: false
+                })
+            } else {
+                return `Could not initiate PayPal Checkout...${error}`;
+            }
+        }
+
+    }
+
+    async function onApprove(data, actions) { 
+        const details = await actions?.order?.capture();
+        console.log('payment source client-side', details);
+        console.log('payment source client-side', details?.payer?.payer_id); 
+
+        let paymentInstrument; 
+        if (details?.payer?.payer_id) {
+            paymentInstrument = 'paypal';
+        } else {
+            paymentInstrument = 'card';
+        }
+
+        try {
+            const response = await axiosInstance.post(
+                // `orders/payments/${data?.orderID}/${paymentInstrument}/capture`,
+                `orders/payments/${data?.orderID}/capture`,
+                {}, // Empty body as it's a POST request without data payload 
+                {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                }
+            );
+
+            const orderData = response?.data;
+
+            // Three cases to handle:
+            // (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
+            // (2) Other non-recoverable errors -> Show a failure message
+            // (3) Successful transaction -> Show confirmation or thank you message
+
+            const transaction =
+                orderData?.purchase_units?.[0]?.payments?.captures?.[0] ||
+                orderData?.purchase_units?.[0]?.payments?.authorizations?.[0];
+            const errorDetail = orderData?.details?.[0];
+
+            if (
+                errorDetail ||
+                !transaction ||
+                transaction.status === "DECLINED"
+            ) {
+                // (2) Other non-recoverable errors -> Show a failure message
+                let errorMessage;
+                if (transaction) {
+                    errorMessage = `Transaction ${transaction.status}: ${transaction.id}`;
+                } else if (errorDetail) {
+                    errorMessage = `${errorDetail.description} (${orderData.debug_id})`;
+                } else {
+                    errorMessage = JSON.stringify(orderData);
+                }
+
+                throw new Error(errorMessage);
+            } else {
+                // (3) Successful transaction -> Show confirmation or thank you message
+                console.log(
+                    "Capture result",
+                    orderData,
+                    JSON.stringify(orderData, null, 2)
+                );
+                return `Transaction ${transaction.status}: ${transaction.id}. See console for all available details`;
+            }
+        } catch (error) {
+            return `Sorry, your transaction could not be processed...${error}`;
+        }
+
+    }
+
+    function onError(error) {
+        // Do something with the error from the SDK
+    }
+    /** End of PayPal logic */ 
+
+    const [isPayPalLoaded, setIsPayPalLoaded] = useState(false); 
+    
+    const { createOrderPayOnDelivery } = useOrder(); 
 
     return ( 
         <Layout> 
@@ -52,250 +217,91 @@ export default function Pay() {
 
                     <section className="d-flex flex-column justify-content-center align-items-start flex-wrap gap-4" style={{ maxWidth: '600px' }}> 
 
+                        <div className="w-100">
+                            <button 
+                                onClick={ async () => {
+                                    await createOrderPayOnDelivery(cartItems); 
+                                }}
+                                className="btn btn-dark border-radius-35 w-100 py-2">Pay Later On Delivery</button>
+                        </div> 
+
+                        { isPayPalLoaded && (
+                            <div className="w-100 d-flex justify-content-center py-2">
+                                <span className="fw-bold">OR</span>
+                            </div> 
+                        ) }
+
                         <PayPalScriptProvider options={initialOptions}>
-                            <PayPalButtons
+                            
+                            <div className="w-100">
+                                <PayPalButtons
+                                    createOrder={createOrder}
+                                    onApprove={onApprove}
+                                    onError={onError}
+                                    style={{
+                                        shape: "pill",
+                                        layout: "vertical",
+                                        color: "black",
+                                        label: "pay",
+                                    }} 
+                                    onInit={() => {
+                                        setIsPayPalLoaded(true); // Set state to show the OR text once PayPal is ready
+                                    }} 
+                                    onClick={() => setPaymentSource('paypal')}
+                                />
+                            </div>
+
+                            { isPayPalLoaded && (
+                                <div className="w-100 d-flex justify-content-center">
+                                    <span className="fw-bold">OR</span>
+                                </div>
+                            ) } 
+
+                            <div className="w-100 border-bottom">
+                                <span>Pay with card</span>
+                            </div>
+
+                            <PayPalCardFieldsProvider
+                                createOrder={createOrder}
+                                onApprove={onApprove}
                                 style={{
-                                    shape: "pill",
-                                    layout: "vertical",
-                                    color: "black",
-                                    label: "pay",
+                                    input: { 
+                                        "font": "inherit", 
+                                        "font-size": "16px",
+                                        "font-family": "Montserrat, sans-serif", 
+                                        // "font-family": "courier, monospace",
+                                        "font-weight": "lighter",
+                                        color: "#000", 
+                                        "border-radius": "35px", 
+                                        "padding-left": "1.75rem", 
+                                        "padding-right": "1.75rem", 
+                                    },
+                                    ".invalid": { color: "purple" },
                                 }}
-                                createOrder={async () => {
-                                    // await axiosInstance.post(`orders`, {
-                                    //     cart: cartItems
-                                    // }, {
-                                    //     "Content-Type": "application/json", 
-                                    //     "Authorization": `Bearer ${ authTokens?.access }`
-                                    // })
-                                    //     .then(response => { 
-                                    //         console.log(response); 
-                                    //         const orderData = response.json(); 
-
-                                    //         console.log(orderData); 
-
-                                    //         if (orderData?.jsonResponse?.id) {
-                                    //             return orderData?.jsonResponse?.id; 
-                                    //         } else {
-                                    //             const errorDetail = orderData?.details?.[0];
-                                    //             const errorMessage = errorDetail
-                                    //                 ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
-                                    //                 : JSON.stringify(orderData?.data);
-
-                                    //             throw new Error(errorMessage);
-                                    //         }
-                                    //     })
-                                    //     .catch(error => {
-                                    //         console.log(error); 
-                                    //         // setMessage(`Could not initiate PayPal Checkout...${error}`);
-                                    //         setMessage(`Could not initiate PayPal Checkout`);
-                                    //     })
-
-                                    try {
-                                        const response = await fetch(`${Constants.serverURL}/api/v1/orders`, {
-                                            method: "POST",
-                                            headers: { 
-                                                "Content-Type": "application/json", 
-                                                "Authorization": `Bearer ${ authTokens?.access }`, 
-                                            },
-                                            // use the "body" param to optionally pass additional order information
-                                            // like product ids and quantities
-                                            body: JSON.stringify({
-                                                // cart: [
-                                                //     {
-                                                //         id: "YOUR_PRODUCT_ID",
-                                                //         quantity: "YOUR_PRODUCT_QUANTITY",
-                                                //     },
-                                                // ], 
-                                                cart: cartItems, 
-                                            }),
-                                        }); 
-
-                                        console.log(response); 
-
-                                        if (response.ok) {
-                                            const orderData = await response.json(); 
-                                            console.log(orderData); 
-
-                                            // Update order with the PayPal Order ID
-                                            await axiosInstance.patch(`orders/${orderData?.data?.order?._id}/update-paypal-order-id`, {
-                                                paypal_order_id: orderData?.jsonResponse?.id
-                                            })
-                                                .then(response => { 
-                                                    console.log(response);
-                                                })
-                                                .catch(error => {
-                                                    // console.error(error); 
-                                                    if (error?.response?.status == '400') {
-                                                        swal.fire({
-                                                            text: `${error?.response?.status}: Something went wrong!`, 
-                                                            color: '#900000', 
-                                                            width: 325, 
-                                                            position: 'top', 
-                                                            showConfirmButton: false
-                                                        })
-                                                    } else if (error?.response?.status == '401') {
-                                                        swal.fire({
-                                                            text: `${error?.response?.status}: You must sign in  to proceed.`, 
-                                                            color: '#900000', 
-                                                            width: 325, 
-                                                            position: 'top', 
-                                                            showConfirmButton: false
-                                                        })
-                                                    } else if (error?.response?.status == '403') {
-                                                        swal.fire({
-                                                            text: `${error?.response?.status}: Forbidden.`, 
-                                                            color: '#900000', 
-                                                            width: 325, 
-                                                            position: 'top', 
-                                                            showConfirmButton: false
-                                                        })
-                                                    } else {
-                                                        swal.fire({
-                                                            text: `${error?.response?.status}: ${error?.response?.data?.message}`, 
-                                                            color: '#900000', 
-                                                            width: 325, 
-                                                            position: 'top', 
-                                                            showConfirmButton: false
-                                                        })
-                                                    }
-                                                })
-
-                                            if (orderData?.jsonResponse?.id) {
-                                                return orderData?.jsonResponse?.id; 
-                                            } else {
-                                                const errorDetail = orderData?.details?.[0];
-                                                const errorMessage = errorDetail
-                                                    ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
-                                                    : JSON.stringify(orderData?.data);
-
-                                                throw new Error(errorMessage);
-                                            }
-                                        } else {
-                                            // Handle non-OK responses
-                                            const errorDetail = await response.json();
-                                            let errorMessage = `Error: ${response.status} - ${response.statusText}`; 
-                                            console.log(errorMessage); 
-                                            
-                                            swal.fire({
-                                                text: `Could not initiate PayPal Checkout. You must login to proceed. 
-                                                Error: ${response?.status} - ${response?.statusText}`, 
-                                                color: '#900000', 
-                                                width: 325, 
-                                                position: 'top', 
-                                                showConfirmButton: false
-                                            })
-                                            if (errorDetail?.message) {
-                                                errorMessage = errorDetail.message;
-                                            }
-                                            throw new Error(errorMessage);
-                                        }
-                                    } catch (error) {
-                                        console.error(error); 
-                                        // setMessage(`Could not initiate PayPal Checkout...${error}`);
-                                        // setMessage(`Could not initiate PayPal Checkout...`); 
-                                        swal.fire({
-                                            text: `Could not initiate PayPal Checkout...`, 
-                                            color: '#900000', 
-                                            width: 325, 
-                                            position: 'top', 
-                                            showConfirmButton: false
-                                        })
-                                    }
-                                }} 
-                                onApprove={async (data, actions) => { 
-                                    console.log(data); 
-                                    // console.log(actions); 
-                                    try { 
-                                        const response = await fetch(
-                                            `${Constants.serverURL}/api/v1/orders/${data?.orderID}/${data?.payerID}/${data?.paymentID}/${data?.paymentSource}/capture`,
-                                            {
-                                                method: "POST",
-                                                headers: { 
-                                                    "Content-Type": "application/json", 
-                                                    'Authorization': `Bearer ${ authTokens?.access }`, 
-                                                }, 
-                                            }, 
-                                        );
-
-                                        const orderData = await response.json(); 
-                                        // Three cases to handle: 
-                                        //   (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
-                                        //   (2) Other non-recoverable errors -> Show a failure message
-                                        //   (3) Successful transaction -> Show confirmation or thank you message
-
-                                        const errorDetail = orderData?.details?.[0]; 
-
-                                        if (errorDetail?.issue === "INSTRUMENT_DECLINED") {
-                                            // (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
-                                            // recoverable state, per https://developer.paypal.com/docs/checkout/standard/customize/handle-funding-failures/
-                                            return actions.restart();
-                                        } else if (errorDetail) {
-                                            // (2) Other non-recoverable errors -> Show a failure message
-                                            throw new Error(
-                                            `${errorDetail?.description} (${orderData?.debug_id})`,
-                                            );
-                                        } else {
-                                            // (3) Successful transaction -> Show confirmation or thank you message
-                                            // Or go to another URL:  actions.redirect('thank_you.html');
-                                            const transaction = orderData?.purchase_units[0]?.payments?.captures[0];
-                                            setMessage(
-                                                `Transaction ${transaction?.status}: ${transaction.id}. See console for all available details`,
-                                            );
-                                            console.log(
-                                                "Capture result",
-                                                orderData,
-                                                JSON.stringify(orderData, null, 2),
-                                            ); 
-
-                                            // Mark order as paid after server-side confirmation
-                                            await axiosInstance.post(`orders/${orderData?.id}/mark-as-paid`)
-                                                .then(response => { 
-                                                    console.log(response); 
-                                                    const orderData = response.json(); 
-
-                                                    console.log(orderData); 
-
-                                                    if (orderData?.jsonResponse?.id) {
-                                                        return orderData?.jsonResponse?.id; 
-                                                    } else {
-                                                        const errorDetail = orderData?.details?.[0];
-                                                        const errorMessage = errorDetail
-                                                            ? `${errorDetail.issue} ${errorDetail?.description} (${orderData?.debug_id})`
-                                                            : JSON.stringify(orderData?.data);
-
-                                                        throw new Error(errorMessage);
-                                                    }
-                                                })
-                                                .catch(error => {
-                                                    console.log(error); 
-                                                    // setMessage(`Could not initiate PayPal Checkout...${error}`);
-                                                    // setMessage(`Could not initiate PayPal Checkout`); 
-                                                    swal.fire({
-                                                        text: `Could not initiate PayPal Checkout`, 
-                                                        color: '#900000', 
-                                                        width: 325, 
-                                                        position: 'top', 
-                                                        showConfirmButton: false
-                                                    })
-                                                })
-                                        }
-                                    } catch (error) {
-                                        console.error(error);
-                                        // setMessage(
-                                        //     `Sorry, your transaction could not be processed...${error}`,
-                                        // ); 
-                                        swal.fire({
-                                                    text: `Sorry, your transaction could not be processed...${error}`, 
-                                                    color: '#900000', 
-                                                    width: 325, 
-                                                    position: 'top', 
-                                                    showConfirmButton: false
-                                                })
-                                    }
-                                }}
-                            />
+                            >
+                                {/* <PayPalNameField
+                                    style={{
+                                        input: { color: "blue" },
+                                        ".invalid": { color: "purple" },
+                                    }}
+                                /> */}
+                                <PayPalNameField />
+                                <PayPalNumberField />
+                                <PayPalExpiryField />
+                                <PayPalCVVField />
+                                
+                                
+                                {/* Custom client component to handle card fields submission */}
+                                <SubmitPayment
+                                    isPaying={isPaying}
+                                    setIsPaying={setIsPaying}
+                                    billingAddress={
+                                        billingAddress
+                                    } 
+                                />
+                            </PayPalCardFieldsProvider>
+                            
                         </PayPalScriptProvider>
-                        <Message content={message} />
 
                     </section>
 
@@ -372,17 +378,17 @@ const SubmitPayment = ({ isPaying, setIsPaying, billingAddress }) => {
     const handleClick = async () => {
         if (!cardFieldsForm) {
             const childErrorMessage =
-            "Unable to find any child components in the <PayPalCardFieldsProvider />";
+                "Unable to find any child components in the <PayPalCardFieldsProvider />";
 
             throw new Error(childErrorMessage);
-        } 
-        
+        }
         const formState = await cardFieldsForm.getState();
 
         if (!formState.isFormValid) {
             return alert("The payment form is invalid");
         }
-        setIsPaying(true);
+        setIsPaying(true); 
+        setPaymentSource('card')
 
         cardFieldsForm.submit({ billingAddress }).catch((err) => {
             setIsPaying(false);
@@ -391,8 +397,8 @@ const SubmitPayment = ({ isPaying, setIsPaying, billingAddress }) => {
 
     return (
         <button
-            className={isPaying ? "btn" : "btn btn-success border-radius-35 px-4 mx-1 my-3 fw-semibold"}
-            style={{ float: "left" }}
+            className={isPaying ? "btn border-radius-35 mt-3 me-2 px-4" : "btn btn-dark border-radius-35 mt-3 me-2 px-4 fw-semibold"}
+            style={{ float: "right" }}
             onClick={handleClick}
         >
             {isPaying ? <div className="spinner tiny" /> : "Pay Now"}

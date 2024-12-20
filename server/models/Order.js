@@ -51,9 +51,13 @@ const orderSchema = new Schema({
         total_paid: { type: Number }, 
         total_balance: { type: Number }, 
         cancelled: { type: Boolean, default: false }, 
+        need_refund: { type: Boolean, default: false }, 
+        refunded_at: { type: String, default: null }, 
         proposed_delivery_start_date: { type: Date }, 
         proposed_delivery_destination_reach_date: { type: Date }, 
         delivery_date: { type: Date }, 
+        delivery_confirmed_by_recipient_at: { type: String, default: null }, 
+        delivered_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
         full_name: { 
             type: String, 
             required: true 
@@ -117,7 +121,6 @@ const orderSchema = new Schema({
             minLength: 3, 
             maxLength: 245
         }, 
-        delivered_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
         deleted_at: { type: String, default: null }, 
         deleted_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
     }, 

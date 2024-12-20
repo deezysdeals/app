@@ -15,7 +15,8 @@ export function useOrders(orderQuery) {
     }, [orderQuery]); 
 
     async function getOrders(orderQuery, { signal } = {}) { 
-        console.log(orderQuery);
+        console.log(orderQuery); 
+        orders?.data = '';
         setOrders([]); 
         return axiosInstance.get(`users/${orderQuery?.username}/orders?page=${orderQuery?.page}&limit=${orderQuery?.limit}`, { signal }) 
             .then(response => setOrders(response?.data))
