@@ -5,7 +5,7 @@ import Notification from '../models/Notification.js';
 /**
  * GET ALL NOTIFICATIONS
  */ 
-const getNotifications = asyncHandler(async (req, res) => {
+const getMailNotifications = asyncHandler(async (req, res) => {
     const current_page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 10; 
     const skip = (current_page - 1) * limit; 
@@ -36,7 +36,7 @@ const getNotifications = asyncHandler(async (req, res) => {
 /**
  * READ NOTIFICATION
  */
-const readNotification = asyncHandler (async (req, res) => {
+const readMailNotification = asyncHandler (async (req, res) => {
     const { id } = req?.params; 
 
     const notification = await Notification.findOne({ _id: id }).exec();
@@ -58,7 +58,7 @@ const readNotification = asyncHandler (async (req, res) => {
 /**
  * SOFT-DELETE A NOTIFICATION
  */
-const deleteNotification = asyncHandler(async (req, res) => {
+const deleteMailNotification = asyncHandler(async (req, res) => {
     const { id } = req?.params; 
     const notification = await Notification.findOne({ _id: id }).exec();
 
@@ -81,7 +81,7 @@ const deleteNotification = asyncHandler(async (req, res) => {
 /**
  * RESTORE A SOFT-DELETED NOTIFICATION
  */
-const restoreNotification = asyncHandler(async (req, res) => {
+const restoreMailNotification = asyncHandler(async (req, res) => {
     const { id } = req?.params; 
     const notification = await Notification.findOne({ _id: id }).exec();
 
@@ -104,7 +104,7 @@ const restoreNotification = asyncHandler(async (req, res) => {
 /**
  * PERMANENTLY DELETE A NOTIFICATION
  */
-const destroyNotification = asyncHandler(async (req, res) => {
+const destroyMailNotification = asyncHandler(async (req, res) => {
     const { id } = req?.params;
 	const notification = await Notification.findOne({ _id: id }).exec();
 
@@ -117,8 +117,8 @@ const destroyNotification = asyncHandler(async (req, res) => {
 
 
 
-export { getNotifications, 
-        readNotification,
-        deleteNotification, 
-        restoreNotification, 
-        destroyNotification }; 
+export { getMailNotifications, 
+        readMailNotification,
+        deleteMailNotification, 
+        restoreMailNotification, 
+        destroyMailNotification }; 
