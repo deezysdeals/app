@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { route } from '@/routes'; 
 import useAxios from '@/utils/useAxios.jsx'; 
 import swal from 'sweetalert2'; 
-import { readNotification } from '../../../server/controllers/notificationController';
 
 
 export function useNotification(id = null) {
