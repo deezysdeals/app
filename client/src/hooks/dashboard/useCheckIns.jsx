@@ -13,7 +13,8 @@ export function useCheckIns(range = 'all') {
     }, [range]); 
  
     async function getCheckIns(range, { signal } = {}) { 
-        console.log(range) 
+        console.log(range); 
+        setCheckIns([]);
         return axiosInstance.get(`dashboard/check-ins?range=${range}`, { signal }) 
             .then(response => { 
                 console.log(response?.data)

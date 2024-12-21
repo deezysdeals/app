@@ -235,7 +235,7 @@ export default function SideNav() {
                                         <span className="fw-semibold fs-6 px-2">Social Media</span>
                                     </Link>
                                 </li> 
-                                <li>
+                                {/* <li>
                                     <Link to={ route('home.clients.index') } 
                                         className={`text-decoration-none text-dark sidenav-item p-2 ps-3 d-flex gap-1 align-items-center border-radius-35 ${ location.pathname.startsWith('/home/clients') && 'active'}`}>
                                         <svg width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -247,8 +247,8 @@ export default function SideNav() {
                                         </svg>
                                         <span className="fw-semibold fs-6 px-2">Clients</span>
                                     </Link>
-                                </li> 
-                                <li>
+                                </li>  */}
+                                {/* <li>
                                     <Link to={ route('home.admin.index') } 
                                         className={`text-decoration-none text-dark sidenav-item p-2 ps-3 d-flex gap-1 align-items-center border-radius-35 ${ location.pathname.startsWith('/home/admin') && 'active'}`}>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-person-lines-fill" viewBox="0 0 16 16">
@@ -256,7 +256,7 @@ export default function SideNav() {
                                         </svg>
                                         <span className="fw-semibold fs-6 px-2">Admin</span>
                                     </Link>
-                                </li> 
+                                </li>  */}
                                 <li>
                                     <Link to={ route('home.users.index') } 
                                         className={`text-decoration-none text-dark sidenav-item p-2 ps-3 d-flex gap-1 align-items-center border-radius-35 ${ location.pathname.startsWith('/home/user-management') && 'active'}`}>

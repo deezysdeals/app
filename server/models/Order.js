@@ -48,6 +48,7 @@ const orderSchema = new Schema({
             default: 'usd'
         }, 
         paid: { type: Boolean, default: false }, 
+        paid_at: { type: Date }, 
         total_paid: { type: Number }, 
         total_balance: { type: Number }, 
         cancelled: { type: Boolean, default: false }, 

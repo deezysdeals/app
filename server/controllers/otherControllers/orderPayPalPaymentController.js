@@ -65,18 +65,28 @@ const createOrderPayment = async (req, res) => {
                         }); 
                         // console.log(upsertCategory); 
 
-                        /** Create new product (order item), if does not exist */ 
-                        const productFilter = { title: response?.data?.title }; 
-                        const productUpdate = { added_by: req?.user_id, 
-                                                title: response?.data?.title, 
-                                                retail_price: response?.data?.price, 
-                                                images: [response?.data?.image] };
+                        /** Create new product (order item), if does not exist */
+                        const productFilter = { title: response?.data?.title };
+                        const productUpdate = {
+                            $setOnInsert: { // This ensures these fields are set only when the document is inserted
+                                user: req?.user_id,
+                                title: response?.data?.title,
+                                retail_price: response?.data?.price,
+                                images: [response?.data?.image]
+                            },
+                            $inc: { order_count: 1 } // Increment the order_count atomically
+                        };
 
-                        const upsertProduct = await Product.findOneAndUpdate(productFilter, productUpdate, {
-                            new: true,
-                            upsert: true 
-                        }); 
-                        // console.log(upsertProduct); 
+                        /** Find and update or insert a new product, incrementing `order_count` if the product exists */ 
+                        const upsertProduct = await Product.findOneAndUpdate(
+                            productFilter,
+                            productUpdate,
+                            {
+                                new: true,   // Return the updated document
+                                upsert: true // Create a new document if one doesn't exist
+                            }
+                        );
+                        // console.log(upsertProduct);
 
                         /** Create new product image (order item image), if does not exist */ 
                         const productImageFilter = { 'image_path.url': response?.data?.image }; 
@@ -94,11 +104,12 @@ const createOrderPayment = async (req, res) => {
                             product: upsertProduct?._id, 
                             order: newOrder?._id, 
                             quantity: item?.quantity, 
-                            price: upsertProduct?.retail_price
+                            cost_price: upsertProduct?.retail_price, 
+                            selling_price: (upsertProduct?.retail_price + (10/100))
                         }); 
                         // console.log({'Test': newOrderItem?.price * newOrderItem?.quantity}); 
 
-                        let orderItemPrice = newOrderItem?.price * newOrderItem?.quantity; 
+                        let orderItemPrice = newOrderItem?.selling_price * newOrderItem?.quantity; 
                         totalToBePaid += orderItemPrice; 
                         // console.log({ 'totaltobe': totalToBePaid }); 
                         // console.log({'Cart length:': cart?.length}); 
@@ -200,15 +211,35 @@ const captureOrderPayment = async (req, res) => {
                                                     : (jsonResponse?.payment_source?.card) 
                                                     ? 'card' 
                                                         : 'cash', 
-                                paypal_payer_id: (jsonResponse?.payment_source?.paypal?.account_id && jsonResponse?.payment_source?.paypal?.account_id),
-                                paid: true }; 
+                                paypal_payer_id: (jsonResponse?.payment_source?.paypal?.account_id || null),
+                                paid: true, 
+                                paid_at: new Date().toISOString() }; 
 
         await Order.findOneAndUpdate(orderFilter, orderUpdate, {
             new: true
         })
             .then(async order => {
                 if (order) { 
-                    res.status(httpStatusCode).json(jsonResponse); 
+                    try {
+                        const orderItem = await OrderItem.updateMany(
+                            { order: order?._id },
+                            { $set: { order_paid: true } }
+                        ); 
+
+                        const productFilter = { _id: orderItem?.product };
+                        const productUpdate = { $inc: { sold_count: 1 } };
+                        const updateProduct = await Product.findOneAndUpdate(
+                            productFilter,
+                            productUpdate,
+                            {
+                                new: true
+                            }
+                        ); 
+                        res.status(httpStatusCode).json(jsonResponse);
+                    } catch (error) {
+                        res.status(500).json({ message: 'Failed to update OrderItems', details: `${error.message}` });
+                    }
+                    // res.status(httpStatusCode).json(jsonResponse); 
                 } else {  
                     res.status(404).json({ message: 'No order found to proceed with payment processing.' });
                 }

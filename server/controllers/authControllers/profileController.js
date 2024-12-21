@@ -57,8 +57,18 @@ const updateProfile = asyncHandler(async (req, res) => {
     }
 }); 
 
+const updateNotificationSetting = asyncHandler(async (req, res) => {
+
+}); 
+
+const updateVisibilitySetting = asyncHandler(async (req, res) => {
+
+}); 
+
 
 export {
     getProfile, 
-    updateProfile
+    updateProfile, 
+    updateNotificationSetting, 
+    updateVisibilitySetting
 };

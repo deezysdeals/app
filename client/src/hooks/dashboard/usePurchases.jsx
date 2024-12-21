@@ -13,7 +13,8 @@ export function usePurchases(range = 'all') {
     }, [range]); 
  
     async function getPurchases(range, { signal } = {}) { 
-        console.log(range) 
+        console.log(range); 
+        setPurchases([])
         return axiosInstance.get(`dashboard/purchases?range=${range}`, { signal }) 
             .then(response => { 
                 console.log(response?.data)

@@ -18,7 +18,7 @@ import { createOrderPayment,
         captureOrderPayment, 
         authorizeOrderPayment, 
         captureAuthorisedOrderPayment
-} from '../../controllers/otherControllers/orderPayPalPaymentController.js'
+} from '../../controllers/otherControllers/orderPayPalPaymentController.js';
 
 
 orderRouter.use(authenticated); 
@@ -26,7 +26,6 @@ orderRouter.use(authenticated);
 /** Additional Routes */
 /** Payment */ 
 orderRouter.post('/payments', createOrderPayment); 
-// orderRouter.post('/payments/:orderID/:paymentSource/capture', captureOrderPayment); 
 orderRouter.post('/payments/:orderID/capture', captureOrderPayment); 
 orderRouter.post('/payments/:orderID/authorize', authorizeOrderPayment); 
 orderRouter.post('/payments/:authorizationId/captureAuthorize', captureAuthorisedOrderPayment); 

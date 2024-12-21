@@ -6,15 +6,18 @@ const orderItemSchema = new Schema({
         user: { type: Schema.Types.ObjectId, ref: 'User' }, 
         product: { type: Schema.Types.ObjectId, ref: 'Product' }, 
         order: { type: Schema.Types.ObjectId, ref: 'Order' }, 
+        order_paid: { type: Boolean, default: false }, 
         quantity: { type: Number }, 
         price: { type: Number }, 
+        cost_price: { type: Number }, 
+        selling_price: { type: Number }, 
         deleted_at: { type: String, default: null }, 
         deleted_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
     }, 
     {
         timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
     }
-);
+); 
 
 
 let OrderItem = mongoose.model("OrderItem", orderItemSchema);

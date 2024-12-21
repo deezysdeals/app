@@ -24,6 +24,7 @@ import Pay from '@/views/public/Pay.jsx';
 import Paid from '@/views/public/Paid.jsx'; 
 import Product from '@/views/public/Product.jsx'; 
 import Products from '@/views/public/Products.jsx'; 
+import Trending from '@/views/public/Trending.jsx'; 
 import Index from '@/views/public/Index.jsx'; 
 
 import ProtectedAdminShow from '@/views/protected/admin/Show.jsx'; 
@@ -140,6 +141,7 @@ function App() {
               <Route path={ route('paid') } element={ <Paid /> } /> 
               <Route path={ route('products.show') } element={ <Product /> } /> 
               <Route path={ route('products.index') } element={ <Products /> } /> 
+              <Route path={ route('trending') } element={ <Trending /> } /> 
 
               <Route path={ route('index') } element={ <Index /> } /> 
 

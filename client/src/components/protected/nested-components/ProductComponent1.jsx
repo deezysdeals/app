@@ -45,15 +45,20 @@ export default function ProductComponent1({ itemId,
                                             category = '', 
                                             orderId, 
                                             orderCount, 
+                                            orderPrice, 
                                             variations, 
                                             variationsValue, 
                                             dealValue, 
                                             dealValueUnit, 
                                             deliveryStatus, 
-                                            deliveryDate }) { 
+                                            deliveryDate, 
+                                            purchasePrice, 
+                                            purchaseDate, 
+                                            sellingPrice, 
+                                            saleDate }) { 
     const location = useLocation(); 
     const { user, signOut } = useContext(AuthContext); 
-    console.log(user)
+    // console.log(user)
     const { cartItems, addToCart, removeFromCart } = useContext(CartContext); 
     const { getFavorites } = useFavorites(); 
     const { deleteFavorite } = useFavorite(); 
@@ -209,7 +214,7 @@ export default function ProductComponent1({ itemId,
                             <div className="col-md-7">
                                 <div className="card-body d-flex flex-column gap-0"> 
                                     { (location.pathname.startsWith('/home/ordered-items')) &&
-                                        <span className="card-text">Order #:&nbsp;<span className="fw-semibold">{ orderId }</span></span> 
+                                        <small className="card-text">#:&nbsp;<small className="fw-semibold">{ orderId }</small></small> 
                                     } 
                                     { (location.pathname.startsWith('/home/market')) && 
                                         <div className="pb-2">
@@ -243,9 +248,14 @@ export default function ProductComponent1({ itemId,
                                     }
                                     <span className="card-text">
                                         <small><s>{ oldPrice && '$'+Number(oldPrice)?.toFixed(2) }</s>{ oldPrice && <span>&nbsp;</span>}</small>
-                                        <span className="fw-semibold">
-                                            { currentPrice ? '$'+Number(currentPrice)?.toFixed(2) : '$'+0 }
-                                        </span>
+                                        { (!location.pathname.startsWith('/home/sales')) 
+                                            ?   <span className="fw-semibold">
+                                                    { currentPrice ? '$'+Number(currentPrice)?.toFixed(2) : '$'+0 }
+                                                </span>
+                                                :   <span className="fw-semibold">
+                                                        { sellingPrice ? '$'+Number(sellingPrice)?.toFixed(2) : '$'+0 }
+                                                    </span> 
+                                                }
                                     </span> 
                                     <div className="d-flex pt-1">
                                         { (location.pathname.startsWith('/home/ordered-items')) 
@@ -477,7 +487,7 @@ export default function ProductComponent1({ itemId,
                                                         { (imgsSrc?.length > 0) && imgsSrc?.map((imgSrc, imgSrcIndex) => {
                                                                 return (
                                                                     <div key={ imgSrcIndex } className={`carousel-item ${ (imgSrcIndex == 0) && `active` }`}>
-                                                                        <img src={ imgSrc } className="d-block object-fit-cover border-radius-35" style={{ width: '215px', height: '215px' }} alt="..." />
+                                                                        <img src={ imgSrc } className="d-block object-fit-cover border-radius-35" style={{ minWidth: '175px', maxWidth: '215px', ninHeight: '175px', maxHeight: '215px' }} alt="..." />
                                                                     </div> 
                                                                 )
                                                             }) 
@@ -524,9 +534,14 @@ export default function ProductComponent1({ itemId,
                                                 }
                                                 <span className="card-text">
                                                     <small><s>{ oldPrice && '$'+Number(oldPrice)?.toFixed(2) }</s>{ oldPrice && <span>&nbsp;</span>}</small>
-                                                    <span className="fw-semibold">
-                                                        { currentPrice ? '$'+Number(currentPrice)?.toFixed(2) : '$'+0 }
-                                                    </span>
+                                                    { (!location.pathname.startsWith('/home/sales')) 
+                                                        ?   <span className="fw-semibold">
+                                                                { currentPrice ? '$'+Number(currentPrice)?.toFixed(2) : '$'+0 }
+                                                            </span> 
+                                                            :   <span className="fw-semibold">
+                                                                    { sellingPrice ? '$'+Number(sellingPrice)?.toFixed(2) : '$'+0 }
+                                                                </span> 
+                                                            }
                                                 </span> 
                                                 { (dealValue && dealValueUnit) && 
                                                     <span className="card-text">
@@ -557,25 +572,76 @@ export default function ProductComponent1({ itemId,
                                         </div>
                                     </div> 
 
-                                    <div className="d-flex justify-content-end px-4 pt-4 pb-2">
-                                        <span className="btn btn-sm btn-dark border-radius-35 d-flex align-items-center">
-                                            <Link 
-                                                to={ route('products.show', 
-                                                        { source: ((location?.pathname)?.startsWith('/home/market') 
-                                                            ? 'market' 
-                                                                : 'shop'), 
-                                                        id: productId }) } 
-                                                target="_blank"  
-                                                className="text-decoration-none ps-1 fw-semibold text-white">
-                                                <span className="fw-semibold">See full details</span>&nbsp;
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                                    className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
-                                                </svg>
-                                            </Link>
-                                        </span>
-                                    </div>
+                                    { (location.pathname.startsWith('/home/sales')) && (
+                                        <div className="sales px-3 pt-3">
+                                            <section className="orders d-flex flex-column">
+                                                <h4 className="border-bottom fs-6">Order Details</h4> 
+                                                <div className="d-flex flex-column">
+                                                    <p className="my-0">
+                                                        <Link 
+                                                            to={ route('home.orders.show', { id: orderId }) } 
+                                                            target="_blank" 
+                                                            className="text-dark">
+                                                            <small><small>#{ orderId }</small></small>
+                                                        </Link>    
+                                                    </p> 
+                                                    <p className="my-0"><small>Total paid:&nbsp;</small><span className="fw-semibold">${ (orderPrice)?.toFixed(2) }</span></p>
+                                                    <p className="my-0 text-secondary"><small><small>{ dayjs.utc(saleDate).fromNow() }</small></small></p>
+                                                </div>
+                                            </section>
+                                            <section className="product d-flex flex-column pt-3">
+                                                <h4 className="border-bottom fs-6">Product Details</h4> 
+                                                <div className="d-flex flex-column">
+                                                    <p className="my-0">
+                                                        <Link 
+                                                            to={ route('products.show', { source: 'shop', id: productId }) } 
+                                                            target="_blank" 
+                                                            className="text-dark" 
+                                                            style={{ textTransform: "capitalize" }}>
+                                                                <small><small>{ title }</small></small>
+                                                        </Link>    
+                                                    </p> 
+                                                    <div className="pt-3">
+                                                        <p className="my-0">
+                                                            <small>Bought:&nbsp;</small>
+                                                            <span className="fw-semibold">
+                                                                ${ Number(purchasePrice)?.toFixed(2) }&nbsp;
+                                                            </span><small><small>{ dayjs.utc(purchaseDate).fromNow() }</small></small>
+                                                        </p>
+
+                                                        <p className="my-0">
+                                                            <small>Sold:&nbsp;</small>
+                                                            <span className="fw-semibold">
+                                                                ${ Number(sellingPrice)?.toFixed(2) }&nbsp;
+                                                            </span><small><small>{ dayjs.utc(saleDate).fromNow() }</small></small>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </section>
+                                        </div>
+                                    ) }
+                                    
+                                    { (!location.pathname.startsWith('/home/sales')) && 
+                                        <div className="d-flex justify-content-end px-4 pt-4 pb-2">
+                                            <span className="btn btn-sm btn-dark border-radius-35 d-flex align-items-center">
+                                                <Link 
+                                                    to={ route('products.show', 
+                                                            { source: ((location?.pathname)?.startsWith('/home/market') 
+                                                                ? 'market' 
+                                                                    : 'shop'), 
+                                                            id: productId }) } 
+                                                    target="_blank"  
+                                                    className="text-decoration-none ps-1 fw-semibold text-white"> 
+                                                    <span className="fw-semibold">See full details</span>&nbsp;
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                                        className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+                                                    </svg>
+                                                </Link>
+                                            </span>
+                                        </div> 
+                                    }
                                 </div>
                                 <div className="modal-footer">
                                 </div>

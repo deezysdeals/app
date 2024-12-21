@@ -1,17 +1,16 @@
 import asyncHandler from 'express-async-handler'; 
-import Product from '../../models/Product.js'; 
+import Order from '../../models/Order.js'; 
 
 
 /**
- * GET ALL PURCHASES
+ * GET ALL PAYMENTS
  */ 
-const getPurchases = asyncHandler(async (req, res) => {
+const getPayments = asyncHandler(async (req, res) => {
     const current_page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 10; 
     const skip = (current_page - 1) * limit; 
 
-    // const purchases = await Product.find({ deleted_at: null })
-    const purchases = await Product.find({ deleted_at: null, purchased_for_resale: true })
+    const payments = await Order.find({ deleted_at: null, paid: true })
                             .sort('-created_at')
                             .skip(skip)
                             .limit(limit)
@@ -20,10 +19,9 @@ const getPurchases = asyncHandler(async (req, res) => {
                                 select: 'first_name last_name username'
                             })
                             .lean(); 
-    if (!purchases?.length) return res.status(404).json({ message: "No purchases found!" }); 
+    if (!payments?.length) return res.status(404).json({ message: "No payments found!" }); 
 
-    // const total = await Product.countDocuments({ deleted_at: null }); 
-    const total = await Product.countDocuments({ deleted_at: null, purchased_for_resale: true }); 
+    const total = await Order.countDocuments({ deleted_at: null, paid: true }); 
 
     res.json({ 
                 meta: {
@@ -32,9 +30,9 @@ const getPurchases = asyncHandler(async (req, res) => {
                     total_pages: Math.ceil(total / limit), 
                     total_results: total
                 }, 
-                data: purchases 
+                data: payments 
             });
 }); 
 
 
-export { getPurchases }
+export { getPayments }; 

@@ -13,7 +13,8 @@ export function useRatings(range = 'all') {
     }, [range]); 
  
     async function getRatings(range, { signal } = {}) { 
-        console.log(range) 
+        console.log(range); 
+        setRatings([]);
         return axiosInstance.get(`dashboard/ratings?range=${range}`, { signal }) 
             .then(response => { 
                 console.log(response?.data)

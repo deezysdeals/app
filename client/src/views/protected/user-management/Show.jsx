@@ -92,7 +92,7 @@ export default function Show() {
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.orders', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
-                                            View Details
+                                            View
                                         </Link>
                                     </div>
                                 </article> 
@@ -102,7 +102,7 @@ export default function Show() {
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.ordered-items', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
-                                            View Details
+                                            View
                                         </Link>
                                     </div>
                                 </article>
@@ -112,7 +112,7 @@ export default function Show() {
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.payments', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
-                                            View Details
+                                            View
                                         </Link>
                                     </div>
                                 </article>
@@ -122,7 +122,7 @@ export default function Show() {
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.product-reviews', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
-                                            View Details
+                                            View
                                         </Link>
                                     </div>
                                 </article>
@@ -132,7 +132,7 @@ export default function Show() {
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.deliveries', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
-                                            View Details
+                                            View
                                         </Link>
                                     </div>
                                 </article>
@@ -142,7 +142,7 @@ export default function Show() {
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.purchases', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
-                                            View Details
+                                            View
                                         </Link>
                                     </div>
                                 </article>
@@ -152,7 +152,7 @@ export default function Show() {
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.client-queries', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
-                                            View Details
+                                            View
                                         </Link>
                                     </div>
                                 </article>
@@ -162,7 +162,7 @@ export default function Show() {
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.query-responses', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
-                                            View Details
+                                            View
                                         </Link>
                                     </div>
                                 </article>

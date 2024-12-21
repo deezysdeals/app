@@ -111,6 +111,8 @@ const routeNames = {
     'products.show': '/products/:source/:id/show', 
     'products.index': '/products', 
 
+    'trending': '/trending', 
+
     'index': '/'
 } 
 

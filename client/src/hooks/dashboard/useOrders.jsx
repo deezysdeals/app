@@ -13,7 +13,8 @@ export function useOrders(range = 'all') {
     }, [range]); 
  
     async function getOrders(range, { signal } = {}) { 
-        console.log(range) 
+        console.log(range)
+        setOrders([]); 
         return axiosInstance.get(`dashboard/orders?range=${range}`, { signal }) 
             .then(response => { 
                 console.log(response?.data)

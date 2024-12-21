@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import useAxios from '@/utils/useAxios.jsx'; 
 
 
-// export function useOrders(orderRange = 'all', type = 'all', page = 1, limit = 10, user = '', delivery_status = 'all', paid = 'true') {
+// export function useOrders(orderRange = 'all', type = 'all', page = 1, limit = 10, user = '', payment_status = 'all', paid = 'true') {
 export function useOrders(orderQuery) {
     const axiosInstance = useAxios(); 
     const [orders, setOrders] = useState([]); 
@@ -20,7 +20,7 @@ export function useOrders(orderQuery) {
         console.log(orderQuery); 
         setOrders([]); 
         // console.log(orders);
-        return axiosInstance.get(`orders?page=${orderQuery?.page}&limit=${orderQuery?.limit}&delivery_status=${orderQuery?.delivery_status}`, { signal }) 
+        return axiosInstance.get(`orders?page=${orderQuery?.page}&limit=${orderQuery?.limit}&payment_status=${orderQuery?.payment_status}`, { signal }) 
             .then(response => { 
                 console.log(response?.data)
                 setOrders(response?.data)

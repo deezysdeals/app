@@ -14,18 +14,18 @@ import Address from '../models/Address.js';
  * GET ALL ORDERS
  */
 const getOrders = asyncHandler(async (req, res) => { 
-    const deliveryStatus = req?.query?.delivery_status
+    const paymentStatus = req?.query?.payment_status
     const limit = parseInt(req?.query?.limit) || 10; 
     const current_page = parseInt(req?.query?.page) || 1;
-    // console.log(deliveryStatus, limit, current_page);
+    // console.log(paymentStatus, limit, current_page);
     const skip = (current_page - 1) * limit; 
 
-    // console.log('delivery status', deliveryStatus);
+    // console.log('payment status', paymentStatus);
 
     let orders, ordersCount; 
     let ordersList = [];
 
-    if (deliveryStatus == 'all') {
+    if (paymentStatus == 'all') {
         orders = await Order.find({ deleted_at: null })
                                     .sort('-created_at')
                                     .skip(skip)
@@ -41,7 +41,7 @@ const getOrders = asyncHandler(async (req, res) => {
 
     } else {
 
-        orders = await Order.find({ deleted_at: null, delivery_status: deliveryStatus }) 
+        orders = await Order.find({ deleted_at: null, paid: paymentStatus }) 
                                     .sort('-created_at')
                                     .skip(skip)
                                     .limit(limit)
@@ -52,19 +52,19 @@ const getOrders = asyncHandler(async (req, res) => {
                                     .lean(); 
         if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
 
-        ordersCount = await Order.countDocuments({ deleted_at: null, delivery_status: deliveryStatus });
+        ordersCount = await Order.countDocuments({ deleted_at: null, paid: paymentStatus });
     }
 
     /** Order Items within Orders */ 
     if (orders?.length) {
         const updatePromises = orders?.map(async order => { 
-            let foundOrderItems = await OrderItem.find({ order: order?._id })
+            let foundOrderItems = await OrderItem.find({ order: order?._id, deleted_at: null })
                                                 .sort('-created_at')
                                                 .populate({
                                                     path: 'product', 
                                                 })
                                                 .exec(); 
-            order['orderItems'] = foundOrderItems; 
+            order['order_items'] = foundOrderItems; 
 
             ordersList.push(order);
         }); 
@@ -140,16 +140,28 @@ const getOrders = asyncHandler(async (req, res) => {
 
 const getOrder = asyncHandler(async (req, res) => {
 	const order = await Order.findOne({ _id: req?.params?.id })
-		.select(['-created_at', '-updated_at', '-deleted_at'])
-		.lean();
+                            .select(['-created_at', '-updated_at', '-deleted_at'])
+                            .populate({
+                                path: 'user', 
+                                select: 'first_name last_name username' 
+                            })
+                            .lean();
 
 	if (!order) return res.status(404).json({ message: `No order matches order ${req?.params?.id}!` }); 
 
-    const orderItems = await OrderItem.find({ order: order?._id }).lean();
+    const orderItems = await OrderItem.find({ order: order?._id, deleted_at: null })
+                                    .sort('-created_at')
+                                    .populate({
+                                        path: 'product'
+                                    })
+                                    .lean(); 
+
+    order.order_items = orderItems;
     
-	res.status(200).json({ data: {
-        order, order_items: orderItems
-    } });
+	// res.status(200).json({ data: {
+    //     order, order_items: orderItems
+    // } }); 
+	res.status(200).json({ data: order }); 
 }); 
 
 

@@ -2,23 +2,29 @@ import { useState, useEffect } from 'react';
 import useAxios from '@/utils/useAxios.jsx'; 
 
 
-export function usePurchases(page = 1, limit = 10) {
+export function usePurchases(purchaseQuery) {
     const axiosInstance = useAxios(); 
     const [purchases, setPurchases] = useState([]); 
 
     useEffect(() => {
-        if (page !== null) {
+        if (purchaseQuery !== null) {
             const controller = new AbortController(); 
-            getPurchases({page, limit}, { signal: controller.signal }); 
+            getPurchases(purchaseQuery, { signal: controller.signal }); 
             return () => { controller.abort() };
         }
-    }, [page, limit]); 
+    }, [purchaseQuery]); 
 
-    async function getPurchases(page = 1, { signal } = {}) {
-        return axiosInstance.get(`products/purchases?page=${page}&limit=${limit}`, { signal }) 
-            .then(response => setPurchases(response?.data))
-            .catch(error => console.log(error));
+    async function getPurchases(purchaseQuery, { signal } = {}) { 
+        console.log(purchaseQuery); 
+        setPurchases([]); 
+        return axiosInstance.get(`purchases?page=${purchaseQuery?.page}&limit=${purchaseQuery?.limit}`, { signal }) 
+            .then(response => { 
+                console.log(response?.data)
+                setPurchases(response?.data)
+            })
+            .catch(error => console.log(error)); 
     } 
 
     return { purchases, getPurchases }; 
 } 
+ 

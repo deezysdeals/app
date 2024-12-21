@@ -15,16 +15,12 @@ import Previous from '@/components/protected/nested-components/pagination-links/
 import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
 import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
 import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
-import ProductComponent1 from '../../../components/protected/nested-components/ProductComponent1.jsx'; 
+import ProductComponent1 from '@/components/protected/nested-components/ProductComponent1.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
 export default function Index() { 
-    const { purchases, getPurchases } = usePurchases(); 
-    // console.log(purchases); 
-    const { product, getProduct } = useProduct(); 
-
-    // Voice-to-Text Search funtionality
+    /** Voice-to-Text Search funtionality */
     const [searchKey, setSearchKey] = useState(''); 
 
     useEffect(() => {
@@ -39,14 +35,21 @@ export default function Index() {
             setVoiceText,
             isListening, 
             setIsListening } = useVoiceToText();
-    // End of Voice-to-Text search functionality
+    /** End of Voice-to-Text Search funtionality */
+
+    const [purchaseQuery, setPurchaseQuery] = useState({
+        page: 1, 
+        limit: 10, 
+    }); 
+    const { purchases, getPurchases } = usePurchases(); 
+    // console.log(purchases); 
 
     return (
         <Layout>
             <div className="main">
                 <div className="dashboard-content pt-3"> 
                     <section className="d-flex justify-content-between align-items-center border-bottom pb-1 mb-3">
-                        <h2 className="fs-4">Purchased Products for Re-Sale</h2> 
+                        <h2 className="fs-4">Purchases for Re-Sale</h2> 
 
                         <div className="">
                             <Link to={ route('home.products.create') } className="btn btn-sm btn-dark px-3 border-radius-35">
@@ -127,7 +130,7 @@ export default function Index() {
                                                     title={ product?.title } 
                                                     description='' 
                                                     oldPrice='' 
-                                                    currentPrice={ product?.retail_price } 
+                                                    currentPrice={ product?.purchase_price } 
                                                     rating={ product?.rating?.rate } 
                                                     category={ product?.category } />
                                         </li>
@@ -147,32 +150,53 @@ export default function Index() {
                         <span 
                             type="button" 
                             onClick={ async () => { 
+                                let firstPage = 1
+                                setPurchaseQuery(prevState => ({
+                                    ...prevState, 
+                                    page: firstPage
+                                })); 
+                                await getPurchases(purchaseQuery); 
                                 scrollToTop(); 
-                                await getPurchases(1); 
                             } }>
-                                <First /> 
+                            <First /> 
                         </span> 
                         <span 
                             type="button" 
-                            onClick={ async () => { 
+                            onClick={ async () => {
+                                let previousPage = ((purchases?.meta?.current_page >= 1) ? (purchases?.meta?.current_page - 1) : 1)
+                                setPurchaseQuery(prevState => ({
+                                    ...prevState, 
+                                    // role: purchaseQuery?.role, 
+                                    page: previousPage
+                                })); 
+                                await getPurchases(purchaseQuery); 
                                 scrollToTop(); 
-                                await getPurchases((purchases?.meta?.current_page >= 1) ? (purchases?.meta?.current_page - 1) : 1); 
                             } }>
                                 <Previous /> 
                         </span> 
                         <span 
                             type="button" 
-                            onClick={ async () => { 
+                            onClick={ async () => {
+                                let nextPage = ((purchases?.meta?.current_page < purchases?.meta?.total_pages) ? (purchases?.meta?.current_page + 1) : purchases?.meta?.total_pages)
+                                setPurchaseQuery(prevState => ({
+                                    ...prevState, 
+                                    page: nextPage
+                                })); 
+                                await getPurchases(purchaseQuery); 
                                 scrollToTop(); 
-                                await getPurchases((purchases?.meta?.current_page < purchases?.meta?.total_pages) ? (purchases?.meta?.current_page + 1) : purchases?.meta?.total_pages); 
                             } }>
                             <Next /> 
                         </span> 
                         <span 
                             type="button" 
-                            onClick={ async () => { 
+                            onClick={ async () => {
+                                let lastPage = purchases?.meta?.total_pages
+                                setPurchaseQuery(prevState => ({
+                                    ...prevState, 
+                                    page: lastPage
+                                })); 
+                                await getPurchases(purchaseQuery); 
                                 scrollToTop(); 
-                                await getPurchases(purchases?.meta?.total_pages); 
                             } }>
                                 <Last />
                         </span>

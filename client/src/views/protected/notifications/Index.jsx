@@ -72,7 +72,7 @@ export default function Index() {
                                                             <h3 className='fs-6 fw-semibold'>{ (notification?.type == 'order') && 'Order' }&nbsp;Notification</h3> 
                                                             <p>
                                                                 { (notification?.type == 'order') && 
-                                                                    <span>You placed an order worth ${ notification?.order?.total_to_be_paid}.&nbsp;
+                                                                    <span>You placed an order worth ${ (notification?.order?.total_to_be_paid)?.toFixed(2) }.&nbsp;
                                                                         <span>
                                                                             <Link to={ route('home.orders.show', { id: notification?.order?._id }) } className="text-warning">View details</Link>
                                                                         </span>.

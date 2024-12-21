@@ -1,29 +1,34 @@
 import asyncHandler from 'express-async-handler'; 
-import Product from '../../models/Product.js'; 
+import Order from '../../models/Order.js'; 
+import OrderItem from '../../models/OrderItem.js'; 
 
 
 /**
- * GET ALL PURCHASES
+ * GET ALL PROFITS
  */ 
-const getPurchases = asyncHandler(async (req, res) => {
+const getProfits = asyncHandler(async (req, res) => {
     const current_page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 10; 
     const skip = (current_page - 1) * limit; 
 
-    // const purchases = await Product.find({ deleted_at: null })
-    const purchases = await Product.find({ deleted_at: null, purchased_for_resale: true })
+    const profits = await OrderItem.find({ deleted_at: null, order_paid: true })
                             .sort('-created_at')
                             .skip(skip)
                             .limit(limit)
+                            .populate({
+                                path: 'product',
+                            })
+                            .populate({
+                                path: 'order',
+                            })
                             .populate({
                                 path: 'user',
                                 select: 'first_name last_name username'
                             })
                             .lean(); 
-    if (!purchases?.length) return res.status(404).json({ message: "No purchases found!" }); 
+    if (!profits?.length) return res.status(404).json({ message: "No profits found!" }); 
 
-    // const total = await Product.countDocuments({ deleted_at: null }); 
-    const total = await Product.countDocuments({ deleted_at: null, purchased_for_resale: true }); 
+    const total = await OrderItem.countDocuments({ deleted_at: null, order_paid: true }); 
 
     res.json({ 
                 meta: {
@@ -32,9 +37,9 @@ const getPurchases = asyncHandler(async (req, res) => {
                     total_pages: Math.ceil(total / limit), 
                     total_results: total
                 }, 
-                data: purchases 
+                data: profits 
             });
 }); 
 
 
-export { getPurchases }
+export { getProfits }

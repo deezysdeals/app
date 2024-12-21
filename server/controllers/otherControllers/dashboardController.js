@@ -257,7 +257,8 @@ const getPurchases = asyncHandler(async (req, res) => {
                 total = await Product.aggregate([
                     {
                         $match: { deleted_at: null, 
-                                purchase_price: { $exists: true }, 
+                                // purchase_price: { $exists: true }, 
+                                purchased_for_resale: true, 
                                 created_at: { $gte: rangeStart, $lte: rangeEnd } }
                     },
                     {
@@ -268,7 +269,8 @@ const getPurchases = asyncHandler(async (req, res) => {
                     }
                 ]); 
                 purchasesCount = await Product.find({ deleted_at: null, 
-                                                    purchase_price: { $exists: true }, 
+                                                    // purchase_price: { $exists: true }, 
+                                                    purchased_for_resale: true, 
                                                     created_at: { $gte: rangeStart, 
                                                                 $lte: rangeEnd } }).countDocuments(); 
                 /** End of Current */
@@ -276,7 +278,8 @@ const getPurchases = asyncHandler(async (req, res) => {
                 totalPrevious = await Product.aggregate([
                     {
                         $match: { deleted_at: null, 
-                                purchase_price: { $exists: true }, 
+                                // purchase_price: { $exists: true }, 
+                                purchased_for_resale: true, 
                                 created_at: { $gte: previousRangeStart, $lte: previousRangeEnd } }
                     },
                     {
@@ -287,14 +290,16 @@ const getPurchases = asyncHandler(async (req, res) => {
                     }
                 ]); 
                 purchasesCountPrevious = await Product.find({ deleted_at: null, 
-                                                            purchase_price: { $exists: true }, 
+                                                            // purchase_price: { $exists: true }, 
+                                                            purchased_for_resale: true, 
                                                             created_at: { $gte: previousRangeStart, 
                                                                         $lte: previousRangeEnd } }).countDocuments(); 
                 /** End of Previous */
             } else {
                 total = await Product.aggregate([
                     {
-                        $match: { deleted_at: null, purchase_price: { $exists: true } }
+                        // $match: { deleted_at: null, purchase_price: { $exists: true } }
+                        $match: { deleted_at: null, purchased_for_resale: true }
                     },
                     {
                         $group: {
@@ -304,7 +309,8 @@ const getPurchases = asyncHandler(async (req, res) => {
                     }
                 ]); 
                 purchasesCount = await Product.find({ deleted_at: null, 
-                                                    purchase_price: { $exists: true },  }).countDocuments(); 
+                                                    // purchase_price: { $exists: true },  }).countDocuments(); 
+                                                    purchased_for_resale: true }).countDocuments(); 
             }
             
             totalPaid = total?.length > 0 ? total[0].totalAmount : 0;

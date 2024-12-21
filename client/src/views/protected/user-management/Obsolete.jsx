@@ -184,7 +184,7 @@ export default function Obsolete() {
                                                 <section className="ordered-items pt-3" style={{ maxWidth: '600px' }}> 
                                                     <h4 className="fw-semibold border-bottom pb-1 fs-6">Ordered Items</h4>
                                                     <ol className='list-unstyled d-flex flex-column gap-1'> 
-                                                        { (order?.orderItems?.length > 0) && (order?.orderItems?.slice(0,2)?.map((orderItem, index) => {
+                                                        { (order?.order_items?.length > 0) && (order?.order_items?.slice(0,2)?.map((orderItem, index) => {
                                                             return (
                                                                 <li key={ orderItem?._id } className="ordered-item row align-items-center g-3 py-1">
                                                                     <div className="col-md-2">
@@ -231,14 +231,14 @@ export default function Obsolete() {
                                                             )
                                                         })) }
                                                     </ol> 
-                                                    { (order?.orderItems?.length > 2) && 
+                                                    { (order?.order_items?.length > 2) && 
                                                     (<span 
                                                         type="button" 
                                                         data-bs-toggle="modal" 
                                                         data-bs-target={ `#order${order?._id}Modal` } 
                                                         className="text-decoration-underline pt-4">
-                                                            <span className="fw-semibold">+{ order?.orderItems?.length - 2 }</span>
-                                                            &nbsp;other item{ ((order?.orderItems?.length - 2) > 1) && 's' }
+                                                            <span className="fw-semibold">+{ order?.order_items?.length - 2 }</span>
+                                                            &nbsp;other item{ ((order?.order_items?.length - 2) > 1) && 's' }
                                                     </span>) }
                                                 </section>
                                             </div> 
@@ -275,7 +275,7 @@ export default function Obsolete() {
                                                             <section className="ordered-items pt-1" style={{ maxWidth: '600px' }}> 
                                                                 <h4 className="fw-semibold border-bottom pb-1 fs-6">Ordered Items</h4>
                                                                 <ol className='list-unstyled d-flex flex-column gap-1'> 
-                                                                    { (order?.orderItems?.length > 0) && (order?.orderItems?.map(orderItem => {
+                                                                    { (order?.order_items?.length > 0) && (order?.order_items?.map(orderItem => {
                                                                         return (
                                                                             <li key={ orderItem?._id } className="ordered-item row align-items-center g-3 py-1">
                                                                                 <div className="col-md-2">

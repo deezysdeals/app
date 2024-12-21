@@ -2,30 +2,31 @@ import { useState, useEffect } from 'react';
 import useAxios from '@/utils/useAxios.jsx'; 
 
 
-export function useDeliveries(deliveryRange = 'all', type = 'all', page = 1, limit = 10, user = '') {
+export function useDeliveries(deliveryQuery) {
     const axiosInstance = useAxios(); 
     const [deliveries, setDeliveries] = useState([]); 
 
     useEffect(() => {
-        if (page !== null) {
+        if (deliveryQuery !== null) {
             const controller = new AbortController(); 
-            getDeliveries({deliveryRange}, { signal: controller.signal }); 
+            getDeliveries(deliveryQuery, { signal: controller.signal }); 
             return () => { controller.abort() };
         }
-    }, [deliveryRange, type, page, limit, user]); 
+    }, [deliveryQuery]); 
 
-    async function getDeliveries(obj, { signal } = {}) {
-        console.log(obj); 
-
-        return axiosInstance.get(`deliveries?range=${obj?.deliveryRange?.range}&type=${obj?.deliveryRange?.type}&page=${obj?.deliveryRange?.page}&limit=${obj?.deliveryRange?.limit}&user=${obj?.deliveryRange?.user}`, { signal })
-            .then(response => {
-                console.log(response?.data); 
-                setDeliveries(response?.data); 
+    // async function getDeliveries(range = 'all', type = 'all', page = 1, { signal } = {}) { 
+    async function getDeliveries(deliveryQuery, { signal } = {}) { 
+        console.log(deliveryQuery); 
+        setDeliveries([]); 
+        // console.log(deliveries);
+        return axiosInstance.get(`deliveries?page=${deliveryQuery?.page}&limit=${deliveryQuery?.limit}&delivery_status=${deliveryQuery?.delivery_status}`, { signal }) 
+            .then(response => { 
+                console.log(response?.data)
+                setDeliveries(response?.data)
             })
-            .catch(error => {
-                console.log(error)
-            });
+            .catch(error => console.log(error)); 
     } 
 
     return { deliveries, getDeliveries }; 
-}
+} 
+ 

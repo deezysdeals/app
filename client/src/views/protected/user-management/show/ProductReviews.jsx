@@ -173,7 +173,7 @@ export default function ProductReviews() {
                                     </ul> 
                                         :   (
                                                 <div className="h-100 w-100 py-4 d-flex justify-content-center align-items-center">
-                                                    <span>You have yet to add reviews.</span>
+                                                    <span>User is yet to add reviews.</span>
                                                 </div>
                                             ) } 
                         </section>

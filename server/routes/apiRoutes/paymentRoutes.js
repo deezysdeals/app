@@ -3,22 +3,12 @@ const paymentRouter = express.Router();
 import authenticated from '../../middleware/authenticated.js'; 
 import roles from '../../config/allowedRoles.js'; 
 import checkRoles from '../../middleware/checkRoles.js'; 
-import { getPayments, 
-        createPayment, 
-        getPayment, 
-        updatePayment, 
-        deletePayment
-} from '../../controllers/paymentController.js'; 
+import { getPayments } from '../../controllers/otherControllers/paymentController.js'; 
 
 
-paymentRouter.route('/')
-                .get(getPayments)
-                .post(authenticated, createPayment); 
+paymentRouter.use(authenticated); 
 
-paymentRouter.route('/:id')
-                .get(getPayment)
-                .put(updatePayment)
-                .delete(deletePayment); 
+paymentRouter.get('/', getPayments); 
 
 
 export default paymentRouter; 

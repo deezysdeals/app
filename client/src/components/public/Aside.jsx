@@ -1,4 +1,12 @@
-export default function Aside() {
+import { Link } from 'react-router-dom'; 
+import { route } from '@/routes'; 
+import { useMiniTrendings } from '@/hooks/public/useMiniTrendings.jsx'; 
+
+
+export default function Aside() { 
+    const { miniTrendings, getMiniTrendings } = useMiniTrendings(); 
+    console.log(miniTrendings); 
+
     return (
         <aside className="aside card border-radius-35 mt-4 mb-4"> 
                 <div className="advanced-search p-3 pt-4">
@@ -49,56 +57,35 @@ export default function Aside() {
                         <h3 className="fw-bold border-bottom pb-2 pt-3 fs-5">Trending</h3>
                     </div>
                     <div className="d-flex flex-column row-gap-2">
-                        <article className="item row align-items-center m-2 py-3 bg-body-tertiary rounded">
-                            <div className="col-md-4">
-                                <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                    alt="" style={{ width: '75px', height: '100px' }} className="rounded d-block object-fit-contain" />
-                            </div>
-                            <div className="col-md-8 d-flex flex-column">
-                                <div className="text">
-                                    <h5 className="item-title fw-semibold">Hard Beans Brasil Espresso</h5>
-                                    <p className="item-description">An elegant, classic of highest quality ...</p>
-                                    <p className="item-amount"><s className="">$275</s>&nbsp;<span className="fw-semibold text-success">$250.00</span></p>
-                                </div>
-                            </div>
-                        </article>
-                        <article className="item row align-items-center m-2 py-2 bg-body-tertiary rounded">
-                            <div className="col-md-4">
-                                <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                    alt="" style={{ width: '75px', height: '100px' }} className="rounded d-block object-fit-contain" />
-                            </div>
-                            <div className="col-md-8 d-flex flex-column">
-                                <div className="text">
-                                    <h5 className="item-title fw-semibold">Hard Beans Brasil Espresso</h5>
-                                    <p className="item-description">An elegant, classic of highest quality ...</p>
-                                    <p className="item-amount"><s className="">$275</s>&nbsp;<span className="fw-semibold text-success">$250.00</span></p>
-                                </div>
-                            </div>
-                        </article>
-                        <article className="item row align-items-center m-2 py-2 bg-body-tertiary rounded">
-                            <div className="col-md-4">
-                                <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                    alt="" style={{ width: '75px', height: '100px' }}className="rounded d-block object-fit-contain" />
-                            </div>
-                            <div className="col-md-8 d-flex flex-column">
-                                <div className="text">
-                                    <h5 className="item-title fw-semibold">Hard Beans Brasil Espresso</h5>
-                                    <p className="item-description">An elegant, classic of highest quality ...</p>
-                                    <p className="item-amount"><s className="">$275</s>&nbsp;<span className="fw-semibold text-success">$250.00</span></p>
-                                </div>
-                            </div>
-                        </article>
+                        { (miniTrendings?.data?.length > 0) && (miniTrendings?.data?.map(product => {
+                            return (
+                                <article className="item row align-items-center m-2 py-3 bg-body-tertiary rounded">
+                                    <div className="col-md-4">
+                                        <img src={ product?.images?.[0] }
+                                            alt="" style={{ width: '75px', height: '100px' }} className="rounded d-block object-fit-contain" />
+                                    </div>
+                                    <div className="col-md-8 d-flex flex-column">
+                                        <div className="text">
+                                            <h5 className="item-title fw-semibold">{ (product?.title)?.slice(0,15) }</h5>
+                                            <p className="item-description">{ product?.description?.[0]?.slice(0,15) }</p>
+                                            <p className="item-amount"><s className="">${ product?.initial_retail_price }</s>&nbsp;<span className="fw-semibold text-success">${ product?.retail_price }</span></p>
+                                        </div>
+                                    </div>
+                                </article>
+                            )
+                        }))}
+                    
                     </div> 
                     <div className="d-flex pt-3 px-2">
                         <span className="btn btn-sm border-radius-35 d-flex align-items-center">
-                            <a href="#" className="text-decoration-none ps-1 fw-semibold">
+                            <Link to={ route('trending') } className="text-decoration-none ps-1 fw-semibold">
                                 <span className="fw-semibold">See more</span>&nbsp;
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-right-circle-fill"
                                     viewBox="0 0 16 16">
                                     <path
                                         d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
                                 </svg>
-                            </a>
+                            </Link>
                         </span>
                     </div>
                 </div> 

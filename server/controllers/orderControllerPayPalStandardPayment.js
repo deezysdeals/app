@@ -64,7 +64,7 @@ const getOrders = asyncHandler(async (req, res) => {
                                                     path: 'product', 
                                                 })
                                                 .exec(); 
-            order['orderItems'] = foundOrderItems; 
+            order['order_items'] = foundOrderItems; 
 
             ordersList.push(order);
         }); 

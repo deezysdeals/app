@@ -10,7 +10,7 @@ const getNotifications = asyncHandler(async (req, res) => {
     const limit = parseInt(req?.query?.limit) || 10; 
     const skip = (current_page - 1) * limit; 
 
-    const notifications = await Notification.find({ deleted_at: null })
+    const notifications = await Notification.find({ deleted_at: null, user: req?.user_id })
                                             .sort('-created_at')
                                             .skip(skip)
                                             .limit(limit)
