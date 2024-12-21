@@ -17,6 +17,7 @@ export default defineConfig({
   build: {
     outDir: 'dist', 
     rollupOptions: {
+      external: ['express-async-handler'],
       output: {
         manualChunks(id) {
           if (id?.includes('node_modules')) {
