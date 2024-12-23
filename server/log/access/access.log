@@ -1534,6 +1534,7 @@
 ::ffff:127.0.0.1 - - [2024-12-23T13:29:50.129Z] "GET /api/v1/site-configurations HTTP/1.1" - "- - - ms" "http://localhost:5174/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 ::ffff:127.0.0.1 - - [2024-12-23T13:29:50.419Z] "GET /api/v1/trendings/mini-trendings HTTP/1.1" 200 "1256 - 282.503 ms" "http://localhost:5174/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 ::ffff:127.0.0.1 - - [2024-12-23T13:29:50.424Z] "GET /api/v1/site-configurations HTTP/1.1" 200 "811 - 285.355 ms" "http://localhost:5174/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+<<<<<<< HEAD
 ::ffff:127.0.0.1 - - [2024-12-23T13:37:31.840Z] "OPTIONS /api/v1/dashboard/ratings?range=all HTTP/1.1" 200 "0 - 6.161 ms" "http://localhost:5174/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 ::ffff:127.0.0.1 - - [2024-12-23T13:37:31.858Z] "OPTIONS /api/v1/dashboard/check-ins?range=all HTTP/1.1" 200 "0 - 0.442 ms" "http://localhost:5174/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 ::ffff:127.0.0.1 - - [2024-12-23T13:37:31.861Z] "OPTIONS /api/v1/dashboard/client-growth?range=all HTTP/1.1" 200 "0 - 0.673 ms" "http://localhost:5174/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
@@ -3032,3 +3033,5 @@
 ::ffff:127.0.0.1 - - [2024-12-23T18:59:41.626Z] "GET /api/v1/users?role=admin&range=all&page=1&limit=10 HTTP/1.1" 304 "- - 563.171 ms" "http://localhost:5174/" "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
 ::ffff:127.0.0.1 - - [2024-12-23T18:59:44.099Z] "OPTIONS /api/v1/users/maxralph01 HTTP/1.1" 200 "0 - 0.211 ms" "http://localhost:5174/" "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
 ::ffff:127.0.0.1 - - [2024-12-23T18:59:46.877Z] "GET /api/v1/users/maxralph01 HTTP/1.1" 304 "- - 2773.874 ms" "http://localhost:5174/" "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
+=======
+>>>>>>> f8762b8d4b1a8ad76a1096de337fbd3ffbe843d2
