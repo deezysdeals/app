@@ -17,6 +17,9 @@ import ProductReview from '@/components/protected/nested-components/ProductRevie
 
 export default function ProductReviews() { 
     const params = useParams(); 
+    const { retrievedUser } = useUser(params?.username); 
+    // console.log(retrievedUser); 
+    
     const [productReviewQuery, setProductReviewQuery] = useState({ 
         page: 1, 
         limit: 10, 
@@ -24,8 +27,7 @@ export default function ProductReviews() {
         username: params?.username
     }); 
     // console.log(productReviewQuery); 
-    const { retrievedUser } = useUser(params?.username); 
-    // console.log(retrievedUser); 
+    
     const { productReviews, getProductReviews } = useProductReviews(productReviewQuery); 
     // console.log(productReviews); 
     const { deleteProductReview } = useProductReview(); 
@@ -36,6 +38,9 @@ export default function ProductReviews() {
                 <div className="dashboard-content pt-3">
                     <section className="d-flex justify-content-between align-items-center gap-3 flex-wrap border-bottom pb-1">
                         <h2 className="fs-4">
+                            <Link to={ route('home.users.index') } className="text-dark">
+                                Users
+                            </Link>&nbsp;|&nbsp;
                             <Link to={ route('home.users.show', { username: params?.username }) } className="text-dark">
                                 { retrievedUser?.data?.first_name + ' ' + retrievedUser?.data?.last_name }
                             </Link>&nbsp;|&nbsp;Reviews/Ratings</h2> 

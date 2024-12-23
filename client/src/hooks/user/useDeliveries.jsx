@@ -17,7 +17,7 @@ export function useDeliveries(deliveryQuery) {
     async function getDeliveries(deliveryQuery, { signal } = {}) { 
         console.log(deliveryQuery);
         setDeliveries([]); 
-        return axiosInstance.get(`users/${deliveryQuery?.username}/deliveries?page=${deliveryQuery?.page}&limit=${deliveryQuery?.limit}&type=${deliveryQuery?.type}`, { signal }) 
+        return axiosInstance.get(`users/${deliveryQuery?.username}/deliveries?page=${deliveryQuery?.page}&limit=${deliveryQuery?.limit}&delivery_status=${deliveryQuery?.delivery_status}`, { signal }) 
             .then(response => setDeliveries(response?.data))
             .catch(error => console.log(error));
     } 

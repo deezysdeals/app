@@ -59,19 +59,28 @@ export default function Aside() {
                     <div className="d-flex flex-column row-gap-2">
                         { (miniTrendings?.data?.length > 0) && (miniTrendings?.data?.map(product => {
                             return (
-                                <article className="item row align-items-center m-2 py-3 bg-body-tertiary rounded">
-                                    <div className="col-md-4">
-                                        <img src={ product?.images?.[0] }
-                                            alt="" style={{ width: '75px', height: '100px' }} className="rounded d-block object-fit-contain" />
-                                    </div>
-                                    <div className="col-md-8 d-flex flex-column">
-                                        <div className="text">
-                                            <h5 className="item-title fw-semibold">{ (product?.title)?.slice(0,15) }</h5>
-                                            <p className="item-description">{ product?.description?.[0]?.slice(0,15) }</p>
-                                            <p className="item-amount"><s className="">${ product?.initial_retail_price }</s>&nbsp;<span className="fw-semibold text-success">${ product?.retail_price }</span></p>
-                                        </div>
-                                    </div>
-                                </article>
+                                <Link 
+                                    key={ product?._id }
+                                    to={ route('products.show', { source: 'shop', id: product?._id }) } 
+                                    className="text-decoration-none text-dark">
+                                        <article className="item row align-items-center m-2 py-3 bg-body-tertiary rounded">
+                                            <div className="col-md-4">
+                                                <img src={ product?.images?.[0] }
+                                                    alt="" style={{ width: '75px', height: '100px' }} className="rounded d-block object-fit-cover" />
+                                            </div>
+                                            <div className="col-md-8 d-flex flex-column">
+                                                <div className="text">
+                                                    <h5 className="item-title fw-semibold">{ (product?.title)?.slice(0,15) }</h5>
+                                                    <p className="item-description">{ product?.description?.[0]?.slice(0,15) }</p>
+                                                    <p className="item-amount">
+                                                        { product?.initial_retail_price && 
+                                                        <s className="">${ product?.initial_retail_price }&nbsp;</s> }
+                                                        <span className="fw-semibold text-success">${ product?.retail_price }</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </article>
+                                </Link>
                             )
                         }))}
                     

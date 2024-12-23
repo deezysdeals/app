@@ -16,10 +16,12 @@ export function useOrders(orderQuery) {
 
     async function getOrders(orderQuery, { signal } = {}) { 
         console.log(orderQuery); 
-        orders?.data = '';
         setOrders([]); 
-        return axiosInstance.get(`users/${orderQuery?.username}/orders?page=${orderQuery?.page}&limit=${orderQuery?.limit}`, { signal }) 
-            .then(response => setOrders(response?.data))
+        return axiosInstance.get(`users/${orderQuery?.username}/orders?page=${orderQuery?.page}&limit=${orderQuery?.limit}&payment_status=${orderQuery?.payment_status}`, { signal }) 
+            .then(response => {
+                setOrders(response?.data); 
+                console.log(response?.data); 
+            })
             .catch(error => console.log(error));
     } 
 

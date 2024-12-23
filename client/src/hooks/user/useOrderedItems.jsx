@@ -2,22 +2,23 @@ import { useState, useEffect } from 'react';
 import useAxios from '@/utils/useAxios.jsx'; 
 
 
-export function useOrderedItems(orderedItemQuery) {
+export function useOrderedItems(username) {
+    let page = 1, limit = 10
     const axiosInstance = useAxios(); 
     const [orderedItems, setOrderedItems] = useState([]); 
 
     useEffect(() => {
-        if (orderedItemQuery !== null) {
+        if (page !== null) {
             const controller = new AbortController(); 
-            getOrderedItems(orderedItemQuery, { signal: controller.signal }); 
+            getOrderedItems({username, page, limit}, { signal: controller.signal }); 
             return () => { controller.abort() };
         }
-    }, [orderedItemQuery]); 
+    }, [page, limit, username]); 
 
-    async function getOrderedItems(orderedItemQuery, { signal } = {}) { 
-        console.log(orderedItemQuery);
+    async function getOrderedItems(page = 1, { signal } = {}) { 
+        console.log(page);
         setOrderedItems([]); 
-        return axiosInstance.get(`users/${orderedItemQuery?.username}/ordered-items?page=${orderedItemQuery?.page}&limit=${orderedItemQuery?.limit}`, { signal }) 
+        return axiosInstance.get(`users/${username}/ordered-items?page=${page}&limit=${limit}`, { signal }) 
             .then(response => setOrderedItems(response?.data))
             .catch(error => console.log(error));
     } 

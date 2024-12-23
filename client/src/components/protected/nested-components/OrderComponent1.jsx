@@ -13,8 +13,7 @@ import { useOrder } from '@/hooks/useOrder.jsx';
 export default function OrderComponent1({ order, 
                                         index,
                                         current_page, 
-                                        limit, 
- }) {
+                                        limit }) {
     return (
         <>
             <div className="text-dark px-3">
@@ -35,9 +34,9 @@ export default function OrderComponent1({ order,
                     <h3 className="fw-semibold">${ (order?.total_to_be_paid)?.toFixed(2) || 0 }</h3> 
                     <p>By&nbsp;
                         <Link 
-                            to={ route('home.clients.show', { username: order?.user?.username }) } 
+                            to={ route('home.users.show', { username: order?.user?.username }) } 
                             className="text-dark">
-                            { order?.user?.first_name + ' ' + order?.user?.last_name }
+                                { order?.user?.first_name + ' ' + order?.user?.last_name }
                         </Link>
                         { order?.state_region && 
                             <span>&nbsp;from { order?.state_region }</span>
@@ -148,7 +147,8 @@ export default function OrderComponent1({ order,
                                 }
                                 <p style={{ marginTop: '-0.5rem' }}>By&nbsp;
                                     <Link 
-                                        to={ route('home.clients.show', { username: order?.user?.username }) } 
+                                        to={ route('home.users.show', { username: order?.user?.username }) } 
+                                        target="_blank" 
                                         className="text-dark">
                                             { order?.user?.first_name + ' ' + order?.user?.last_name }
                                     </Link>

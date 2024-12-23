@@ -20,6 +20,7 @@ import Brands from '@/views/public/Brands.jsx';
 import Cart from '@/views/public/Cart.jsx'; 
 import Categories from '@/views/public/Categories.jsx'; 
 import Category from '@/views/public/Category.jsx'; 
+import OrderPlaced from '@/views/public/OrderPlaced.jsx'; 
 import Pay from '@/views/public/Pay.jsx'; 
 import Paid from '@/views/public/Paid.jsx'; 
 import Product from '@/views/public/Product.jsx'; 
@@ -96,7 +97,7 @@ import ProtectedSocialMediaIndex from '@/views/protected/social-media/Index.jsx'
 
 import ProtectedUserManagementClientQueries from '@/views/protected/user-management/show/ClientQueries.jsx'; 
 import ProtectedUserManagementDeliveries from '@/views/protected/user-management/show/Deliveries.jsx'; 
-import ProtectedUserManagementOrderItems from '@/views/protected/user-management/show/OrderItems.jsx'; 
+import ProtectedUserManagementOrderedItems from '@/views/protected/user-management/show/OrderedItems.jsx'; 
 import ProtectedUserManagementOrders from '@/views/protected/user-management/show/Orders.jsx'; 
 import ProtectedUserManagementPayments from '@/views/protected/user-management/show/Payments.jsx'; 
 import ProtectedUserManagementProductReviews from '@/views/protected/user-management/show/ProductReviews.jsx'; 
@@ -137,6 +138,7 @@ function App() {
               <Route path={ route('cart') } element={ <Cart /> } /> 
               <Route path={ route('categories.show') } element={ <Category /> } /> 
               <Route path={ route('categories.index') } element={ <Categories /> } /> 
+              <Route path={ route('order-placed') } element={ <OrderPlaced /> } /> 
               <Route path={ route('pay') } element={ <Pay /> } /> 
               <Route path={ route('paid') } element={ <Paid /> } /> 
               <Route path={ route('products.show') } element={ <Product /> } /> 
@@ -214,7 +216,7 @@ function App() {
                 <Route path={ route('home.social-media.index') } element={ <ProtectedSocialMediaIndex /> } /> 
 
                 <Route path={ route('home.users.show.orders') } element={ <ProtectedUserManagementOrders /> } /> 
-                <Route path={ route('home.users.show.ordered-items') } element={ <ProtectedUserManagementOrderItems /> } /> 
+                <Route path={ route('home.users.show.ordered-items') } element={ <ProtectedUserManagementOrderedItems /> } /> 
                 <Route path={ route('home.users.show.payments') } element={ <ProtectedUserManagementPayments /> } /> 
                 <Route path={ route('home.users.show.product-reviews') } element={ <ProtectedUserManagementProductReviews /> } /> 
                 <Route path={ route('home.users.show.deliveries') } element={ <ProtectedUserManagementDeliveries /> } /> 

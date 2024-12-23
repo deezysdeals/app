@@ -60,11 +60,11 @@ export function useUser(username = null) {
 
         return axiosInstance.get(`users/${username}`, { signal })
             .then(response => {
-                // console.log(response?.data?.data); 
+                console.log(response); 
                 setData(response?.data?.data); 
             })
             .catch(error => {
-                // console.error(error?.response);
+                console.error(error);
                 setErrors(error?.response); 
             })
             .finally(() => setLoading(false));

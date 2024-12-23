@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'; 
+import { Link, useParams } from 'react-router-dom'; 
+import { route } from '@/routes'; 
 import dayjs from 'dayjs';
 import relativeTime from "dayjs/plugin/relativeTime"; 
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(relativeTime);
 dayjs.extend(utc); 
 import { useVoiceToText } from '@/utils/useVoiceToText.jsx'; 
-import { useOrderItems } from '@/hooks/useOrderItems.jsx'; 
+import { useOrderedItems } from '@/hooks/user/useOrderedItems.jsx'; 
+import { useUser } from '@/hooks/useUser.jsx'; 
 import scrollToTop from '@/utils/ScrollToTop.jsx'; 
 import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
 import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
@@ -16,9 +19,11 @@ import ProductComponent1 from '@/components/protected/nested-components/ProductC
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
-export default function Index() { 
-    const { orderItems, getOrderItems } = useOrderItems();  
-    // console.log(orderItems); 
+export default function OrderedItems() { 
+    const params = useParams(); 
+    const { retrievedUser } = useUser(params?.username); 
+    const { orderedItems, getOrderedItems } = useOrderedItems(params?.username);  
+    // console.log(orderedItems); 
 
     /** Voice-to-Text Search funtionality */ 
     const [searchKey, setSearchKey] = useState(''); 
@@ -41,9 +46,17 @@ export default function Index() {
         <Layout>
             <div className="main">
                 <div className="dashboard-content pt-3"> 
-                    <h2 className="border-bottom pb-1 fs-4">Ordered Items</h2> 
+                    <section className="d-flex justify-content-between align-items-center gap-3 flex-wrap border-bottom pb-1"> 
+                        <h2 className="fs-4">
+                            <Link to={ route('home.users.index') } className="text-dark">
+                                Users
+                            </Link>&nbsp;|&nbsp;
+                            <Link to={ route('home.users.show', { username: params?.username }) } className="text-dark">
+                                { (retrievedUser?.data?.first_name + ' ' + retrievedUser?.data?.last_name) }
+                            </Link>&nbsp;|&nbsp;Ordered Items</h2> 
+                    </section>
 
-                    <div className="d-flex justify-content-between flex-wrap gap-2"> 
+                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 py-3"> 
                         <div className="search">
                             <div className="search-container border border-dark" style={{ maxWidth: '375px' }}>
                                 { !isListening &&
@@ -72,7 +85,7 @@ export default function Index() {
                                         setSearchKey(voiceText); 
                                         
                                         scrollToTop(); 
-                                        await getOrderItems(1); 
+                                        await getOrderedItems(1); 
                                     } }
                                     className="search-icon">
                                         <svg width="16"
@@ -84,25 +97,25 @@ export default function Index() {
                                 </span>
                             </div>
                         </div> 
-                        { (orderItems?.data?.length > 0) 
+                        { (orderedItems?.data?.length > 0) 
                             && <PaginationMeter 
-                                    current_page={ orderItems?.meta?.current_page } 
-                                    limit={ orderItems?.meta?.limit } 
-                                    total_pages={ orderItems?.meta?.total_pages } 
-                                    total_results={ orderItems?.meta?.total_results } /> } 
+                                    current_page={ orderedItems?.meta?.current_page } 
+                                    limit={ orderedItems?.meta?.limit } 
+                                    total_pages={ orderedItems?.meta?.total_pages } 
+                                    total_results={ orderedItems?.meta?.total_results } /> } 
                     </div>
 
                     <section className="py-4">
                         <ul className="list-unstyled d-flex flex-column gap-5"> 
-                            { (orderItems?.data?.length > 0) && (orderItems?.data?.map((orderItem, index) => {
+                            { (orderedItems?.data?.length > 0) && (orderedItems?.data?.map((orderItem, index) => {
                                 return ( 
                                     <li 
                                         key={ orderItem?._id } 
                                         className="box-shadow-1 border-radius-25 py-3 px-2 cursor-pointer">
                                             <ProductComponent1 
-                                                index={ (((orderItems?.meta?.current_page) > 1) 
-                                                            ? (((orderItems?.meta?.current_page - 1) * orderItems?.meta?.limit) + 1) 
-                                                                : orderItems?.meta?.current_page) + index } 
+                                                index={ (((orderedItems?.meta?.current_page) > 1) 
+                                                            ? (((orderedItems?.meta?.current_page - 1) * orderedItems?.meta?.limit) + 1) 
+                                                                : orderedItems?.meta?.current_page) + index } 
                                                 itemId={ orderItem?._id } 
                                                 productId={ orderItem?.product?._id } 
                                                 asin={ orderItem?.product?.asin }
@@ -123,40 +136,42 @@ export default function Index() {
                     </section>
                 </div>
 
-                <section className="pagination-links py-5 d-flex justify-content-end gap-2 pe-2"> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            await getOrderItems(1); 
-                        } }>
-                            <First /> 
-                    </span> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            await getOrderItems((orderItems?.meta?.current_page >= 1) ? (orderItems?.meta?.current_page - 1) : 1); 
-                        } }>
-                            <Previous /> 
-                    </span> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            await getOrderItems((orderItems?.meta?.current_page < orderItems?.meta?.total_pages) ? (orderItems?.meta?.current_page + 1) : orderItems?.meta?.total_pages); 
-                        } }>
-                        <Next /> 
-                    </span> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            await getOrderItems(orderItems?.meta?.total_pages); 
-                        } }>
-                            <Last />
-                    </span>
-                </section>
+                { (orderedItems?.data?.length > 0) && (
+                    <section className="pagination-links py-5 d-flex justify-content-end gap-2 pe-2"> 
+                        <span 
+                            type="button" 
+                            onClick={ async () => { 
+                                scrollToTop(); 
+                                await getOrderedItems(1); 
+                            } }>
+                                <First /> 
+                        </span> 
+                        <span 
+                            type="button" 
+                            onClick={ async () => { 
+                                scrollToTop(); 
+                                await getOrderedItems((orderedItems?.meta?.current_page >= 1) ? (orderedItems?.meta?.current_page - 1) : 1); 
+                            } }>
+                                <Previous /> 
+                        </span> 
+                        <span 
+                            type="button" 
+                            onClick={ async () => { 
+                                scrollToTop(); 
+                                await getOrderedItems((orderedItems?.meta?.current_page < orderedItems?.meta?.total_pages) ? (orderedItems?.meta?.current_page + 1) : orderedItems?.meta?.total_pages); 
+                            } }>
+                            <Next /> 
+                        </span> 
+                        <span 
+                            type="button" 
+                            onClick={ async () => { 
+                                scrollToTop(); 
+                                await getOrderedItems(orderedItems?.meta?.total_pages); 
+                            } }>
+                                <Last />
+                        </span>
+                    </section> 
+                ) }
             </div>
         </Layout>
     )

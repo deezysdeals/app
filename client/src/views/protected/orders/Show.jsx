@@ -73,7 +73,7 @@ export default function Show() {
                                                         <div className="images"> 
                                                             { (orderItem?.product?.images?.length > 0) && (orderItem?.product?.images?.map((image, index) => {
                                                                 return (
-                                                                    <div className={`carousel-item ${(index==0) && `active`}`}>
+                                                                    <div key={ image } className={`carousel-item ${(index==0) && `active`}`}>
                                                                         <img src={ image } className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt={ image } />
                                                                     </div>
                                                                 )

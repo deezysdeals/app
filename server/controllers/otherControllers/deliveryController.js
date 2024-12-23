@@ -71,7 +71,7 @@ const getDeliveries = asyncHandler(async (req, res) => {
                     total_results: deliveriesCount
                 }, 
                 data: deliveriesList 
-            });
+            }); 
 }); 
 
 /**

@@ -1,4 +1,3 @@
-import { useState } from 'react'; 
 import { Link, useParams } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import dayjs from 'dayjs';
@@ -7,13 +6,6 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(relativeTime);
 dayjs.extend(utc); 
 import { useUser } from '@/hooks/useUser.jsx'; 
-import { useOrders } from '@/hooks/useOrders.jsx'; 
-import { usePurchases } from '@/hooks/usePurchases.jsx'; 
-import scrollToTop from '@/utils/ScrollToTop.jsx'; 
-import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
-import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
-import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
-import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
@@ -21,32 +13,8 @@ export default function Show() {
     const params = useParams(); 
     const { retrievedUser, getUser } = useUser(params?.username); 
 
-    const [activeLink, setActiveLink] = useState('deliveries'); 
-
-    const [orderQuery, setOrderQuery] = useState({
-        range: 'all', 
-        type: 'all', 
-        page: 1, 
-        limit: 10, 
-        user: params?.username, 
-        delivery_status: 'all', 
-        paid: true
-    }); 
-    const { orders, getOrders } = useOrders(orderQuery); 
-    // getOrders();
-
-    const [purchaseQuery, setPurchaseQuery] = useState({
-        range: 'all', 
-        type: 'all', 
-        page: 1, 
-        limit: 10, 
-        user: params?.username
-    }); 
-    const { purchases, getPurchases } = usePurchases(purchaseQuery); 
-
     console.log(params?.username)
     console.log(retrievedUser?.data); 
-    console.log(orders); 
     
     return (
         <Layout>
@@ -88,7 +56,7 @@ export default function Show() {
                             <div className="d-flex flex-column gap-3 pt-3">
                                 <article className="w-100 d-flex justify-content-between border-radius-25 box-shadow-1 p-3">
                                     <div>
-                                        <h4 className="fs-6">Orders (25)</h4>
+                                        <h4 className="fs-6">Orders ({ retrievedUser?.data?.orders_count || 0 }), <small className="text-secondary">{ retrievedUser?.data?.orders_pending_count || 0 } pending</small></h4>
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.orders', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
@@ -98,7 +66,7 @@ export default function Show() {
                                 </article> 
                                 <article className="w-100 d-flex justify-content-between border-radius-25 box-shadow-1 p-3">
                                     <div>
-                                        <h4 className="fs-6">Items Bought (25)</h4>
+                                        <h4 className="fs-6">Items Ordered ({ retrievedUser?.data?.order_items_count || 0 })</h4>
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.ordered-items', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
@@ -108,7 +76,7 @@ export default function Show() {
                                 </article>
                                 <article className="w-100 d-flex justify-content-between border-radius-25 box-shadow-1 p-3">
                                     <div>
-                                        <h4 className="fs-6">Payments (25)</h4>
+                                        <h4 className="fs-6">Payments ({ retrievedUser?.data?.payments_count || 0 })</h4>
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.payments', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
@@ -118,7 +86,7 @@ export default function Show() {
                                 </article>
                                 <article className="w-100 d-flex justify-content-between border-radius-25 box-shadow-1 p-3">
                                     <div>
-                                        <h4 className="fs-6">Ratings/Reviews (25)</h4>
+                                        <h4 className="fs-6">Ratings/Reviews ({ retrievedUser?.data?.product_reviews_count || 0 })</h4>
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.product-reviews', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
@@ -128,7 +96,7 @@ export default function Show() {
                                 </article>
                                 <article className="w-100 d-flex justify-content-between border-radius-25 box-shadow-1 p-3">
                                     <div>
-                                        <h4 className="fs-6">Deliveries (25), <small className="text-secondary">1 pending</small></h4>
+                                        <h4 className="fs-6">Deliveries ({ retrievedUser?.data?.deliveries_count || 0 }), <small className="text-secondary">{ retrievedUser?.data?.deliveries_pending_count || 0 } pending</small></h4>
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.deliveries', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
@@ -138,7 +106,7 @@ export default function Show() {
                                 </article>
                                 <article className="w-100 d-flex justify-content-between border-radius-25 box-shadow-1 p-3">
                                     <div>
-                                        <h4 className="fs-6">Purchases (25)</h4>
+                                        <h4 className="fs-6">Purchases ({ retrievedUser?.data?.purchases_count || 0 })</h4>
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.purchases', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
@@ -148,7 +116,7 @@ export default function Show() {
                                 </article>
                                 <article className="w-100 d-flex justify-content-between border-radius-25 box-shadow-1 p-3">
                                     <div>
-                                        <h4 className="fs-6">Queries (25)</h4>
+                                        <h4 className="fs-6">Queries ({ retrievedUser?.data?.client_queries_count || 0 })</h4>
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.client-queries', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">
@@ -158,7 +126,7 @@ export default function Show() {
                                 </article>
                                 <article className="w-100 d-flex justify-content-between border-radius-25 box-shadow-1 p-3">
                                     <div>
-                                        <h4 className="fs-6">Responses to Client Queries (25)</h4>
+                                        <h4 className="fs-6">Client Queries Solved ({ retrievedUser?.data?.client_queries_solved_count || 0 })</h4>
                                     </div>
                                     <div>
                                         <Link to={ route('home.users.show.query-responses', { username: params?.username }) } className="btn btn-sm btn-dark py-0 border-radius-35 text-decoration-none fw-semibold">

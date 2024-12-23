@@ -8,14 +8,12 @@ dayjs.extend(relativeTime);
 dayjs.extend(utc); 
 import { useVoiceToText } from '@/utils/useVoiceToText.jsx'; 
 import { usePayments } from '@/hooks/usePayments.jsx'; 
-import { useProduct } from '@/hooks/useProduct.jsx'; 
 import scrollToTop from '@/utils/ScrollToTop.jsx'; 
 import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
 import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
 import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
 import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
 import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
-import ProductComponent1 from '@/components/protected/nested-components/ProductComponent1';
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
@@ -52,11 +50,7 @@ export default function Index() {
                         <h2 className="fs-4">Payments</h2> 
 
                         <div className="">
-                            <Link to={ route('home.products.create') } className="btn btn-sm btn-dark px-3 border-radius-35">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="17.5" height="17.5" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
-                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-                                </svg>
-                            </Link>
+
                         </div>
                     </section>
 

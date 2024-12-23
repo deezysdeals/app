@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react'; 
+import { useContext, useEffect, useState } from 'react'; 
+import { CartContext } from '@/context/CartContext.jsx'; 
 import { useNavigate } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import useAxios from '@/utils/useAxios.jsx'; 
 import swal from 'sweetalert2'; 
 
 
-export function useOrder(id = null) {
+export function useOrder(id = null) { 
+    const { clearCart } = useContext(CartContext); 
     const [errors, setErrors] = useState({}); 
     const [loading, setLoading] = useState(false); 
     const [data, setData] = useState({}); 
@@ -25,15 +27,25 @@ export function useOrder(id = null) {
         setLoading(true); 
         setErrors({}); 
 
-        console.log(); 
-        return axiosInstance.post('orders', order)
+        console.log(order); 
+        return axiosInstance.post('orders', 
+            {
+                cart: order, 
+            }, 
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
             .then(response => {
-                setData(response?.data)
-                console.log(response);
+                setData(response?.data); 
+                // console.log(response); 
+                clearCart(); 
+                navigate(route('order-placed'));
             })
             .catch(error => {
                 setErrors(error?.response); 
-                if (error?.response?.status == 409) {
+                if (error?.response?.status == 400 || error?.response?.status == 409) {
                     swal.fire({
                         text: `${error?.response?.data?.message}`, 
                         color: '#900000', 
@@ -51,6 +63,7 @@ export function useOrder(id = null) {
                     });
                 }
                 console.log(error);
+                console.log(error?.response);
             })
             .finally(() => setLoading(false));
     } 

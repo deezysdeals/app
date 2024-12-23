@@ -20,16 +20,23 @@ export default function Cart() {
                     <span className="mb-0 badge rounded-pill text-bg-success" style={{ marginTop: '-16px' }}>{ getTotalQuantity() }</span>
                 </div> 
                 { (cartItems?.length > 0) && 
-                    <div className="cursor-pointer d-flex align-items-center gap-2 text-bg-dark rounded py-2 px-2 mb-0">
-                        <span className="fw-bold">${ getTotalPrice()?.toFixed(2)?.toLocaleString('en') }</span>
-                        <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                                className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                <path
-                                    d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
-                            </svg>
-                        </span>
-                    </div> 
+                    <span>
+                        { !(location?.pathname == route('pay')) && 
+                                <Link 
+                                to={ route('pay') }
+                                className="cursor-pointer d-flex align-items-center gap-2 text-bg-dark rounded py-2 px-2 mb-0 text-decoration-none">
+                                <span className="fw-bold">${ getTotalPrice()?.toFixed(2)?.toLocaleString('en') }</span>
+                                {/* <span className="fw-bold">{getTotalPrice() ? `${getTotalPrice()?.toFixed(2)}` : ''}</span> */}
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                                        className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+                                    </svg>
+                                </span>
+                            </Link> 
+                        }
+                    </span>
                 }
             </div>
 

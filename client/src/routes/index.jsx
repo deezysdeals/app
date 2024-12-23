@@ -105,8 +105,9 @@ const routeNames = {
     'categories.index': '/categories', 
 
     'cart': '/cart', 
-    'pay': '/pay', 
     'paid': '/paid', 
+    'pay': '/pay', 
+    'order-placed': '/order-placed', 
 
     'products.show': '/products/:source/:id/show', 
     'products.index': '/products', 

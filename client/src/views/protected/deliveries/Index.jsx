@@ -81,13 +81,13 @@ export default function Index() {
                                             setDeliveryQuery(prevState => ({
                                                 ...prevState, 
                                                 page: firstPage, 
-                                                delivery_status: 'undelivered'
+                                                delivery_status: 'pending'
                                             })); 
                                             await getDeliveries(); 
                                             scrollToTop(); 
                                         }}
-                                        className={`badge rounded-pill ${(deliveryQuery?.delivery_status == 'undelivered') ? `text-bg-secondary` : `text-bg-dark`}`}>
-                                            Undelivered
+                                        className={`badge rounded-pill ${(deliveryQuery?.delivery_status == 'pending') ? `text-bg-secondary` : `text-bg-dark`}`}>
+                                            Pending
                                     </span>
                                 </li> 
                                 <li>

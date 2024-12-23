@@ -9,7 +9,7 @@ import Previous from '@/components/protected/nested-components/pagination-links/
 import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
 import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
 import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
-import ProductComponent1 from '../../../components/protected/nested-components/ProductComponent1.jsx'; 
+import ProductComponent1 from '@/components/protected/nested-components/ProductComponent1.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
 

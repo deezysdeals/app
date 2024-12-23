@@ -1,4 +1,3 @@
-import { useState } from 'react'; 
 import Cart from '@/components/Cart.jsx'; 
 import Help from '@/components/Help.jsx';
 

@@ -376,16 +376,16 @@ export default function ProductComponent1({ itemId,
                                                                         </small>
                                                                     </span> 
                                                                 } 
-                                                                { (deliveryStatus == 'undelivered') 
+                                                                { (deliveryStatus == 'pending') 
                                                                     ? <span className="text-warning fw-semibold pt-1">Not yet delivered</span> 
                                                                         : '' }
                                                                 <span className="card-text">
                                                                     { (deliveryStatus == 'delivered') ? 'Delivered' 
-                                                                        : (deliveryStatus == 'undelivered') ? 'Delivery on' 
+                                                                        : (deliveryStatus == 'pending') ? 'Delivery on' 
                                                                             : '' }&nbsp;
                                                                     <span className="fw-semibold">
                                                                         { (deliveryStatus == 'delivered') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY h:mm A') 
-                                                                            : (deliveryStatus == 'undelivered') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY') 
+                                                                            : (deliveryStatus == 'pending') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY') 
                                                                                 : '' } 
                                                                     </span>
                                                                 </span> 
@@ -555,16 +555,16 @@ export default function ProductComponent1({ itemId,
                                                         </small>
                                                     </span> 
                                                 } 
-                                                { (deliveryStatus == 'undelivered') 
+                                                { (deliveryStatus == 'pending') 
                                                         ? <span className="text-warning fw-semibold pt-1">Not yet delivered</span> 
                                                             : '' }
                                                     <span className="card-text">
                                                         { (deliveryStatus == 'delivered') ? 'Delivered' 
-                                                            : (deliveryStatus == 'undelivered') ? 'Delivery on' 
+                                                            : (deliveryStatus == 'pending') ? 'Delivery on' 
                                                                 : '' }&nbsp;
                                                         <span className="fw-semibold">
                                                             { (deliveryStatus == 'delivered') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY h:mm A') 
-                                                                : (deliveryStatus == 'undelivered') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY') 
+                                                                : (deliveryStatus == 'pending') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY') 
                                                                     : '' } 
                                                         </span>
                                                 </span> 

@@ -6,6 +6,7 @@ import OrderItem from '../models/OrderItem.js';
 import Payment from '../models/Payment.js'; 
 import Product from '../models/Product.js'; 
 import ProductReview from '../models/ProductReview.js';
+import ClientQuery from '../models/ClientQuery.js'; 
 
 
 /**
@@ -135,89 +136,43 @@ const createUser = asyncHandler(async (req, res) => {
 const getUser = asyncHandler(async (req, res) => { 
     const { username } = req?.params; 
 
-	const userFound = await User.findOne({ username: username })
+	const user = await User.findOne({ username: username })
                                 .select(['-password', '-password_reset_token', '-updated_at', '-deleted_at'])
                                 .lean(); 
 
-	if (!userFound) return res.status(404).json({ message: `No user matches user @${username}!` }); 
+	if (!user) return res.status(404).json({ message: `No user matches user @${username}!` }); 
 
-    console.log(userFound);
+    console.log(user);
 
-    // Query optimization 
-    // Orders
-    const orders_current_page = parseInt(req?.query?.orderPage) || 1;
-    const orders_limit = parseInt(req?.query?.orderLimit) || 10; 
-    const orders_skip = (orders_current_page - 1) * orders_limit; 
+    /** User Details: */
+    /** Orders, Order Items, Payments, Product Reviews, Deliveries, Purchases, Client Queries, Query Responses */ 
+    const userOrders = await Order.countDocuments({ user: user?._id, deleted_at: null }); 
+    const userOrdersPending = await Order.countDocuments({ user: user?._id, paid: false, deleted_at: null }); 
+    const getUserOrderItems = await OrderItem.countDocuments({ user: user?._id, deleted_at: null }); 
+    const getUserPayments = await Order.countDocuments({ user: user?._id, paid: 'true', deleted_at: null }); 
+    const getUserProductReviews = await ProductReview.countDocuments({ user: user?._id, deleted_at: null }); 
+    const getUserDeliveries = await Order.countDocuments({ user: user?._id, deleted_at: null }); 
+    const getUserDeliveriesPending = await Order.countDocuments({
+        user: user?._id,
+        delivery_status: { $in: ['undelivered', 'pending'] },
+        deleted_at: null
+    }); 
+    const getUserPurchases = await Product.countDocuments({ user: user?._id, purchased_for_resale: true, deleted_at: null }); 
+    const getUserClientQueries = await ClientQuery.countDocuments({ user: user?._id, deleted_at: null }); 
+    const getUserClientQueriesSolved = await ClientQuery.countDocuments({ marked_solved_by: user?._id, deleted_at: null }); 
 
-    // // Products
-    // const products_current_page = parseInt(req?.query?.productPage) || 1;
-    // const products_limit = parseInt(req?.query?.productLimit) || 10; 
-    // const products_skip = (products_current_page - 1) * limit; 
+    user.orders_count = userOrders; 
+    user.orders_pending_count = userOrdersPending; 
+    user.order_items_count = getUserOrderItems;
+    user.payments_count = getUserPayments; 
+    user.product_reviews_count = getUserProductReviews; 
+    user.deliveries_count = getUserDeliveries; 
+    user.deliveries_pending_count = getUserDeliveriesPending; 
+    user.purchases_count = getUserPurchases; 
+    user.client_queries_count = getUserClientQueries; 
+    user.client_queries_solved_count = getUserClientQueriesSolved; 
 
-    let userDetails = []; 
-
-    // userDetails.push(userFound); 
-
-    const updatePromises = async () => { 
-        // Orders
-        const orders = await Order.find({ user: userFound?._id, deleted_at: null })
-                                .sort('-created_at')
-                                .skip(orders_skip)
-                                .limit(orders_limit)
-                                .populate({
-                                    path: 'user', 
-                                    select: 'first_name last_name username' 
-                                })
-                                .lean(); 
-
-        let updateOrderPromises = []; 
-
-        // Ensure orders is an array before calling map
-        if (Array.isArray(orders) && orders.length > 0) {
-            updateOrderPromises = orders?.map(async (order) => {
-                let foundOrderItems = await OrderItem.find({ order: order?._id })
-                                                    .populate({
-                                                        path: 'product', 
-                                                    })
-                                                    .exec(); 
-                order['order_items'] = foundOrderItems; 
-
-                userDetails.push(order); 
-            }); 
-
-            // await Promise.all(updateOrderPromises); 
-        } else {
-            console.log("No orders found for the user.");
-        }
-
-        // Only call Promise.all if updateOrderPromises is an array and has promises
-        // if (updateOrderPromises.length > 0) {
-        //     await Promise.all(updateOrderPromises); 
-        // }
-
-        // Payments
-        const payments = await Payment.find({ user: userFound?._id, deleted_at: null }); 
-
-        userDetails.push(payments);
-    } 
-
-    if (updatePromises.length > 0) {
-        await Promise.all(updatePromises); 
-    }
-    // await Promise.all(updatePromises); 
-
-    userDetails.push(userFound); 
-
-	// res.status(200).json({ data: userFound }); 
-    res.json({ 
-                meta: {
-                    // current_page, 
-                    // limit, 
-                    // total_pages: Math.ceil(ordersCount / limit), 
-                    // total_results: ordersCount, 
-                }, 
-                data: userFound 
-            });
+    res.json({ data: user });
 }); 
 
 /**
@@ -351,6 +306,7 @@ const destroyUser = asyncHandler(async (req, res) => {
  */
 const getUserClientQueries = asyncHandler(async (req, res) => {
     const { username } = req?.params; 
+    
 });
 
 /**
@@ -358,6 +314,74 @@ const getUserClientQueries = asyncHandler(async (req, res) => {
  */
 const getUserDeliveries = asyncHandler(async (req, res) => {
     const { username } = req?.params; 
+    const deliveryStatus = req?.query?.delivery_status; 
+    const limit = parseInt(req?.query?.limit) || 10; 
+    const current_page = parseInt(req?.query?.page) || 1;
+    // console.log(deliveryStatus, limit, current_page);
+    const skip = (current_page - 1) * limit; 
+
+    /** Firstly, find user */ 
+    const userFound = await User.findOne({ username: username }).lean();
+
+    let deliveries, deliveriesCount; 
+    let deliveriesList = []; 
+
+    if (deliveryStatus == 'all') {
+        deliveries = await Order.find({ user: userFound?._id, deleted_at: null })
+                                    .sort('-created_at')
+                                    .skip(skip)
+                                    .limit(limit)
+                                    .populate({
+                                        path: 'user', 
+                                        select: 'first_name last_name username' 
+                                    })
+                                    .lean(); 
+        if (!deliveries?.length) return res.status(404).json({ message: "No deliveries found!" }); 
+
+        deliveriesCount = await Order.countDocuments({ user: userFound?._id, deleted_at: null });
+
+    } else {
+        // if (deliveryStatus == 'pending' || deliveryStatus == 'undelivered') deliveryStatus = { $in: ['undelivered', 'pending'] };
+        deliveries = await Order.find({ user: userFound?._id, deleted_at: null, delivery_status: deliveryStatus }) 
+                                    .sort('-created_at')
+                                    .skip(skip)
+                                    .limit(limit)
+                                    .populate({
+                                        path: 'user', 
+                                        select: 'first_name last_name username' 
+                                    })
+                                    .lean(); 
+        if (!deliveries?.length) return res.status(404).json({ message: "No deliveries found!" }); 
+
+        deliveriesCount = await Order.countDocuments({ user: userFound?._id, deleted_at: null, delivery_status: deliveryStatus });
+    }
+
+    /** Order Items within Deliveries */ 
+    if (deliveries?.length) {
+        const updatePromises = deliveries?.map(async order => { 
+            let foundOrderItems = await OrderItem.find({ user: userFound?._id, order: order?._id, deleted_at: null })
+                                                .sort('-created_at')
+                                                .populate({
+                                                    path: 'product', 
+                                                })
+                                                .exec(); 
+            order['order_items'] = foundOrderItems; 
+
+            deliveriesList.push(order);
+        }); 
+        await Promise.all(updatePromises); 
+    }
+
+    // res.json({ data: deliveries, count: deliveriesCount, total_amount: totalPaid }); 
+    res.json({ 
+                meta: {
+                    current_page, 
+                    limit, 
+                    total_pages: Math.ceil(deliveriesCount / limit), 
+                    total_results: deliveriesCount
+                }, 
+                data: deliveriesList 
+            }); 
 });
 
 /**
@@ -365,6 +389,43 @@ const getUserDeliveries = asyncHandler(async (req, res) => {
  */
 const getUserOrderItems = asyncHandler(async (req, res) => {
     const { username } = req?.params; 
+    const current_page = parseInt(req?.query?.page) || 1;
+    const limit = parseInt(req?.query?.limit) || 10; 
+    const skip = (current_page - 1) * limit; 
+
+    /** Firstly, find user */ 
+    const userFound = await User.findOne({ username: username }).lean();
+
+	const orderItems = await OrderItem.find({ user: userFound?._id, deleted_at: null })
+                                    .sort('-created_at')
+                                    .skip(skip)
+                                    .limit(limit)
+                                    .populate({
+                                        path: 'order', 
+                                    })
+                                    .populate({
+                                        path: 'product', 
+                                    })
+                                    .populate({
+                                        path: 'user', 
+                                        select: 'first_name last_name username' 
+                                    })
+                                    .lean(); 
+                                    
+    if (!orderItems?.length) return res.status(404).json({ message: "No order items found!" }); 
+
+    // Order items count 
+    const orderItemsCount = await OrderItem.find({ user: userFound?._id, deleted_at: null }).countDocuments(); 
+
+    res.json({ 
+                meta: {
+                    current_page, 
+                    limit, 
+                    total_pages: Math.ceil(orderItemsCount / limit), 
+                    total_results: orderItemsCount 
+                }, 
+                data: orderItems 
+            });
 }); 
 
 /**
@@ -372,71 +433,108 @@ const getUserOrderItems = asyncHandler(async (req, res) => {
  */
 const getUserOrders = asyncHandler(async (req, res) => {
     const { username } = req?.params; 
+    const paymentStatus = req?.query?.payment_status
+    const limit = parseInt(req?.query?.limit) || 10; 
+    const current_page = parseInt(req?.query?.page) || 1;
+    const skip = (current_page - 1) * limit; 
 
-    let orders, ordersCount, ordersList = [];
-
-    /** Find user first */ 
+    /** Firstly, find user */ 
     const userFound = await User.findOne({ username: username }).lean();
 
-    /** Proceed to main Order logic */ 
-    if (deliveryStatus != 'all') {
-        orders = await Order.find({ user: userFound?._id, delivery_status: deliveryStatus })
-                        .sort('-created_at')
-                        .skip(skip)
-                        .limit(limit)
-                        .populate({
-                            path: 'user', 
-                            select: 'first_name last_name username' 
-                        })
-                        .lean(); 
+    let orders, ordersCount; 
+    let ordersList = [];
+
+    if (paymentStatus == 'all') {
+        orders = await Order.find({ user: userFound?._id, deleted_at: null })
+                            .sort('-created_at')
+                            .skip(skip)
+                            .limit(limit)
+                            .populate({
+                                path: 'user', 
+                                select: 'first_name last_name username' 
+                            })
+                            .lean(); 
         if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
 
-        ordersCount = await Order.find({ deleted_at: null, user: userFound?._id, delivery_status: deliveryStatus }).countDocuments(); 
+        ordersCount = await Order.countDocuments({ deleted_at: null });
+
     } else {
-        orders = await Order.find({ user: userFound?._id })
-                        .sort('-created_at')
-                        .skip(skip)
-                        .limit(limit)
-                        .populate({
-                            path: 'user', 
-                            select: 'first_name last_name username' 
-                        })
-                        .lean(); 
+        orders = await Order.find({ user: userFound?._id,  deleted_at: null, paid: paymentStatus }) 
+                            .sort('-created_at')
+                            .skip(skip)
+                            .limit(limit)
+                            .populate({
+                                path: 'user', 
+                                select: 'first_name last_name username' 
+                            })
+                            .lean(); 
         if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
 
-        ordersCount = await Order.find({ deleted_at: null, user: userFound?._id }).countDocuments(); 
+        ordersCount = await Order.countDocuments({ deleted_at: null, paid: paymentStatus });
     }
 
     /** Order Items within Orders */ 
-    const updatePromises = orders?.map(async order => { 
-        let foundOrderItems = await OrderItem.find({ order: order?._id })
-                                            .sort('-created_at')
-                                            .populate({
-                                                path: 'product', 
-                                            })
-                                            .exec(); 
-        order['order_items'] = foundOrderItems; 
+    if (orders?.length) {
+        const updatePromises = orders?.map(async order => { 
+            let foundOrderItems = await OrderItem.find({ user: userFound?._id, order: order?._id, deleted_at: null })
+                                                .sort('-created_at')
+                                                .populate({
+                                                    path: 'product', 
+                                                })
+                                                .lean(); 
+            order['order_items'] = foundOrderItems; 
 
-        ordersList.push(order);
-    }); 
-    await Promise.all(updatePromises); 
+            ordersList.push(order);
+        }); 
+        await Promise.all(updatePromises); 
+    }
 
+    // res.json({ data: orders, count: ordersCount, total_amount: totalPaid }); 
     res.json({ 
-            meta: {
-                current_page, 
-                limit, 
-                total_pages: Math.ceil(ordersCount / limit), 
-                total_results: ordersCount 
-            }, 
-            data: ordersList 
-        });
+                meta: {
+                    current_page, 
+                    limit, 
+                    total_pages: Math.ceil(ordersCount / limit), 
+                    total_results: ordersCount
+                }, 
+                data: ordersList 
+            });
 });
 
 /**
  * GET USER PAYMENTS
  */
 const getUserPayments = asyncHandler(async (req, res) => {
-    const { username } = req?.params; 
+    const username = req?.params?.username; 
+    const current_page = parseInt(req?.query?.page) || 1;
+    const limit = parseInt(req?.query?.limit) || 10; 
+    const skip = (current_page - 1) * limit; 
+
+    let userFound = await User.findOne({ username: username }).lean(); 
+    if (!userFound) return res.status(404).json({ message: "User not found!" }); 
+
+    const payments = await Order.find({ user: userFound?._id, deleted_at: null, paid: true })
+                            .sort('-created_at')
+                            .skip(skip)
+                            .limit(limit)
+                            .populate({
+                                path: 'user',
+                                select: 'first_name last_name username'
+                            })
+                            .lean(); 
+    if (!payments?.length) return res.status(404).json({ message: "No payments found!" }); 
+
+    const total = await Order.countDocuments({ user: userFound?._id, deleted_at: null, paid: true }); 
+
+    res.json({ 
+                meta: {
+                    current_page, 
+                    limit, 
+                    total_pages: Math.ceil(total / limit), 
+                    total_results: total
+                }, 
+                data: payments 
+            });
 });
 
 /**
@@ -532,7 +630,38 @@ const getUserProductReviews = asyncHandler(async (req, res) => {
  * GET USER PURCHASES
  */
 const getUserPurchases = asyncHandler(async (req, res) => {
-    const { username } = req?.params; 
+    const username = req?.params?.username; 
+    const current_page = parseInt(req?.query?.page) || 1;
+    const limit = parseInt(req?.query?.limit) || 10; 
+    const skip = (current_page - 1) * limit; 
+
+    /** Firstly, find user */ 
+    const userFound = await User.findOne({ username: username }).lean();
+
+    // const purchases = await Product.find({ deleted_at: null })
+    const purchases = await Product.find({ user: userFound?._id, deleted_at: null, purchased_for_resale: true })
+                            .sort('-created_at')
+                            .skip(skip)
+                            .limit(limit)
+                            .populate({
+                                path: 'user',
+                                select: 'first_name last_name username'
+                            })
+                            .lean(); 
+    if (!purchases?.length) return res.status(404).json({ message: "No purchases found!" }); 
+
+    // const total = await Product.countDocuments({ deleted_at: null }); 
+    const total = await Product.countDocuments({ user: userFound?._id, deleted_at: null, purchased_for_resale: true }); 
+
+    res.json({ 
+                meta: {
+                    current_page, 
+                    limit, 
+                    total_pages: Math.ceil(total / limit), 
+                    total_results: total
+                }, 
+                data: purchases 
+            });
 });
 
 /**

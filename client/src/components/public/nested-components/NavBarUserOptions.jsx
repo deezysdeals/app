@@ -22,22 +22,9 @@ export default function NavBarUserOptions() {
                 </span>
     
                 <div id="user-options"
-                    className="user-options position-absolute bg-white px-3 py-4 border border-1 border-radius-35 text-nowrap hidden box-shadow-1 fw-semibold"
+                    className="user-options position-absolute bg-white px-3 py-4 border border-1 border-radius-25 text-nowrap hidden box-shadow-1 fw-semibold"
                     style={{ top: '40px', right: '0', display: userOptionsToggle && 'block' }}>
                     <ul className="list-unstyled d-flex flex-column gap-3">
-                        <li className="text-dark">
-                            <Link to={ route('home.index') } className="text-decoration-none text-dark d-flex justify-content-end gap-1">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 18V15" stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                    <path
-                                        d="M10.07 2.81997L3.14002 8.36997C2.36002 8.98997 1.86002 10.3 2.03002 11.28L3.36002 19.24C3.60002 20.66 4.96002 21.81 6.40002 21.81H17.6C19.03 21.81 20.4 20.65 20.64 19.24L21.97 11.28C22.13 10.3 21.63 8.98997 20.86 8.36997L13.93 2.82997C12.86 1.96997 11.13 1.96997 10.07 2.81997Z"
-                                        stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                                <span>
-                                    Dashboard
-                                </span>
-                            </Link>
-                        </li>
                         <li className="text-dark d-flex justify-content-end gap-1">
                             <Link to={ route('home.settings.index') } className="text-decoration-none text-dark d-flex justify-content-end gap-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"

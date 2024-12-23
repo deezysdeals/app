@@ -1,5 +1,3 @@
-// import { useLocation } from 'react-router-dom'; 
-// import { route } from '@/routes';
 import Header from '@/components/protected/Header.jsx'; 
 import SideNav from '@/components/protected/SideNav.jsx'; 
 import Footer from '@/components/protected/Footer.jsx'; 

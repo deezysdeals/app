@@ -18,7 +18,10 @@ export function usePayments(paymentQuery) {
         console.log(paymentQuery);
         setPayments([]); 
         return axiosInstance.get(`users/${paymentQuery?.username}/payments?page=${paymentQuery?.page}&limit=${paymentQuery?.limit}`, { signal }) 
-            .then(response => setPayments(response?.data))
+            .then(response => {
+                setPayments(response?.data); 
+                console.log(response?.data);
+            })
             .catch(error => console.log(error));
     } 
 

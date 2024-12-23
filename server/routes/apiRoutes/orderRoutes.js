@@ -4,7 +4,7 @@ import authenticated from '../../middleware/authenticated.js';
 import roles from '../../config/allowedRoles.js'; 
 import checkRoles from '../../middleware/checkRoles.js'; 
 import { getOrders, 
-        // createOrder, 
+        createOrder, 
         // updatePayPalOrderID, 
         // captureOrder, 
         // markAsPaidOrder,
@@ -34,7 +34,7 @@ orderRouter.post('/payments/:authorizationId/captureAuthorize', captureAuthorise
 /** Main Routes */
 orderRouter.route('/')
                 .get(getOrders)
-                // .post(createOrder); 
+                .post(createOrder); 
 
 orderRouter.route('/:id')
                 .get(getOrder)

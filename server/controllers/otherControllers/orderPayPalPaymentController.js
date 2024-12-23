@@ -16,6 +16,9 @@ import Address from '../../models/Address.js';
 import Notification from '../../models/Notification.js'; 
 
 
+/**
+ * CREATE ORDER (AND PAY)
+ */
 const createOrderPayment = async (req, res) => {
     try {
         const { cart } = req.body; 
@@ -50,7 +53,7 @@ const createOrderPayment = async (req, res) => {
 
         } else if (cart && cart?.length > 0) { 
             const cartResolve = cart?.map(async (item, index) => { 
-                async function fetchProduct() {
+                async function fetchProductAndProcessOrder() {
                     try {
                         const response = await axios.get(`https://fakestoreapi.com/products/${item?.id}`);
                         // console.log('Response:', response?.data); 
@@ -174,7 +177,7 @@ const createOrderPayment = async (req, res) => {
                         console.error('Error:', error);
                     } 
                 }
-                fetchProduct(); 
+                fetchProductAndProcessOrder(); 
 
             }); 
 
@@ -188,6 +191,9 @@ const createOrderPayment = async (req, res) => {
     }
 }
 
+/**
+ * CAPTURE CREATED ORDER (AND COMPLETE PAYMENT PROCESS)
+ */
 const captureOrderPayment = async (req, res) => {
     try {
         const { orderID } = req.params; 
@@ -227,7 +233,7 @@ const captureOrderPayment = async (req, res) => {
                         ); 
 
                         const productFilter = { _id: orderItem?.product };
-                        const productUpdate = { $inc: { sold_count: 1 } };
+                        const productUpdate = { $inc: { sale_count: 1 } }; 
                         const updateProduct = await Product.findOneAndUpdate(
                             productFilter,
                             productUpdate,
@@ -256,7 +262,9 @@ const captureOrderPayment = async (req, res) => {
     }
 }
 
-// authorizeOrder route
+/**
+ * AUTHORISE ORDER
+ */
 const authorizeOrderPayment = async (req, res) => {
     try {
         const { orderID } = req.params;
@@ -268,7 +276,9 @@ const authorizeOrderPayment = async (req, res) => {
     }
 }
 
-// captureAuthorize route
+/**
+ * CAPTURE AUTHORISED ORDER
+ */
 const captureAuthorisedOrderPayment = async (req, res) => {
     try {
         const { authorizationId } = req.params;
