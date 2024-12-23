@@ -21,10 +21,10 @@ const productSchema = new Schema({
         purchase_price: { type: Number }, 
         initial_retail_price: { type: Number }, 
         retail_price: { type: Number, required: true }, 
-        sold_to_client: { type: Boolean, default: false }, 
-        price_sold_to_client: { type: Number }, 
+        // sold_to_client: { type: Boolean, default: false }, 
+        // price_sold_to_client: { type: Number }, 
         order_count: { type: Number, default: 0 }, 
-        sold_count: { type: Number, default: 0 }, 
+        sale_count: { type: Number, default: 0 }, 
         currency: { type: String, default: 'usd' }, 
         images: [ String ], 
         dimensions: {

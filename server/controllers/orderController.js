@@ -8,6 +8,8 @@ import Order from '../models/Order.js';
 import OrderItem from '../models/OrderItem.js'; 
 import User from '../models/User.js'; 
 import Address from '../models/Address.js'; 
+import Notification from '../models/Notification.js'; 
+import orderPlacedNoticationMailTemplate from '../mails/templates/orderNotificationMail.js';
 
 
 /**
@@ -84,60 +86,165 @@ const getOrders = asyncHandler(async (req, res) => {
 
 });
 
+/**
+ * CREATE ORDER (AND PAY LATER)
+ */
+const createOrder = async (req, res) => {
+    try {
+        const { cart } = req.body; 
+        console.log('cart', cart); 
 
+        const userPlacingOrder = await User.findOne({ _id: req?.user_id }).lean(); 
+        const addressOfUser = await Address.findOne({ user: req?.user_id, default: true }).lean(); 
 
+        if (!addressOfUser) return res.status(409).json({ message: 'You must have an address before you can place an order.' }); 
 
+        const newOrder = await Order.create({
+            user: req?.user_id, 
+            payment_mode: 'unpaid', 
+            billing_status: 'unpaid', 
+            full_name: addressOfUser?.full_name, 
+            email: userPlacingOrder?.email, 
+            phone: addressOfUser?.phone, 
+            address_line_1: addressOfUser?.address_line_1, 
+            address_line_2: addressOfUser?.address_line_2, 
+            post_code: addressOfUser?.post_code, 
+            town_city: addressOfUser?.town_city, 
+            state_region: addressOfUser?.state_region, 
+            country: addressOfUser?.country, 
+            delivery_instructions: addressOfUser?.delivery_instructions 
+        }); 
 
+        let totalToBePaid = 0; 
 
+        if ((cart && cart?.length === 0) || (cart == undefined)) { 
 
+            return res.status(400).json({ message: 'No order items. You must add at least one item!' }); 
 
+        } else if (cart && cart?.length > 0) { 
+            const cartResolve = cart?.map(async (item, index) => { 
+                async function fetchProductAndProcessOrder() {
+                    try {
+                        const response = await axios.get(`https://fakestoreapi.com/products/${item?.id}`);
+                        // console.log('Response:', response?.data); 
 
+                        /** Create new category, if does not exist */  
+                        const categoryFilter = { name: response?.data?.category }; 
+                        const categoryUpdate = { added_by: req?.user_id }; 
 
+                        const upsertCategory = await Category.findOneAndUpdate(categoryFilter, categoryUpdate, {
+                            new: true, 
+                            upsert: true 
+                        }); 
+                        // console.log(upsertCategory); 
 
+                        /** Create new product (order item), if does not exist */
+                        const productFilter = { title: response?.data?.title };
+                        const productUpdate = {
+                            $setOnInsert: { // This ensures these fields are set only when the document is inserted
+                                user: req?.user_id,
+                                title: response?.data?.title,
+                                retail_price: response?.data?.price,
+                                images: [response?.data?.image]
+                            },
+                            $inc: { order_count: 1 } // Increment the order_count atomically
+                        };
 
+                        /** Find and update or insert a new product, incrementing `order_count` if the product exists */ 
+                        const upsertProduct = await Product.findOneAndUpdate(
+                            productFilter,
+                            productUpdate,
+                            {
+                                new: true,   // Return the updated document
+                                upsert: true // Create a new document if one doesn't exist
+                            }
+                        );
+                        // console.log(upsertProduct);
 
+                        /** Create new product image (order item image), if does not exist */ 
+                        const productImageFilter = { 'image_path.url': response?.data?.image }; 
+                        const productImageUpdate = { $set: { product: upsertProduct?._id,
+                                                            'image_path.$.url': response?.data?.image } }; 
 
+                        const upsertProductImage = await ProductImage.findOneAndUpdate(productImageFilter, productImageUpdate, {
+                            new: true,
+                            upsert: true 
+                        }); 
+                        // console.log(upsertProductImage); 
 
+                        const newOrderItem = await OrderItem.create({
+                            user: req?.user_id, 
+                            product: upsertProduct?._id, 
+                            order: newOrder?._id, 
+                            quantity: item?.quantity, 
+                            cost_price: upsertProduct?.retail_price, 
+                            selling_price: (upsertProduct?.retail_price + (10/100))
+                        }); 
+                        // console.log({'Test': newOrderItem?.price * newOrderItem?.quantity}); 
 
+                        let orderItemPrice = newOrderItem?.selling_price * newOrderItem?.quantity; 
+                        totalToBePaid += orderItemPrice; 
+                        // console.log({ 'totaltobe': totalToBePaid }); 
+                        // console.log({'Cart length:': cart?.length}); 
+                        // console.log({'Index': index}); 
 
+                        if ((cart?.length) == index+1) { 
+                            async function updateUserWithOrderCountAndNotification() {
+                                try { 
+                                    const updateUserWithOrdersPlaced = await User.findOneAndUpdate(
+                                        { _id: req?.user_id }, 
+                                        { $inc: { total_amount_spent_on_orders: totalToBePaid, total_orders: 1 } }, 
+                                        { new: true }
+                                    );
+                                    if (!updateUserWithOrdersPlaced) return res.status(404).json({ message: 'User not found' });
 
+                                    const newNotification = await Notification.create({
+                                        user: req?.user_id, 
+                                        type: 'order', 
+                                        order: newOrder?._id
+                                    }); 
 
+                                    // console.log('updated user', updateUserWithOrdersPlaced)
 
+                                    /** Send mail notification for placed order if user wants */ 
+                                    if (updateUserWithOrdersPlaced?.receive_notifications == true) {
+                                        await orderPlacedNoticationMailTemplate(updateUserWithOrdersPlaced, newOrder)
+                                    }
 
+                                } catch (error) {
+                                    console.error('Error updating order and user:', error);
+                                    return res.status(500).json({ message: 'Internal server error' });
+                                }
 
+                            }
+                            await updateUserWithOrderCountAndNotification();
 
+                            // console.log('total within function', totalToBePaid); 
+                            // res.status(201).json({ success: `Order ${newOrder._id} added`, data: newOrder });
+                        }
 
+                    } catch (error) {
+                        console.error('Error:', error);
+                    } 
+                }
+                fetchProductAndProcessOrder(); 
 
+            }); 
 
+            await Promise.all(cartResolve); 
 
+            res.status(201).json({ success: `Order ${newOrder._id} added`, data: newOrder });
+        } 
 
+    } catch (error) {
+        console.error("Failed to create order:", error);
+        res.status(500).json({ error: "Failed to create order." });
+    }
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/**
+ * GET AN ORDER
+ */
 const getOrder = asyncHandler(async (req, res) => {
 	const order = await Order.findOne({ _id: req?.params?.id })
                             .select(['-created_at', '-updated_at', '-deleted_at'])
@@ -164,10 +271,9 @@ const getOrder = asyncHandler(async (req, res) => {
 	res.status(200).json({ data: order }); 
 }); 
 
-
-
-
-
+/**
+ * UPDATE AN ORDER
+ */
 const updateOrder = asyncHandler(async (req, res) => {
     const { delivery_mode, 
             payment_mode, 
@@ -223,10 +329,9 @@ const updateOrder = asyncHandler(async (req, res) => {
         });
 }); 
 
-
-
-
-
+/**
+ * SOFT-DELETE AN ORDER
+ */
 const deleteOrder = asyncHandler(async (req, res) => {
     const { id } = req?.params; 
     const order = await Order.findOne({ _id: id }).exec();
@@ -247,10 +352,9 @@ const deleteOrder = asyncHandler(async (req, res) => {
         });
 }); 
 
-
-
-
-
+/**
+ * RESTORE A SOFT-DELETED ORDER
+ */
 const restoreOrder = asyncHandler(async (req, res) => {
     const { id } = req?.params; 
     const order = await Order.findOne({ _id: id }).exec();
@@ -271,10 +375,9 @@ const restoreOrder = asyncHandler(async (req, res) => {
         });
 }); 
 
-
-
-
-
+/**
+ * PERMANENTLY DELETE AN ORDER
+ */
 const destroyOrder = asyncHandler(async (req, res) => {
     const { id } = req?.params;
 	const order = await Order.findOne({ _id: id }).exec();
@@ -287,12 +390,8 @@ const destroyOrder = asyncHandler(async (req, res) => {
 }); 
 
 
-
-
-
-
 export { getOrders, 
-		// createOrder, 
+		createOrder, 
         // updatePayPalOrderID, 
         // captureOrder, 
         // markAsPaidOrder,

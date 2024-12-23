@@ -20,6 +20,7 @@ import Brands from '@/views/public/Brands.jsx';
 import Cart from '@/views/public/Cart.jsx'; 
 import Categories from '@/views/public/Categories.jsx'; 
 import Category from '@/views/public/Category.jsx'; 
+import OrderPlaced from '@/views/public/OrderPlaced.jsx'; 
 import Pay from '@/views/public/Pay.jsx'; 
 import Paid from '@/views/public/Paid.jsx'; 
 import Product from '@/views/public/Product.jsx'; 
@@ -137,6 +138,7 @@ function App() {
               <Route path={ route('cart') } element={ <Cart /> } /> 
               <Route path={ route('categories.show') } element={ <Category /> } /> 
               <Route path={ route('categories.index') } element={ <Categories /> } /> 
+              <Route path={ route('order-placed') } element={ <OrderPlaced /> } /> 
               <Route path={ route('pay') } element={ <Pay /> } /> 
               <Route path={ route('paid') } element={ <Paid /> } /> 
               <Route path={ route('products.show') } element={ <Product /> } /> 

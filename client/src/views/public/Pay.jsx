@@ -3,7 +3,7 @@ import AuthContext from '@/context/AuthContext.jsx';
 import { CartContext } from '@/context/CartContext.jsx'; 
 import { useNavigate } from 'react-router-dom'; 
 import { route } from '@/routes'; 
-import axios from 'axios'; 
+// import axios from 'axios'; 
 import useAxios from '@/utils/useAxios.jsx'; 
 import swal from 'sweetalert2'; 
 import {
@@ -16,8 +16,6 @@ import {
     PayPalExpiryField,
     PayPalCVVField,
 } from "@paypal/react-paypal-js";
-// import { Link } from 'react-router-dom'; 
-// import { route } from '@/routes'; 
 import Constants from '@/utils/Constants.jsx'; 
 import { useOrder } from '@/hooks/useOrder.jsx'; 
 import Aside from '@/components/public/Aside.jsx'; 
@@ -26,8 +24,8 @@ import Layout from '@/components/public/Layout.jsx';
 
 export default function Pay() { 
     const { authTokens } = useContext(AuthContext); 
-    const { cartItems, getTotalPrice } = useContext(CartContext); 
-    console.log(cartItems); 
+    const { cartItems, getTotalPrice, clearCart } = useContext(CartContext); 
+    // console.log(cartItems); 
     const axiosInstance = useAxios(); 
     const navigate = useNavigate(); 
 
@@ -118,21 +116,9 @@ export default function Pay() {
     }
 
     async function onApprove(data, actions) { 
-        // const details = await actions?.order?.capture();
-        // console.log('payment source client-side', details);
-        // console.log('payment source client-side', details?.payer?.payer_id); 
-
-        // let paymentInstrument; 
-        // if (details?.payer?.payer_id) {
-        //     paymentInstrument = 'paypal';
-        // } else {
-        //     paymentInstrument = 'card';
-        // }
-
         try {
             const response = await axiosInstance.post(
-                `orders/payments/${data?.orderID}/capture`,
-                // `orders/payments/${data?.orderID}/${paymentInstrument}/capture`,
+                `orders/payments/${data?.orderID}/capture`, 
                 {}, // Empty body as it's a POST request without data payload 
                 {
                     headers: {
@@ -161,21 +147,44 @@ export default function Pay() {
                 // (2) Other non-recoverable errors -> Show a failure message
                 let errorMessage;
                 if (transaction) {
-                    errorMessage = `Transaction ${transaction.status}: ${transaction.id}`;
+                    errorMessage = `Transaction ${transaction.status}: ${transaction.id}`; 
+                    swal.fire({ 
+                        text: errorMessage, 
+                        color: '#900000', 
+                        width: 325, 
+                        position: 'top', 
+                        showConfirmButton: false
+                    }); 
                 } else if (errorDetail) {
-                    errorMessage = `${errorDetail.description} (${orderData.debug_id})`;
+                    errorMessage = `${errorDetail.description} (${orderData.debug_id})`; 
+                    swal.fire({ 
+                        text: errorMessage, 
+                        color: '#900000', 
+                        width: 325, 
+                        position: 'top', 
+                        showConfirmButton: false
+                    });
                 } else {
-                    errorMessage = JSON.stringify(orderData);
+                    errorMessage = JSON.stringify(orderData); 
+                    swal.fire({ 
+                        text: errorMessage, 
+                        color: '#900000', 
+                        width: 325, 
+                        position: 'top', 
+                        showConfirmButton: false
+                    }); 
                 }
 
                 throw new Error(errorMessage);
             } else {
-                // (3) Successful transaction -> Show confirmation or thank you message
+                // (3) Successful transaction -> Show confirmation or thank you message 
+                clearCart(); 
+                navigate(route('order-placed'));  
                 console.log(
                     "Capture result",
                     orderData,
                     JSON.stringify(orderData, null, 2)
-                );
+                ); 
                 return `Transaction ${transaction.status}: ${transaction.id}. See console for all available details`;
             }
         } catch (error) {
@@ -185,13 +194,22 @@ export default function Pay() {
     }
 
     function onError(error) {
-        // Do something with the error from the SDK
+        /** Do something with the error from the SDK */  
+        // navigate(route('sign-in')); 
+        swal.fire({ 
+            text: `Error processing payment!`, 
+            color: '#900000', 
+            width: 325, 
+            position: 'top', 
+            showConfirmButton: false
+        })
+
     }
     /** End of PayPal logic */ 
 
     const [isPayPalLoaded, setIsPayPalLoaded] = useState(false); 
-    
-    const { createOrderPayOnDelivery } = useOrder(); 
+    const [payWithCard, setPayWithCard] = useState(false); 
+    const { order, createOrderPayOnDelivery } = useOrder(); 
 
     return ( 
         <Layout> 
@@ -209,112 +227,145 @@ export default function Pay() {
 
                     <section className="d-flex flex-column justify-content-center align-items-start flex-wrap gap-4" style={{ maxWidth: '600px' }}> 
 
-                        <div className="w-100">
-                            <button 
-                                onClick={ async () => {
-                                    await createOrderPayOnDelivery(cartItems); 
-                                }}
-                                className="btn btn-dark border-radius-35 w-100 py-2">Pay Later On Delivery</button>
+                        <div className="w-100"> 
+                            { (order?.loading == false) && 
+                            (
+                                <button 
+                                    onClick={ async () => { 
+                                        let cart = cartItems; 
+                                        console.log(cart)
+                                        await createOrderPayOnDelivery(cart); 
+                                    }}
+                                    className="btn btn-dark border-radius-35 w-100 py-2">Pay Later&nbsp;
+                                        <span className="fw-bold fst-italic">On Delivery</span>
+                                </button>
+                            ) }
                         </div> 
 
-                        { isPayPalLoaded && (
+                        { ((isPayPalLoaded) && (order?.loading == false)) && (
                             <div className="w-100 d-flex justify-content-center py-2">
                                 <span className="fw-bold">OR</span>
                             </div> 
                         ) }
 
-                        <PayPalScriptProvider options={initialOptions}>
-                            
-                            <div className="w-100">
-                                <PayPalButtons
-                                    createOrder={createOrder}
-                                    onApprove={onApprove}
-                                    onError={onError}
-                                    style={{
-                                        shape: "pill",
-                                        layout: "vertical",
-                                        color: "black",
-                                        label: "pay",
-                                    }} 
-                                    onInit={() => {
-                                        setIsPayPalLoaded(true); // Set state to show the OR text once PayPal is ready
-                                    }} 
-                                />
-                            </div>
-
-                            { isPayPalLoaded && (
-                                <div className="w-100 d-flex justify-content-center">
-                                    <span className="fw-bold">OR</span>
+                        { (order?.loading == false) && (
+                            <PayPalScriptProvider options={initialOptions}>
+                                
+                                <div className="w-100">
+                                    <PayPalButtons
+                                        createOrder={createOrder}
+                                        onApprove={onApprove}
+                                        onError={onError}
+                                        style={{
+                                            shape: "pill",
+                                            layout: "vertical",
+                                            color: "black",
+                                            label: "pay",
+                                        }} 
+                                        onInit={() => {
+                                            setIsPayPalLoaded(true); // Set state to show the OR text once PayPal is ready
+                                        }} 
+                                    />
                                 </div>
-                            ) } 
 
-                            <div className="w-100 border-bottom">
-                                <span>Pay with card</span>
-                            </div>
+                                { (payWithCard) && (
+                                    <div className="w-100 d-flex justify-content-end">
+                                        <span 
+                                            type="button" 
+                                            onClick={ () => setPayWithCard(false) }>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                ) } 
 
-                            <PayPalCardFieldsProvider
-                                createOrder={createOrder}
-                                onApprove={onApprove}
-                                style={{
-                                    input: { 
-                                        "font": "inherit", 
-                                        "font-size": "16px",
-                                        "font-family": "Montserrat, sans-serif", 
-                                        // "font-family": "courier, monospace",
-                                        "font-weight": "lighter",
-                                        color: "#000", 
-                                        "border-radius": "35px", 
-                                        "padding-left": "1.75rem", 
-                                        "padding-right": "1.75rem", 
-                                    },
-                                    ".invalid": { color: "purple" },
-                                }}
-                            >
-                                {/* <PayPalNameField
-                                    style={{
-                                        input: { color: "blue" },
-                                        ".invalid": { color: "purple" },
-                                    }}
-                                /> */}
-                                <PayPalNameField />
-                                <PayPalNumberField />
-                                <PayPalExpiryField />
-                                <PayPalCVVField />
-                                
-                                
-                                {/* Custom client component to handle card fields submission */}
-                                <SubmitPayment
-                                    isPaying={isPaying}
-                                    setIsPaying={setIsPaying}
-                                    billingAddress={
-                                        billingAddress
-                                    } 
-                                />
-                            </PayPalCardFieldsProvider>
-                            
-                        </PayPalScriptProvider>
+                                { (!payWithCard) && 
+                                    <div className="w-100">
+                                        <button 
+                                            onClick={  () => {
+                                                setPayWithCard(!payWithCard); 
+                                            }}
+                                            className="btn btn-dark border-radius-35 w-100 py-2">
+                                                Pay with&nbsp;<span className="fw-bold fst-italic">Card</span> 
+                                        </button>
+                                    </div> 
+                                }
+
+                                { (payWithCard) && 
+                                    <PayPalCardFieldsProvider
+                                        createOrder={createOrder}
+                                        onApprove={onApprove}
+                                        style={{
+                                            input: { 
+                                                "font": "inherit", 
+                                                "font-size": "16px",
+                                                "font-family": "Montserrat, sans-serif", 
+                                                // "font-family": "courier, monospace",
+                                                "font-weight": "lighter",
+                                                color: "#000", 
+                                                "border-radius": "35px", 
+                                                "padding-left": "1.75rem", 
+                                                "padding-right": "1.75rem", 
+                                            },
+                                            ".invalid": { color: "purple" },
+                                        }}
+                                    >
+                                        {/* <PayPalNameField
+                                            style={{
+                                                input: { color: "blue" },
+                                                ".invalid": { color: "purple" },
+                                            }}
+                                        /> */}
+                                        <PayPalNameField />
+                                        <PayPalNumberField />
+                                        <PayPalExpiryField />
+                                        <PayPalCVVField />
+                                        
+                                        
+                                        {/* Custom client component to handle card fields submission */}
+                                        <SubmitPayment
+                                            isPaying={isPaying}
+                                            setIsPaying={setIsPaying}
+                                            // billingAddress={
+                                            //     billingAddress
+                                            // } 
+                                        />
+                                    </PayPalCardFieldsProvider> 
+                                }
+
+                            </PayPalScriptProvider> 
+                        ) }
 
                     </section>
 
                     <section className="ordered-items pt-5" style={{ maxWidth: '600px' }}> 
                         <h4 className="fw-semibold border-bottom pb-1 fs-6">Cart Items (Preview)</h4>
                         <ol className='list-unstyled d-flex flex-column gap-1'> 
-                            {(cartItems?.length > 0) && (cartItems?.map((item, index) => {
+                            {(cartItems?.length > 0) && (cartItems?.map((item, index) => { 
+                                // console.log(cartItems)
                                 return (
                                     <li key={ index } className="ordered-item row align-items-center gx-5 gy-1 py-1">
                                         <div className="col-md-2">
                                             <div id="carousel2ModalItem1Example" className="carousel slide">
                                                 <div className="carousel-inner position-relative" style={{ width: '75px', height: '75px' }}>
                                                     <div className="images"> 
-                                                        <div className="carousel-item active">
+                                                        <div className={`carousel-item ${(index==0) && `active`}`}>
                                                             <img src={ item?.img } className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
                                                         </div>
-                                                        <div className="carousel-item">
+                                                        {/* { (item?.images?.map((image, index) => {
+                                                            return (
+                                                                <div className={`carousel-item ${(index==0) && `active`}`}>
+                                                                    <img src={ image?.img } className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
+                                                                </div>
+                                                            )
+                                                        } ))} */}
+                                                        {/* <div className="carousel-item">
                                                             <img src="https://plus.unsplash.com/premium_photo-1680390327010-09e627ebd475?q=80&w=1227&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
                                                         </div>
                                                         <div className="carousel-item">
                                                             <img src="https://images.unsplash.com/photo-1527385352018-3c26dd6c3916?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
-                                                        </div>
+                                                        </div> */}
                                                     </div> 
 
                                                     <div>
