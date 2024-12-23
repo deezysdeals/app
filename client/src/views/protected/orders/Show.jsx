@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'; 
-import { Link, useParams } from 'react-router-dom'; 
+import { Link, useLocation, useParams } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import dayjs from 'dayjs';
 import relativeTime from "dayjs/plugin/relativeTime"; 
@@ -11,9 +11,14 @@ import Layout from '@/components/protected/Layout.jsx';
 
 
 export default function Show() { 
+    const location = useLocation(); 
     const params = useParams(); 
     const { order, getOrder } = useOrder(params?.id); 
     console.log(order); 
+
+    const handlePrint = () => {
+        window.print();
+    };
 
     return (
         <Layout>
@@ -30,6 +35,26 @@ export default function Show() {
 
                     <div className="py-3"> 
                         <section className="amount-and-client">
+                            { (location?.pathname?.startsWith('/home/invoices')) && (
+                                <div className="pb-4">
+                                    <section 
+                                        onClick={ handlePrint } 
+                                        className="d-flex align-items-center gap-1 cursor-pointer">
+                                        <span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" className="bi bi-printer-fill" viewBox="0 0 16 16">
+                                                <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1"/>
+                                                <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+                                            </svg>
+                                        </span>
+                                        <span>Print copy</span>
+                                    </section>
+                                    <section className="barcode pt-3 d-flex justify-content-end" style={{ textAlign: 'center' }}>
+                                        <img alt='Barcode Generator TEC-IT'
+                                        src={`https://barcode.tec-it.com/barcode.ashx?data=${(order?.data?.paypal_order_id)?.replace(/[a-zA-Z]/g, '')?.slice(0,13)}&code=EAN13`}/>
+                                    </section>
+                                </div>
+                            ) }
+
                             <h3 className="fw-semibold">${ (order?.data?.total_to_be_paid)?.toFixed(2) }</h3> 
                             <p className="d-flex align-items-center" style={{ marginTop: '-0.5rem' }}>
                                 <span>Paid with&nbsp;</span>

@@ -37,8 +37,6 @@ import ProtectedBrandEdit from '@/views/protected/brands/Edit.jsx';
 import ProtectedBrandCreate from '@/views/protected/brands/Create.jsx'; 
 import ProtectedBrandsIndex from '@/views/protected/brands/Index.jsx'; 
 
-import ProtectedCalendarIndex from '@/views/protected/calendar/Index.jsx'; 
-
 import ProtectedClientShow from '@/views/protected/clients/Show.jsx'; 
 import ProtectedClientEdit from '@/views/protected/clients/Edit.jsx'; 
 import ProtectedClientsIndex from '@/views/protected/clients/Index.jsx';  
@@ -53,9 +51,6 @@ import ProtectedDeliveriesIndex from '@/views/protected/deliveries/Index.jsx';
 
 import ProtectedFavoriteShow from '@/views/protected/favorites/Show.jsx'; 
 import ProtectedFavoritesIndex from '@/views/protected/favorites/Index.jsx'; 
-
-import ProtectedInvoiceShow from '@/views/protected/invoices/Show.jsx'; 
-import ProtectedInvoicesIndex from '@/views/protected/invoices/Index.jsx'; 
 
 import ProtectedMarketShow from '@/views/protected/market/Show.jsx'; 
 import ProtectedMarketIndex from '@/views/protected/market/Index.jsx'; 
@@ -158,8 +153,6 @@ function App() {
                 <Route path={ route('home.brands.create') } element={ <ProtectedBrandCreate /> } /> 
                 <Route path={ route('home.brands.index') } element={ <ProtectedBrandsIndex /> } /> 
 
-                <Route path={ route('home.calendar.index') } element={ <ProtectedCalendarIndex /> } /> 
-
                 <Route path={ route('home.clients.show') } element={ <ProtectedClientShow /> } />
                 <Route path={ route('home.clients.edit') } element={ <ProtectedClientEdit /> } />
                 <Route path={ route('home.clients.index') } element={ <ProtectedClientsIndex /> } /> 
@@ -175,8 +168,8 @@ function App() {
                 <Route path={ route('home.favorites.show') } element={ <ProtectedFavoriteShow /> } />
                 <Route path={ route('home.favorites.index') } element={ <ProtectedFavoritesIndex /> } /> 
 
-                <Route path={ route('home.invoices.show') } element={ <ProtectedInvoiceShow /> } />
-                <Route path={ route('home.invoices.index') } element={ <ProtectedInvoicesIndex /> } /> 
+                <Route path={ route('home.invoices.show') } element={ <ProtectedOrderShow /> } />
+                <Route path={ route('home.invoices.index') } element={ <ProtectedPaymentsIndex /> } /> 
 
                 <Route path={ route('home.market.show') } element={ <ProtectedMarketShow /> } />
                 <Route path={ route('home.market.index') } element={ <ProtectedMarketIndex /> } /> 

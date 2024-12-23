@@ -32,18 +32,6 @@ export default function Header() {
                                 <span>Invoices</span>
                             </Link>
                         </li>
-
-                        <li className="calendar">
-                            <Link to={ route('home.calendar.index') } className="text-decoration-none d-flex align-items-center justify-content-end gap-1"> 
-                                <span className="d-block d-md-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-calendar4-range" viewBox="0 0 16 16">
-                                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
-                                        <path d="M9 7.5a.5.5 0 0 1 .5-.5H15v2H9.5a.5.5 0 0 1-.5-.5zm-2 3v1a.5.5 0 0 1-.5.5H1v-2h5.5a.5.5 0 0 1 .5.5"/>
-                                    </svg>
-                                </span>
-                                <span>Calendar</span>
-                            </Link>
-                        </li>
                     </ul>
                 </nav>
                 
@@ -81,15 +69,19 @@ export default function Header() {
                                 </span> 
                             </Link>
                         </li> 
-                        <li className="auth-user d-flex align-items-center gap-2">
-                            <span id="user-icon" className="user">
-                                <img src={ user?.user?.user_image ? user?.user?.user_image : UserNoImage }
-                                    alt="" className="object-fit-cover border border-2" />
-                            </span> 
-                            <span className="d-flex flex-column">
-                                <span className="">{ user?.user?.first_name + ' ' + user?.user?.last_name }</span>
-                                <span className="fw-normal">@{ user?.user?.username }</span>
-                            </span>
+                        <li className="auth-user">
+                            <Link 
+                                to={ route('home.profile.index') } 
+                                className="d-flex align-items-center gap-2 text-decoration-none">
+                                <span id="user-icon" className="user">
+                                    <img src={ user?.user?.user_image ? user?.user?.user_image : UserNoImage }
+                                        alt="" className="object-fit-cover border border-2" />
+                                </span> 
+                                <span className="d-flex flex-column">
+                                    <span className="">{ user?.user?.first_name + ' ' + user?.user?.last_name }</span>
+                                    <span className="fw-normal">@{ user?.user?.username }</span>
+                                </span>
+                            </Link>
                         </li>
                         <li 
                             type='button' 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'; 
-import { Link } from 'react-router-dom'; 
+import { Link, useLocation } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import dayjs from 'dayjs';
 import relativeTime from "dayjs/plugin/relativeTime"; 
@@ -18,6 +18,8 @@ import Layout from '@/components/protected/Layout.jsx';
 
 
 export default function Index() {
+    const location = useLocation(); 
+
     /** Voice-to-Text Search funtionality */
     const [searchKey, setSearchKey] = useState(''); 
 
@@ -47,7 +49,10 @@ export default function Index() {
             <div className="main">
                 <div className="dashboard-content pt-3"> 
                     <section className="d-flex justify-content-between align-items-center border-bottom pb-1">
-                        <h2 className="fs-4">Payments</h2> 
+                        <h2 className="fs-4">
+                            { (location?.pathname == route('home.payments.index')) && 'Payments' } 
+                            { (location?.pathname == route('home.invoices.index')) && 'Invoices for Payments' } 
+                        </h2> 
 
                         <div className="">
 
@@ -74,7 +79,7 @@ export default function Index() {
                                     type="text" 
                                     value={ voiceText } 
                                     onChange={ (e) => setVoiceText(e.target.value) }
-                                    placeholder="Search product ..." 
+                                    placeholder={`Search ...`} 
                                     className="" />
 
                                 <span 
@@ -118,11 +123,21 @@ export default function Index() {
                                                                 ? (((payments?.meta?.current_page - 1) * payments?.meta?.limit) + 1) 
                                                                     : payments?.meta?.current_page) + index }
                                                         </span>
-                                                        <Link 
-                                                            to={ route('home.orders.show', { id: payment?._id }) }
-                                                            className="btn btn-sm btn-dark border-radius-35 py-0 fw-semibold">
-                                                                View Order
-                                                        </Link>
+                                                        { (location?.pathname == route('home.payments.index')) && (
+                                                            <Link 
+                                                                to={ route('home.orders.show', { id: payment?._id }) }
+                                                                className="btn btn-sm btn-dark border-radius-35 py-0 fw-semibold">
+                                                                    View Order
+                                                            </Link> 
+                                                        ) }
+
+                                                        { (location?.pathname == route('home.invoices.index')) && (
+                                                            <Link 
+                                                                to={ route('home.invoices.show', { id: payment?._id }) }
+                                                                className="btn btn-sm btn-dark border-radius-35 py-0 fw-semibold">
+                                                                    Get Invoice
+                                                            </Link> 
+                                                        ) }
                                                     </div> 
                                                     <div className="amount-and-client d-flex flex-column gap-2">
                                                         <h3 className="fw-semibold">${ (payment?.total_to_be_paid)?.toFixed(2) || 0 }</h3> 

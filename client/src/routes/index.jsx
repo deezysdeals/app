@@ -21,8 +21,6 @@ const routeNames = {
     'home.brands.create': '/home/brands/create', 
     'home.brands.index': '/home/brands', 
 
-    'home.calendar.index': '/home/calendar', 
-
     'home.clients.show': '/home/clients/:username/show', 
     'home.clients.edit': '/home/clients/:username/edit', 
     'home.clients.index': '/home/clients', 
