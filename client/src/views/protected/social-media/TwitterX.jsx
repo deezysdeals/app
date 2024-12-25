@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios'; 
+import Constants from '@/utils/Constants.jsx'; 
 
 
 export default function TwitterX() {
@@ -17,8 +18,8 @@ export default function TwitterX() {
         }
 
         try {
-            setStatus('Posting tweet...');
-            const response = await axios.post('http://localhost:5001/api/v1/twitter-x/tweet', {
+            setStatus('Posting tweet...'); 
+            const response = await axios.post(`${ Constants?.serverURL }/api/v1/twitter-x/tweet`, {
             message,
             });
             if (response.data.success) {
