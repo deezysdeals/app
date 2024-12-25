@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { route } from '@/routes'; 
 import { useCategoriesExt } from '@/hooks/external/useFakeStoreCategories.jsx'; 
 import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx'; 
+import { useProducts } from '@/hooks/useProducts.jsx'; 
 import { useBrands } from '@/hooks/useBrands.jsx'; 
 import { useDeals } from '@/hooks/useDeals.jsx'; 
 import Aside from '@/components/public/Aside.jsx'; 
@@ -64,7 +65,7 @@ export default function Index() {
 
                         <div className="d-flex px-2 pt-3">
                             <span className="btn btn-sm btn-dark border-radius-35">
-                                <Link to={ route('products.index') } className="text-decoration-none ps-1 fw-semibold text-white d-flex align-items-center">
+                                <Link to={ route('products.index', { source: 'shop' }) } className="text-decoration-none ps-1 fw-semibold text-white d-flex align-items-center">
                                     <span className="fw-semibold">See more products</span>&nbsp;
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
@@ -103,7 +104,7 @@ export default function Index() {
 
                         <div className="d-flex px-2 pt-3">
                             <span className="btn btn-sm btn-dark border-radius-35">
-                                <Link to={ route('products.index') } className="text-decoration-none ps-1 fw-semibold text-white d-flex align-items-center">
+                                <Link to={ route('products.index', { source: 'shop' }) } className="text-decoration-none ps-1 fw-semibold text-white d-flex align-items-center">
                                     <span className="fw-semibold">See more products</span>&nbsp;
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
@@ -187,13 +188,6 @@ export default function Index() {
                                             imgSrc={ deal?.image_path?.url } /> 
                                     )
                                 })}
-                                {/* <DealComponent /> 
-                                <DealComponent /> 
-                                <DealComponent /> 
-                                <DealComponent /> 
-                                <DealComponent /> 
-                                <DealComponent />  */}
-                        
                             </nav>
                         </div>
                     </section> 

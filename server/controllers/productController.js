@@ -24,7 +24,8 @@ const getProducts = asyncHandler(async (req, res) => {
     const skip = (current_page - 1) * limit; 
 
 	const products = await Product.find({ deleted_at: null })
-                                .sort('-created_at')
+                                // .sort('-created_at')
+                                .sort('-updated_at')
                                 .skip(skip)
                                 .limit(limit)
                                 .populate({

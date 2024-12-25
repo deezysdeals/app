@@ -39,7 +39,7 @@ export default function Index() {
     }); 
     const { favorites, getFavorites } = useFavorites(favoriteQuery); 
     const { deleteFavorite } = useFavorite(); 
-    // console.log(favorites); 
+    console.log(favorites); 
 
     return (
         <Layout>
@@ -110,10 +110,10 @@ export default function Index() {
                         <span>
                             { (favorites?.data?.length > 0) 
                                 && <PaginationMeter 
-                                        current_page={ favorites?.meta?.current_page } 
-                                        limit={ favorites?.meta?.limit } 
-                                        total_pages={ favorites?.meta?.total_pages } 
-                                        total_results={ favorites?.meta?.total_results } /> }
+                                    current_page={ favorites?.meta?.current_page } 
+                                    limit={ favorites?.meta?.limit } 
+                                    total_pages={ favorites?.meta?.total_pages } 
+                                    total_results={ favorites?.meta?.total_results } /> }
                         </span> 
                     </div>
 

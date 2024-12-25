@@ -10,8 +10,10 @@ import { getFavorites,
 } from '../../controllers/favoriteController.js'; 
 
 
+favoriteRouter.use(authenticated); 
+
 favoriteRouter.get('/', getFavorites); 
-favoriteRouter.post('/product/:product', authenticated, createFavorite); 
+favoriteRouter.post('/product/:product', createFavorite); 
 
 favoriteRouter.route('/:id')
                 .get(getFavorite)

@@ -88,6 +88,7 @@ import ProtectedSiteConfigurationsIndex from '@/views/protected/site-configurati
 
 import ProtectedSocialMediaEdit from '@/views/protected/social-media/Edit.jsx'; 
 import ProtectedSocialMediaTikTok from '@/views/protected/social-media/TikTok.jsx'; 
+import ProtectedSocialMediaTwitterX from '@/views/protected/social-media/TwitterX.jsx'; 
 import ProtectedSocialMediaIndex from '@/views/protected/social-media/Index.jsx'; 
 
 import ProtectedUserManagementClientQueries from '@/views/protected/user-management/show/ClientQueries.jsx'; 
@@ -206,6 +207,7 @@ function App() {
 
                 <Route path={ route('home.social-media.edit') } element={ <ProtectedSocialMediaEdit /> } /> 
                 <Route path={ route('home.social-media.tiktok') } element={ <ProtectedSocialMediaTikTok /> } /> 
+                <Route path={ route('home.social-media.twitter-x') } element={ <ProtectedSocialMediaTwitterX /> } />
                 <Route path={ route('home.social-media.index') } element={ <ProtectedSocialMediaIndex /> } /> 
 
                 <Route path={ route('home.users.show.orders') } element={ <ProtectedUserManagementOrders /> } /> 

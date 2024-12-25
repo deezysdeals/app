@@ -76,7 +76,7 @@ export default function Header() {
                             </Link>
                         </li>
                         <li className="fw-bold">
-                            <Link to={ route('products.index') } className="text-decoration-none">
+                            <Link to={ route('products.index', { source: 'shop' }) } className="text-decoration-none">
                                 Products
                             </Link>
                         </li>

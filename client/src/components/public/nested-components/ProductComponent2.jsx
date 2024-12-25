@@ -1,23 +1,56 @@
-import { Link } from 'react-router-dom'; 
+import { useContext, useState } from 'react'; 
+import AuthContext from '@/context/AuthContext.jsx'; 
+import { CartContext } from '@/context/CartContext.jsx'; 
+import { Link, useLocation } from 'react-router-dom'; 
 import { route } from '@/routes'; 
+import dayjs from 'dayjs';
+import relativeTime from "dayjs/plugin/relativeTime"; 
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(relativeTime);
+dayjs.extend(utc); 
+import swal from 'sweetalert2'; 
+import { useFavorites } from '@/hooks/useFavorites.jsx'; 
+import { useFavorite } from '@/hooks/useFavorite.jsx'; 
+import { useProduct } from '@/hooks/useProduct.jsx'; 
 
 
-export default function ProductComponent2({ id, 
+export default function ProductComponent2({ itemId, 
+                                            productId, 
+                                            asin, 
+                                            index,
                                             imgSrc, 
                                             title, 
                                             description = '', 
                                             oldPrice = '',
                                             currentPrice, 
                                             rating, 
-                                            category = '' }) {
+                                            category = '', 
+                                            orderId, 
+                                            orderCount, 
+                                            orderPrice, 
+                                            variations, 
+                                            variationsValue, 
+                                            dealValue, 
+                                            dealValueUnit, 
+                                            deliveryStatus, 
+                                            deliveryDate, 
+                                            purchasePrice, 
+                                            purchaseDate, 
+                                            sellingPrice, 
+                                            saleDate }) {
+    const { user } = useContext(AuthContext);
+    const { cartItems, addToCart, removeFromCart } = useContext(CartContext); 
+    const { favorites, getFavorites } = useFavorites(); 
+    const { createFavorite, deleteFavorite } = useFavorite(); 
+
     return (
         <article className="card border-0 mb-5">
-            <Link 
-                to={ route('products.show', { id: id }) } 
-                className="text-decoration-none text-dark">
-                    <div className="row align-items-center g-3">
-                        <div className="col-sm-12 col-lg-4">
-                            <div id={`carouselExample${id}`} className="carousel slide">
+            <div className="row align-items-center g-3">
+                <div className="col-sm-12 col-lg-4">
+                    <Link 
+                        to={ route('products.show', { id: itemId }) } 
+                        className="text-decoration-none text-dark">
+                            <div id={`carouselExample${itemId}`} className="carousel slide">
                                 <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>
                                     <div className="images">
                                         <div className="carousel-item active">
@@ -32,7 +65,7 @@ export default function ProductComponent2({ id,
                                     </div> 
 
                                     <div>
-                                        <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target={`#carouselExample${id}`} data-bs-slide="prev">
+                                        <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target={`#carouselExample${itemId}`} data-bs-slide="prev">
                                             <span>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
                                                     <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
@@ -40,7 +73,7 @@ export default function ProductComponent2({ id,
                                             </span>
                                             <span className="visually-hidden">Previous</span>
                                         </button>
-                                        <button className="carousel-control-next position-absolute right-0 pe-1" type="button" data-bs-target={`#carouselExample${id}`} data-bs-slide="next">
+                                        <button className="carousel-control-next position-absolute right-0 pe-1" type="button" data-bs-target={`#carouselExample${itemId}`} data-bs-slide="next">
                                             <span>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
                                                     <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
@@ -51,44 +84,122 @@ export default function ProductComponent2({ id,
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="col-sm-12 col-lg-8">
-                            <div className="card-body d-flex flex-column gap-0">
-                                <h4 className="card-title fs-4">{ title }</h4>
-                                <span className="card-text"><small>Options: <span className="fw-semibold">7
-                                            sizes</span></small></span>
-                                <span className="card-text">10k+ bought in the last month</span>
-                                <span className="card-text"><small><s>$86.99</s></small>&nbsp;<span
-                                        className="fw-semibold">${ currentPrice?.toFixed(2) }</span></span>
-                                <span className="card-text"><small><span
-                                            className="bg-success border-radius-35 px-2 py-1 text-white fw-semibold">Save
-                                            $15.00</span>&nbsp;with coupon</small></span>
-                                <span className="card-text">Delivery&nbsp;<span className="fw-semibold">Fri, Aug 30</span></span>
-                                <span>
-                                    <small>More Buying Choices:</small>&nbsp;
-                                    <small className="fw-semibold">$400.98 (46 used & new offers)</small>
-                                </span>
-                                <div className="pt-2 d-flex gap-2">
-                                    <span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bookmark" viewBox="0 0 16 16">
-                                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
-                                        </svg>
+                    </Link>
+                </div>
+                <div className="col-sm-12 col-lg-8">
+                    <div className="card-body d-flex flex-column gap-0">
+                        <h4 className="card-title fs-4">
+                            <Link 
+                                to={ route('products.show', { id: itemId }) } 
+                                className="text-decoration-none text-dark">
+                                    { title }
+                            </Link>
+                        </h4>
+                        { (variations && variationsValue) && 
+                            <span className="card-text">
+                                <small>Options:&nbsp;
+                                    <span className="fw-semibold">{ variationsValue }&nbsp;{ variations }
                                     </span>
-                                    <span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-heart" viewBox="0 0 16 16">
-                                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-                                        </svg>
+                                </small>
+                            </span>
+                        } 
+                        { orderCount && 
+                            <span className="card-text">
+                                { formatNumber(Number(orderCount)) }&nbsp;
+                                bought
+                            </span> 
+                        }
+                        <span className="card-text">
+                            <small><s>{ oldPrice && '$'+Number(oldPrice)?.toFixed(2) }</s>{ oldPrice && <span>&nbsp;</span>}</small>
+                            { (!location.pathname.startsWith('/home/sales')) 
+                                ?   <span className="fw-semibold">
+                                        { currentPrice ? '$'+Number(currentPrice)?.toFixed(2) : '$'+0 }
                                     </span>
-                                    <span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bag" viewBox="0 0 16 16">
-                                            <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                                        </svg>
-                                    </span>
-                                </div>
-                            </div>
+                                    :   <span className="fw-semibold">
+                                            { sellingPrice ? '$'+Number(sellingPrice)?.toFixed(2) : '$'+0 }
+                                        </span> 
+                                    }
+                        </span> 
+                        { (dealValue && dealValueUnit) && 
+                            <span className="card-text">
+                                <small>
+                                    <span className="bg-success border-radius-35 px-2 py-1 text-white fw-semibold">
+                                        Save 
+                                        { (!location.pathname.startsWith('/home/ordered-items')) && 'd' }
+                                        { dealValue + (dealValueUnit)?.toUpperCase() }
+                                    </span>&nbsp;
+                                    with coupon
+                                </small>
+                            </span> 
+                        } 
+                        { (deliveryStatus == 'pending') 
+                            ? <span className="text-warning fw-semibold pt-1">Not yet delivered</span> 
+                                : '' }
+                        <span className="card-text">
+                            { (deliveryStatus == 'delivered') ? 'Delivered' 
+                                : (deliveryStatus == 'pending') ? 'Delivery on' 
+                                    : '' }&nbsp;
+                            <span className="fw-semibold">
+                                { (deliveryStatus == 'delivered') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY h:mm A') 
+                                    : (deliveryStatus == 'pending') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY') 
+                                        : '' } 
+                            </span>
+                        </span> 
+                        <div className="pt-2 d-flex gap-3">
+                            <span 
+                                type="button" 
+                                onClick={ async () => {
+                                            await createFavorite(itemId); 
+                                            await getFavorites();
+                                        } }
+                                className="cursor-pointer">
+                                    { (favorites?.data?.length > 0) && favorites?.data?.find(foundFavorite => foundFavorite?.product?.asin == itemId) 
+                                        ?
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-bookmark-fill" viewBox="0 0 16 16">
+                                                <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2"/>
+                                            </svg>
+                                        : 
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-bookmark"
+                                                viewBox="0 0 16 16">
+                                                <path
+                                                    d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z" />
+                                            </svg>
+                                        
+                                    }
+                            </span> 
+                            {/* { !(user && user?.user?.role == 'admin') &&  */}
+                            <span>
+                                { (cartItems?.length > 0) && cartItems?.find(item => item?.id == asin) ? 
+                                    <svg 
+                                        type="button"
+                                        onClick={ () => removeFromCart(asin) }
+                                        xmlns="http://www.w3.org/2000/svg" 
+                                        width="25" 
+                                        height="22" 
+                                        fill="currentColor" 
+                                        className="bi bi-handbag-fill" 
+                                        viewBox="0 0 16 16">
+                                        <path d="M8 1a2 2 0 0 0-2 2v2H5V3a3 3 0 1 1 6 0v2h-1V3a2 2 0 0 0-2-2M5 5H3.36a1.5 1.5 0 0 0-1.483 1.277L.85 13.13A2.5 2.5 0 0 0 3.322 16h9.355a2.5 2.5 0 0 0 2.473-2.87l-1.028-6.853A1.5 1.5 0 0 0 12.64 5H11v1.5a.5.5 0 0 1-1 0V5H6v1.5a.5.5 0 0 1-1 0z"/>
+                                    </svg> :
+                                    <svg 
+                                        type="button" 
+                                        onClick={ () => {addToCart(itemId, 
+                                                                    asin, 
+                                                                    imgSrc, 
+                                                                    title, 
+                                                                    description, 
+                                                                    oldPrice, 
+                                                                    currentPrice
+                                        )} }
+                                        xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-handbag" viewBox="0 0 16 16">
+                                        <path d="M8 1a2 2 0 0 1 2 2v2H6V3a2 2 0 0 1 2-2m3 4V3a3 3 0 1 0-6 0v2H3.36a1.5 1.5 0 0 0-1.483 1.277L.85 13.13A2.5 2.5 0 0 0 3.322 16h9.355a2.5 2.5 0 0 0 2.473-2.87l-1.028-6.853A1.5 1.5 0 0 0 12.64 5zm-1 1v1.5a.5.5 0 0 0 1 0V6h1.639a.5.5 0 0 1 .494.426l1.028 6.851A1.5 1.5 0 0 1 12.678 15H3.322a1.5 1.5 0 0 1-1.483-1.723l1.028-6.851A.5.5 0 0 1 3.36 6H5v1.5a.5.5 0 1 0 1 0V6z"/>
+                                    </svg> } 
+                            </span> 
+                            {/* } */}
                         </div>
                     </div>
-            </Link>
+                </div>
+            </div>
         </article>
     )
 }

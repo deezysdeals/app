@@ -2,22 +2,23 @@ import { useState, useEffect } from 'react';
 import useAxios from '@/utils/useAxios.jsx'; 
 
 
-export function useFavorites(page = 1, limit = 10, search = '') {
+export function useFavorites(favoriteQuery) {
     const axiosInstance = useAxios(); 
     const [favorites, setFavorites] = useState([]); 
 
     useEffect(() => {
-        if (page !== null) {
+        if (favoriteQuery !== null) {
             const controller = new AbortController(); 
-            getFavorites({page}, { signal: controller.signal }); 
+            getFavorites(favoriteQuery, { signal: controller.signal }); 
             return () => { controller.abort() };
         }
-    }, [page, limit, search]); 
+    }, [favoriteQuery]); 
 
     // async function getFavorites(range = 'all', page = 1, { signal } = {}) { 
-    async function getFavorites(obj, { signal } = {}) { 
-        console.log(obj) 
-        return axiosInstance.get(`favorites?page=${obj?.page?.page}&limit=${obj?.page?.limit}&search=${obj?.page?.search}`, { signal }) 
+    async function getFavorites(favoriteQuery, { signal } = {}) { 
+        console.log(favoriteQuery); 
+        setFavorites([]); 
+        return axiosInstance.get(`favorites?page=${favoriteQuery?.page?.page}&limit=${favoriteQuery?.page?.limit}&search=${favoriteQuery?.page?.search}`, { signal }) 
             .then(response => { 
                 console.log(response?.data)
                 setFavorites(response?.data)

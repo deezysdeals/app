@@ -27,6 +27,7 @@ import trendingRouter from './apiRoutes/trendingRoutes.js';
 
 import siteConfigurationRouter from './apiRoutes/siteConfigurationRoutes.js'; 
 import tiktokRouter from './apiRoutes/tiktokRoutes.js'; 
+import twitterXRouter from './apiRoutes/twitterXRoutes.js'; 
 import dashboardRouter from './apiRoutes/dashboardRoutes.js'; 
 
 
@@ -57,6 +58,7 @@ router.use('/trendings', trendingRouter);
 router.use('/dashboard', dashboardRouter); 
 router.use('/site-configurations', siteConfigurationRouter); 
 router.use('/tiktok', tiktokRouter); 
+router.use('/twitter-x', twitterXRouter); 
 
 
 export default router;

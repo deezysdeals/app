@@ -14,7 +14,9 @@ const getFavorites = asyncHandler(async (req, res) => {
 
     const skip = (current_page - 1) * limit; 
 
-    console.log(current_page, limit, searchPhrase); 
+    console.log('favorites:', current_page, limit, searchPhrase); 
+
+    console.log('user', req?.user_id)
 
     let favorites;
 
@@ -41,7 +43,15 @@ const getFavorites = asyncHandler(async (req, res) => {
     //                                 })
     //                                 .lean(); 
     // } 
-    favorites = await Favorite.find({ user: req?.user_id })
+    if (limit == 'all') {
+        favorites = await Favorite.find({ user: req?.user_id })
+                                .sort('-created_at')
+                                .populate({
+                                    path: 'product'
+                                })
+                                .lean(); 
+    } else {
+        favorites = await Favorite.find({ user: req?.user_id })
                                 .sort('-created_at')
                                 .skip(skip)
                                 .limit(limit)
@@ -49,6 +59,7 @@ const getFavorites = asyncHandler(async (req, res) => {
                                     path: 'product'
                                 })
                                 .lean(); 
+    }
 	
     if (!favorites?.length) return res.status(404).json({ message: "No favorites found!" }); 
 
@@ -121,7 +132,8 @@ const createFavorite = asyncHandler(async (req, res) => {
             if (!favoriteAlreadyExists) {
                 const favorite = new Favorite({
                     user: req?.user_id, 
-                    product: upsertProduct?._id 
+                    product: upsertProduct?._id, 
+                    // asin: response?.data?.id
                 }); 
 
                 favorite.save()

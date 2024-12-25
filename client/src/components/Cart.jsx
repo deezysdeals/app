@@ -54,7 +54,7 @@ export default function Cart() {
                     <div className="cart-items"> 
 
                         { (cartItems?.length === 0) ? (
-                            <div className="d-flex align-items-center justify-content-center py-5">Cart is empty.&nbsp;<Link to={ route('products.index') } className="text-dark">Shop Now</Link></div>
+                            <div className="d-flex align-items-center justify-content-center py-5">Cart is empty.&nbsp;<Link to={ route('products.index', { source: 'shop' }) } className="text-dark">Shop Now</Link></div>
                         ) : (
                             <section>
                                 { (cartItems?.map((item, index) => ( 

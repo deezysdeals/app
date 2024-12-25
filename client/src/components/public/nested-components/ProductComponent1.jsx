@@ -1,4 +1,4 @@
-import { useContext } from 'react'; 
+import { useContext, useState } from 'react'; 
 import { CartContext } from '@/context/CartContext.jsx'; 
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
@@ -14,17 +14,23 @@ export default function ProductComponent1({ itemId,
                                             oldPrice = '',
                                             currentPrice, 
                                             rating, 
-                                            category = '' }) { 
+                                            category = '',  }) { 
     const { cartItems, addToCart, removeFromCart } = useContext(CartContext); 
-    const { favorites, getFavorites } = useFavorites(); 
-    const { createFavorite, getFavorite } = useFavorite(); 
+
+    const [favoriteQuery, setFavoriteQuery] = useState({ 
+        page: 1, 
+        limit: 'all', 
+    }); 
+    const { favorites, getFavorites } = useFavorites(favoriteQuery); 
+    const { createFavorite, getFavorite, deleteFavorite } = useFavorite(); 
+
+    console.log(favorites)
 
     // console.log('cart', cartItems);
 
     return (
         <article className="nav-item" style={{ width: '225px', height: '285px' }}> 
             <div 
-                // to={ route('products.show', { id: itemId }) } 
                 className="text-decoration-none">
                     <div className="card border-radius-35 w-100" style={{ height: '100%' }}> 
                         <Link to={ route('products.show', { id: itemId }) } >
@@ -243,22 +249,29 @@ export default function ProductComponent1({ itemId,
                                 <div className="actions d-flex gap-3">
                                     <span 
                                         type="button" 
-                                        onClick={ async () => {
-                                                    await createFavorite(itemId); 
-                                                    await getFavorites();
-                                                } }
                                         className="cursor-pointer">
                                             { (favorites?.data?.length > 0) && favorites?.data?.find(foundFavorite => foundFavorite?.product?.asin == itemId) 
                                                 ?
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bookmark-fill" viewBox="0 0 16 16">
-                                                        <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2"/>
-                                                    </svg>
+                                                    <span 
+                                                        onClick={ async () => {
+                                                            await deleteFavorite((favorites?.data?.length > 0) && favorites?.data?.find(foundFavorite => foundFavorite?.product?.asin == itemId)?._id); 
+                                                            await getFavorites();
+                                                        } }>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bookmark-fill" viewBox="0 0 16 16">
+                                                                <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2"/>
+                                                            </svg>
+                                                    </span>
                                                 : 
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bookmark"
-                                                        viewBox="0 0 16 16">
-                                                        <path
-                                                            d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z" />
-                                                    </svg>
+                                                    <span 
+                                                        onClick={ async () => {
+                                                            await createFavorite(itemId); 
+                                                            await getFavorites();
+                                                        } }>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bookmark" viewBox="0 0 16 16">
+                                                                <path
+                                                                    d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z" />
+                                                            </svg>
+                                                    </span>
                                                 
                                             }
                                     </span> 

@@ -77,6 +77,7 @@ const routeNames = {
     // 'home.social-media.show': '/home/social-media/:id/show', 
     'home.social-media.edit': '/home/social-media/:id/edit', 
     'home.social-media.tiktok': '/home/social-media/tiktok', 
+    'home.social-media.twitter-x': '/home/social-media/twitter-x', 
     'home.social-media.index': '/home/social-media', 
 
     'home.users.show.orders': '/home/users/:username/orders', 
@@ -108,7 +109,7 @@ const routeNames = {
     'order-placed': '/order-placed', 
 
     'products.show': '/products/:source/:id/show', 
-    'products.index': '/products', 
+    'products.index': '/products/:source', 
 
     'trending': '/trending', 
 

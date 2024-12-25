@@ -33,7 +33,18 @@ export function useFavorite(id = null) {
             })
             .catch(error => {
                 setErrors(error?.response); 
-                if (error?.response?.status == 409) {
+                // console.log(error); 
+                // console.log(error?.name); 
+                if (error?.name == 'InvalidTokenError' || error?.response?.status == 401) {
+                    navigate(route('sign-in'));
+                    swal.fire({
+                        text: `You must be signed in to add a favorite!`, 
+                        color: '#900000', 
+                        width: 325, 
+                        position: 'top', 
+                        showConfirmButton: false
+                    });
+                } else if (error?.response?.status == 409) {
                     swal.fire({
                         text: `${error?.response?.data?.message}`, 
                         color: '#900000', 
@@ -50,7 +61,6 @@ export function useFavorite(id = null) {
                         showConfirmButton: false
                     });
                 }
-                console.log(error);
             })
             .finally(() => setLoading(false));
     } 

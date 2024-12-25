@@ -58,7 +58,7 @@ export default function Cart() {
                             <div className="d-flex align-items-center justify-content-center py-5">
                                 <span>Cart is empty.</span> 
                                 <Link 
-                                    to={ route('products.index') }
+                                    to={ route('products.index', { source: 'shop' }) }
                                     className="shop-now ms-2 text-decoration-none">
                                     <span className="btn btn-sm btn-dark border-radius-35 d-flex gap-1">
                                         <span>Shop Now</span>

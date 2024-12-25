@@ -57,7 +57,7 @@ export default function ProductComponent1({ itemId,
                                             sellingPrice, 
                                             saleDate }) { 
     const location = useLocation(); 
-    const { user, signOut } = useContext(AuthContext); 
+    const { user } = useContext(AuthContext); 
     // console.log(user)
     const { cartItems, addToCart, removeFromCart } = useContext(CartContext); 
     const { getFavorites } = useFavorites(); 
@@ -243,7 +243,7 @@ export default function ProductComponent1({ itemId,
                                     { orderCount && 
                                         <span className="card-text">
                                             { formatNumber(Number(orderCount)) }&nbsp;
-                                            bought in the last month
+                                            bought
                                         </span> 
                                     }
                                     <span className="card-text">
@@ -556,17 +556,17 @@ export default function ProductComponent1({ itemId,
                                                     </span> 
                                                 } 
                                                 { (deliveryStatus == 'pending') 
-                                                        ? <span className="text-warning fw-semibold pt-1">Not yet delivered</span> 
-                                                            : '' }
-                                                    <span className="card-text">
-                                                        { (deliveryStatus == 'delivered') ? 'Delivered' 
-                                                            : (deliveryStatus == 'pending') ? 'Delivery on' 
-                                                                : '' }&nbsp;
-                                                        <span className="fw-semibold">
-                                                            { (deliveryStatus == 'delivered') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY h:mm A') 
-                                                                : (deliveryStatus == 'pending') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY') 
-                                                                    : '' } 
-                                                        </span>
+                                                    ? <span className="text-warning fw-semibold pt-1">Not yet delivered</span> 
+                                                        : '' }
+                                                <span className="card-text">
+                                                    { (deliveryStatus == 'delivered') ? 'Delivered' 
+                                                        : (deliveryStatus == 'pending') ? 'Delivery on' 
+                                                            : '' }&nbsp;
+                                                    <span className="fw-semibold">
+                                                        { (deliveryStatus == 'delivered') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY h:mm A') 
+                                                            : (deliveryStatus == 'pending') ? dayjs(deliveryDate).format('dddd, MMMM D, YYYY') 
+                                                                : '' } 
+                                                    </span>
                                                 </span> 
                                             </div>
                                         </div>
