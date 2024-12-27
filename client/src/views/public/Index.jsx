@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { route } from '@/routes'; 
 import { useCategoriesExt } from '@/hooks/external/useFakeStoreCategories.jsx'; 
 import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx'; 
+import { useFeaturedProducts } from '../../hooks/public/useFeaturedProducts.jsx'; 
+import { usePopularProducts } from '../../hooks/public/usePopularProducts.jsx'; 
+import { useTopRatedProducts } from '../../hooks/public/useTopRatedProducts.jsx'; 
 import { useProducts } from '@/hooks/useProducts.jsx'; 
 import { useBrands } from '@/hooks/useBrands.jsx'; 
 import { useDeals } from '@/hooks/useDeals.jsx'; 
@@ -10,7 +13,7 @@ import Aside from '@/components/public/Aside.jsx';
 import Layout from '@/components/public/Layout.jsx';
 import ProductComponent1 from '@/components/public/nested-components/ProductComponent1.jsx'; 
 import DealComponent from '@/components/public/nested-components/DealComponent.jsx'; 
-import BrandComponent from '../../components/public/nested-components/BrandComponent.jsx'; 
+import BrandComponent from '@/components/public/nested-components/BrandComponent.jsx'; 
 
 
 export default function Index() { 
@@ -18,6 +21,35 @@ export default function Index() {
     const { productsExt } = useProductsExt(); 
     // console.log(categoriesExt); 
     // console.log(productsExt); 
+
+    const { featuredProducts } = useFeaturedProducts(); 
+    console.log(featuredProducts);
+    const { popularProducts } = usePopularProducts(); 
+    console.log(popularProducts); 
+    const { topRatedProducts } = useTopRatedProducts(); 
+    console.log(topRatedProducts);
+
+    let featuredProductsList; 
+    if (featuredProducts?.data?.length > 0) {
+        featuredProductsList = featuredProducts
+    } else {
+        featuredProductsList = productsExt;
+    }; 
+
+    let popularProductsList; 
+    if (popularProducts?.data?.length > 0) {
+        popularProductsList = popularProducts; 
+    } else {
+        popularProductsList = productsExt;
+    }; 
+
+    let topRatedProductsList; 
+    if (topRatedProducts?.data?.length > 0) {
+        topRatedProductsList = topRatedProducts;
+    } else {
+        topRatedProductsList = productsExt;
+    }
+
     const [brandQuery, setBrandQuery] = useState({ 
         page: 1, 
         limit: 20, 
@@ -44,18 +76,19 @@ export default function Index() {
                         <div className="nav-scroller">
                             <nav className="nav justify-content-between py-3" style={{ height: '325px', overflowY: 'hidden' }}>
 
-                                { (productsExt?.data?.length > 0) && (productsExt?.data?.map(product => {
+                                { (featuredProductsList?.data?.length > 0) && (featuredProductsList?.data?.map(product => { 
+                                    const ratingCalculated = (Number(product?.total_rating_value) / Number(product?.total_rating_count)) || 5; 
                                     return (
                                         <ProductComponent1 
                                             key = { product?.id } 
                                             itemId = { product?.id } 
-                                            asin = { product?.id } 
-                                            imgSrc =  { product?.image }
+                                            asin = { product?.asin || product?.id } 
+                                            imgSrc =  { product?.images }
                                             title = { product?.title } 
                                             description = '' 
-                                            oldPrice = '' 
-                                            currentPrice = { product?.price } 
-                                            rating = { product?.rating?.rate } 
+                                            oldPrice = { product?.initial_retail_price && Number(product?.initial_retail_price)?.toFixed(2) }
+                                            currentPrice = { Number(product?.retail_price)?.toFixed(2) } 
+                                            rating = { ratingCalculated || product?.rating?.rate } 
                                             category = { product?.category } />
                                     )
                                 }))}
@@ -83,18 +116,19 @@ export default function Index() {
                         <div className="nav-scroller">
                             <nav className="nav justify-content-between py-3" style={{ height: '325px', overflowY: 'hidden' }}>
 
-                                { (productsExt?.data?.length > 0) && (productsExt?.data?.map(product => {
+                                { (popularProductsList?.data?.length > 0) && (popularProductsList?.data?.map(product => {
+                                    const ratingCalculated = (Number(product?.total_rating_value) / Number(product?.total_rating_count)) || 5; 
                                     return (
                                         <ProductComponent1 
                                             key = { product?.id } 
                                             itemId = { product?.id } 
-                                            asin = { product?.id } 
-                                            imgSrc =  { product?.image }
+                                            asin = { product?.asin || product?.id } 
+                                            imgSrc =  { product?.images }
                                             title = { product?.title } 
                                             description = '' 
-                                            oldPrice = '' 
-                                            currentPrice = { product?.price } 
-                                            rating = { product?.rating?.rate } 
+                                            oldPrice = { product?.initial_retail_price && Number(product?.initial_retail_price)?.toFixed(2) }
+                                            currentPrice = { Number(product?.retail_price)?.toFixed(2) } 
+                                            rating = { ratingCalculated || product?.rating?.rate } 
                                             category = { product?.category } />
                                     )
                                 }))}
@@ -122,19 +156,21 @@ export default function Index() {
                         <div className="nav-scroller">
                             <nav className="nav justify-content-between py-3" style={{ height: '325px', overflowY: 'hidden' }}>
                         
-                                { (productsExt?.data?.length > 0) && (productsExt?.data?.map(product => {
+                                { (topRatedProductsList?.data?.length > 0) && (topRatedProductsList?.data?.map(product => {
+                                    const ratingCalculated = (Number(product?.total_rating_value) / Number(product?.total_rating_count)) || 5; 
+                                    // console.log('rating calculated', ratingCalculated);
                                     return (
                                         <ProductComponent1 
                                             key = { product?.id } 
                                             itemId = { product?.id } 
-                                            asin = { product?.id } 
-                                            imgSrc =  { product?.image }
+                                            asin = { product?.asin || product?.id } 
+                                            imgSrc =  { product?.images }
                                             title = { product?.title } 
                                             description = '' 
-                                            oldPrice = '' 
-                                            currentPrice = { product?.price } 
-                                            rating = { product?.rating?.rate } 
-                                            category = { product?.category } />
+                                            oldPrice = { product?.initial_retail_price && Number(product?.initial_retail_price)?.toFixed(2) } 
+                                            currentPrice = { Number(product?.retail_price)?.toFixed(2) } 
+                                            rating = { ratingCalculated || product?.rating?.rate } 
+                                            category = { product?.category } /> 
                                     )
                                 }))}
                         

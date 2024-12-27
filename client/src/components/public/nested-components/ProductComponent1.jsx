@@ -276,10 +276,10 @@ export default function ProductComponent1({ itemId,
                                             }
                                     </span> 
                                     <span className="cursor-pointer">
-                                        { (cartItems?.length > 0) && cartItems?.find(item => item?.id == itemId) ? 
+                                        { (cartItems?.length > 0) && cartItems?.find(item => item?.id == asin) ? 
                                             <svg 
                                                 type="button"
-                                                onClick={ () => removeFromCart(itemId) }
+                                                onClick={ () => removeFromCart(asin) }
                                                 xmlns="http://www.w3.org/2000/svg" 
                                                 width="16" 
                                                 height="16" 

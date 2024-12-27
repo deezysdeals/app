@@ -320,6 +320,10 @@ const getProduct = asyncHandler(async (req, res) => {
                                         .select('-product -deleted_at')
                                         .lean(); 
 
+    let productInfo = await ProductInfo.find({ product: product?._id })
+                                        .select('-product -deleted_at')
+                                        .lean(); 
+
     let productFeatures = await ProductFeature.find({ product: product._id })
                                         .select('-product -deleted_at')
                                         .lean(); 
@@ -330,6 +334,7 @@ const getProduct = asyncHandler(async (req, res) => {
 
     productObj.categories = productCategories; 
     productObj.images = productImages; 
+    productObj.info = productInfo; 
     productObj.features = productFeatures; 
     productObj.descriptions = productDescriptions; 
 

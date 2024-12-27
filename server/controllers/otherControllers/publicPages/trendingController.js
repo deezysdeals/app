@@ -1,9 +1,9 @@
 import asyncHandler from 'express-async-handler'; 
-import Product from '../../models/Product.js'; 
+import Product from '../../../models/Product.js'; 
 import { getYesterdayDateRange, 
         getTodayDateRange, 
         getPreviousWeekDateRange, 
-        getCurrentWeekDateRange } from '../../utils/date_range.js'; 
+        getCurrentWeekDateRange } from '../../../utils/date_range.js'; 
 /** Initialising Date Range Manipulation Functions */ 
 const { yesterdayStart, yesterdayEnd } = getYesterdayDateRange(); 
 const { todayStart, todayEnd } = getTodayDateRange(); 

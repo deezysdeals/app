@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx'; 
-import { useProducts } from '@/hooks/useProducts.jsx'; 
+import { useProducts } from '@/hooks/public/useProducts.jsx'; 
 import scrollToTop from '@/utils/ScrollToTop.jsx'; 
 import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
 import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
@@ -57,19 +57,23 @@ export default function Products() {
                 <div className="main"> 
 
                     <section className="products pt-3">
-                        {(productsList?.data?.length > 0) && (productsList?.data?.map(product => {
+                        {(productsList?.data?.length > 0) && (productsList?.data?.map((product, index) => {
                             return (
-                                <ProductComponent2 
-                                    key = { product?.id } 
-                                    itemId = { product?.id } 
-                                    asin = { product?.asin } 
-                                    imgSrc =  { product?.image || product?.images }
-                                    title = { product?.title } 
-                                    description = '' 
-                                    oldPrice = '' 
-                                    currentPrice = { product?.price } 
-                                    rating = { product?.rating?.rate } 
-                                    category = { product?.category } />
+                                <article key={ index } className="card border-0 mb-5">
+                                    <ProductComponent2 
+                                        key = { product?.id } 
+                                        itemId = { product?.id || product?._id } 
+                                        asin = { product?.asin || product?.id } 
+                                        imgSrc =  { product?.image || product?.images }
+                                        title = { product?.title } 
+                                        description = '' 
+                                        oldPrice = { product?.initial_retail_price && product?.initial_retail_price } 
+                                        currentPrice = { product?.retail_price || product?.price } 
+                                        rating = { product?.rating?.rate } 
+                                        orderCount = { product?.order_count } 
+                                        salesCount = { product?.sale_count } 
+                                        category = { product?.category } />
+                                </article>
                             )
                         }))}
                     </section> 

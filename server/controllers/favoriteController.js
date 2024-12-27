@@ -82,7 +82,11 @@ const createFavorite = asyncHandler(async (req, res) => {
 
     // const productFound = await Product.findOne({ _id: product }).lean();
 
-    // if (!productFound?.length) return res.status(404).json({ message: "No product matches the product key provided!" });
+    // if (!productFound?.length) return res.status(404).json({ message: "No product matches the product key provided!" }); 
+    /** Allow only 20 favorites */
+    const maximumNumberOfFavorites = await Favorite.countDocuments({ user: req?.user_id }); 
+    if (maximumNumberOfFavorites >= 15) return res.status(409).json({ message: 'You must delete a favorite to add a new one'})
+
     async function fetchProductAndCreateFavorite() {
         try {
             const response = await axios.get(`https://fakestoreapi.com/products/${product}`);

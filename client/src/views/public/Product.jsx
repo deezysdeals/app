@@ -2,16 +2,28 @@ import { Link, useParams } from 'react-router-dom';
 import { route } from '@/routes'; 
 import { useProductExt } from '@/hooks/external/useFakeStoreProduct.jsx'; 
 import { useProduct } from '@/hooks/useProduct.jsx'; 
+import formatNumber from '@/utils/FormatNumber.jsx';
 import Aside from '@/components/public/Aside.jsx'; 
 import Layout from '@/components/public/Layout.jsx'; 
 
 
 export default function Product() { 
     const params = useParams(); 
+    const source = params?.source; 
+
     const { productExt, getProductExt } = useProductExt(params?.id); 
-    const { product, getProduct } = useProduct(params?.id); 
-    const { internalProduct, externalProduct } = params; 
     console.log(productExt); 
+    const { product, getProduct } = useProduct(params?.id); 
+    console.log(product); 
+
+    let productArticle;
+    if (source == 'market') {
+        productArticle = productExt; 
+        console.log(productArticle); 
+    } else if (source == 'shop') {
+        productArticle = product; 
+        console.log(productArticle); 
+    }
 
     return (
         <Layout>
@@ -28,17 +40,28 @@ export default function Product() {
                                         <div className="col-sm-12 col-md-5">
                                             <div id="carouselExample" className="carousel slide">
                                                 <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>
-                                                    <div className="images">
-                                                        <div className="carousel-item active">
-                                                            <img src="https://images.unsplash.com/photo-1695527081756-6e15ed27c6a3?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://plus.unsplash.com/premium_photo-1678739395192-bfdd13322d34?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://images.unsplash.com/photo-1527385352018-3c26dd6c3916?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                    </div> 
+                                                    { params?.source == 'market' && 
+                                                        <div className="images">
+                                                            { (productArticle?.data?.image?.length > 0) && (productArticle?.data?.image?.map((image, index) => {
+                                                                return (
+                                                                    <div className={`carousel-item ${(index==0) && `active`}`}>
+                                                                        <img src={ image } className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
+                                                                    </div>
+                                                                )
+                                                            }))} 
+                                                        </div> 
+                                                    }
+                                                    { params?.source == 'shop' && 
+                                                        <div className="images">
+                                                            { (productArticle?.data?.images?.length > 0) && (productArticle?.data?.images?.map((image, index) => {
+                                                                return (
+                                                                    <div className={`carousel-item ${(index==0) && `active`}`}>
+                                                                        <img src={ image?.image_path?.url } className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
+                                                                    </div>
+                                                                )
+                                                            }))} 
+                                                        </div> 
+                                                    }
 
                                                     <div>
                                                         <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
@@ -63,17 +86,32 @@ export default function Product() {
                                         </div>
                                         <div className="col-sm-12 col-md-7">
                                             <div className="card-body d-flex flex-column gap-0">
-                                                <h4 className="card-title fs-4 text-capitalize">{ productExt?.title }</h4>
-                                                <span className="card-text"><small>Options: <span className="fw-semibold">7
-                                                            sizes</span></small></span>
-                                                <span className="card-text">10k+ bought in the last month</span>
-                                                <span className="card-text"><small><s>$86.99</s></small>&nbsp;<span
-                                                        className="fw-semibold fs-1">${ productExt?.price }</span></span>
-                                                <span className="card-text"><small><span
-                                                            className="bg-success border-radius-35 px-2 py-1 text-white fw-semibold">Save
-                                                            $15.00</span>&nbsp;with coupon</small></span>
-                                                <span className="card-text">Delivery&nbsp;<span className="fw-semibold">Fri, Aug
-                                                        30</span></span>
+                                                <h4 className="card-title fs-4 text-capitalize word-wrap">{ productArticle?.data?.title }</h4>
+                                                {/* <span className="card-text">
+                                                    <small>Options: <span className="fw-semibold">7 sizes</span>
+                                                    </small>
+                                                </span> */}
+                                                { (productArticle?.data?.order_count>0) &&
+                                                    <span className="card-text">{ formatNumber(Number(productArticle?.data?.order_count))} bought</span>
+                                                }
+                                                <span className="card-text">
+                                                    { (Number(productArticle?.data?.initial_retail_price)>0) &&
+                                                        <small>
+                                                            <s>${ Number(productArticle?.data?.initial_retail_price) }</s>&nbsp;
+                                                        </small> 
+                                                    }
+                                                    <span className="fw-semibold fs-1">
+                                                        ${ Number(productArticle?.data?.retail_price) || Number(productArticle?.data?.price) }
+                                                    </span>
+                                                </span>
+                                                <span className="card-text">
+                                                    <small>
+                                                        <span className="bg-success border-radius-35 px-2 py-1 text-white fw-semibold">Save $15.00</span>&nbsp;with coupon
+                                                    </small>
+                                                </span>
+                                                <span className="card-text">Delivery&nbsp;
+                                                    <span className="fw-semibold">Fri, Aug 30</span>
+                                                </span>
                                                 <span>
                                                     <small>More Buying Choices:</small>
                                                     <small className="fw-semibold">$400.98(46 used & new offers)</small>
@@ -113,36 +151,26 @@ export default function Product() {
 
                             <div>
                                 <ul>
-                                    <li style={{ marginLeft: 'unset' }}>
-                                        Powerful Performance: Equipped with an Intel Celeron N5100 processor (4C/4T, 1.1/2.8GHz) and integrated Intel UHD
-                                        Graphics, ensuring smooth and efficient multitasking for everyday computing tasks.
-                                    </li>
-                                    <li>
-                                        Generous Storage & Memory: Features 32GB DDR4 RAM and a 1TB SSD for fast data access and ample storage space, perfect
-                                        for storing large files and applications.
-                                    </li>
-                                    <li>
-                                        Sleek Design & Display: 15.6" FHD (1920x1080) anti-glare display delivers clear and vibrant visuals. The laptop has a
-                                        modern and durable design with a black PC-ABS chassis, weighing just 1.7 kg (3.75 lbs) for portability.
-                                    </li> 
-                                    <li>
-                                        Enhanced Connectivity & Security: Includes multiple ports for versatile connectivity - USB 2.0, USB 3.2 Gen 1, HDMI
-                                        1.4b, and RJ-45 Ethernet. Features Wi-Fi 5, Bluetooth 5.1, a camera privacy shutter, Firmware TPM 2.0 for added
-                                        security, and comes with Windows 11 Pro pre-installed.
-                                    </li> 
-                                    <li>
-                                        Complete Accessory Package for Ultimate Convenience: Alongside the laptop, this package includes a set of valuable
-                                        accessories to enhance your computing experience. You'll receive a 512GB external hard drive for additional storage, a
-                                        microfiber cloth for keeping your screen clean and smudge-free, and a hotkey sticker sheet to speed up your workflow.
-                                        Find your special voucher inside due to package size constraints. Claim your free exclusive gifts with a simple scan,
-                                        shipped at no extra cost!
-                                    </li>
+                                    {
+                                        (productArticle?.data?.descriptions?.length > 0) && 
+                                        productArticle?.data?.descriptions.map((description, index) => {
+                                            return (
+                                            <li 
+                                                key={ description?._id } 
+                                                className=""
+                                                // style={{ marginLeft: index == 0 ? 'unset' : 'initial' }}>
+                                                style={{ marginLeft: 'unset' }}>
+                                                { description?.content } 
+                                            </li>
+                                            );
+                                        })
+                                    }
                                 </ul>
                             </div> 
 
                             <div className="pt-4">
                                 <span>
-                                    <a href="#features-table" className="text-dark fw-semibold fs-6">View More Features</a>
+                                    <a href="#features" className="text-dark fw-semibold fs-6">View More Features</a>
                                 </span>
                             </div>
                         </section>
@@ -156,105 +184,41 @@ export default function Product() {
                         <h4 className="fw-semibold fs-5 border-bottom pb-2">Features</h4>
                     </summary> 
 
-                    <div id="features-table" className="pt-3">
-
+                    <div id="features" className="pt-3">
+                        {
+                            (productArticle?.data?.features?.length > 0) && 
+                            productArticle?.data?.features.map((feature, index) => {
+                                return (
+                                <li 
+                                    key={ feature?._id } 
+                                    className=""
+                                    // style={{ marginLeft: index == 0 ? 'unset' : 'initial' }}>
+                                    style={{ marginLeft: 'unset' }}>
+                                    { feature?.content } 
+                                </li>
+                                );
+                            })
+                        }
                     </div>
 
-                    <div className="table-responsive col-md-9">
+                    <div className="table-responsive col-md-9 pt-4">
                         <table className="table table-hover align-middle">
                             <tbody>
-                                <tr>
+                                {
+                                    (productArticle?.data?.info?.length > 0) && 
+                                    productArticle?.data?.info.map((infoItem, index) => {
+                                        return (
+                                            <tr key={ infoItem?._id }>
+                                                <th scope="row">{ infoItem?.dynamic_data[0] }</th>
+                                                <td colSpan="2">{ infoItem?.dynamic_data[1] }</td>
+                                            </tr>
+                                        );
+                                    })
+                                }
+                                {/* <tr>
                                     <th scope="row">Standing screen display size</th>
                                     <td colSpan="2">15.6 Inches</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Max Screen Resolution</th>
-                                    <td>1920 x 1080 Pixels</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Processor</th>
-                                    <td>2.8 GHz celeron</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">RAM</th>
-                                    <td>32 GB DDR4</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Hard Drive</th>
-                                    <td>1 TB SSD</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Graphics Coprocessor</th>
-                                    <td>Intel UHD Graphics</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Chipset Brand</th>
-                                    <td>Intel</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Card Description</th>
-                                    <td>Integrated</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Number of USB 2.0 Ports</th>
-                                    <td>1</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Number of USB 3.0 Ports</th>
-                                    <td>2</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Brand</th>
-                                    <td>Lenovo</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Series</th>
-                                    <td>V15</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Item model number</th>
-                                    <td>V15</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Hardware Platform</th>
-                                    <td>PC</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Item Weight</th>
-                                    <td>5.04 pounds</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Product Dimensions</th>
-                                    <td>14.14 x 9.28 x 0.78 inches</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Item Dimensions LxWxH</th>
-                                    <td>14.14 x 9.28 x 0.78 inches</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Color</th>
-                                    <td>Black</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Processor Brand</th>
-                                    <td>Intel</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Number of Processors</th>
-                                    <td>4</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Computer Memory Type</th>
-                                    <td>DDR4 SDRAM</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Flash Memory Size</th>
-                                    <td>1TB</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Hard Drive Interface</th>
-                                    <td>Solid State</td>
-                                </tr>
+                                </tr> */}
                             </tbody>
                         </table>
                     </div>

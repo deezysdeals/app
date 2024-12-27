@@ -342,50 +342,21 @@ export default function Pay() {
                     <section className="ordered-items pt-5" style={{ maxWidth: '600px' }}> 
                         <h4 className="fw-semibold border-bottom pb-1 fs-6">Cart Items (Preview)</h4>
                         <ol className='list-unstyled d-flex flex-column gap-1'> 
-                            {(cartItems?.length > 0) && (cartItems?.map((item, index) => { 
-                                // console.log(cartItems)
+                            {(cartItems?.length > 0) && (cartItems?.map((item, index) => {
                                 return (
                                     <li key={ index } className="ordered-item row align-items-center gx-5 gy-1 py-1">
                                         <div className="col-md-2">
-                                            <div id="carousel2ModalItem1Example" className="carousel slide">
+                                            <div id={`carousel2ModalItem${index}`} className="carousel slide">
                                                 <div className="carousel-inner position-relative" style={{ width: '75px', height: '75px' }}>
                                                     <div className="images"> 
-                                                        <div className={`carousel-item ${(index==0) && `active`}`}>
-                                                            <img src={ item?.img } className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
-                                                        </div>
-                                                        {/* { (item?.images?.map((image, index) => {
+                                                        { (item?.img?.length > 0) && (item?.img?.map((image, index) => {
                                                             return (
                                                                 <div className={`carousel-item ${(index==0) && `active`}`}>
-                                                                    <img src={ image?.img } className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
+                                                                    <img src={ image } className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
                                                                 </div>
                                                             )
-                                                        } ))} */}
-                                                        {/* <div className="carousel-item">
-                                                            <img src="https://plus.unsplash.com/premium_photo-1680390327010-09e627ebd475?q=80&w=1227&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://images.unsplash.com/photo-1527385352018-3c26dd6c3916?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
-                                                        </div> */}
+                                                        })) }
                                                     </div> 
-
-                                                    <div>
-                                                        <button className="carousel-control-prev position-absolute left-0 ps-2" type="button" data-bs-target="#carousel2ModalItem1Example" data-bs-slide="prev">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" className="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Previous</span>
-                                                        </button>
-                                                        <button className="carousel-control-next position-absolute right-0 pe-2" type="button" data-bs-target="#carousel2ModalItem1Example" data-bs-slide="next">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Next</span>
-                                                        </button>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -419,10 +390,9 @@ const SubmitPayment = ({ isPaying, setIsPaying, billingAddress }) => {
 
     const handleClick = async () => {
         if (!cardFieldsForm) {
-            const childErrorMessage =
-                "Unable to find any child components in the <PayPalCardFieldsProvider />";
+            const childErrorMessage = "Unable to find any child components in the <PayPalCardFieldsProvider />";
 
-            throw new Error(childErrorMessage);
+            throw new Error(childErrorMessage); 
         }
         const formState = await cardFieldsForm.getState();
 
@@ -440,7 +410,7 @@ const SubmitPayment = ({ isPaying, setIsPaying, billingAddress }) => {
         <button
             className={isPaying ? "btn border-radius-35 mt-3 me-2 px-4" : "btn btn-dark border-radius-35 mt-3 me-2 px-4 fw-semibold"}
             style={{ float: "right" }}
-            onClick={handleClick}
+            onClick={ handleClick }
         >
             {isPaying ? <div className="spinner tiny" /> : "Pay Now"}
         </button>

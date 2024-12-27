@@ -56,7 +56,7 @@ const createOrderPayment = async (req, res) => {
                 async function fetchProductAndProcessOrder() {
                     try {
                         const response = await axios.get(`https://fakestoreapi.com/products/${item?.id}`);
-                        // console.log('Response:', response?.data); 
+                        console.log('Response:', response?.data); 
 
                         /** Create new category, if does not exist */  
                         const categoryFilter = { name: response?.data?.category }; 
@@ -73,6 +73,7 @@ const createOrderPayment = async (req, res) => {
                         const productUpdate = {
                             $setOnInsert: { // This ensures these fields are set only when the document is inserted
                                 user: req?.user_id,
+                                asin: item?.id, 
                                 title: response?.data?.title,
                                 retail_price: response?.data?.price,
                                 images: [response?.data?.image]
@@ -101,6 +102,8 @@ const createOrderPayment = async (req, res) => {
                             upsert: true 
                         }); 
                         // console.log(upsertProductImage); 
+                        console.log('Retail Price', Number(upsertProduct?.retail_price)); 
+                        console.log('Selling Price', Number(upsertProduct?.retail_price + (10/100))); 
 
                         const newOrderItem = await OrderItem.create({
                             user: req?.user_id, 
@@ -108,9 +111,10 @@ const createOrderPayment = async (req, res) => {
                             order: newOrder?._id, 
                             quantity: item?.quantity, 
                             cost_price: upsertProduct?.retail_price, 
-                            selling_price: (upsertProduct?.retail_price + (10/100))
+                            selling_price: Number(upsertProduct?.retail_price + (10/100))
                         }); 
-                        // console.log({'Test': newOrderItem?.price * newOrderItem?.quantity}); 
+                        console.log('Selling Price', newOrderItem?.selling_price); 
+                        console.log({'Test': newOrderItem?.selling_price * newOrderItem?.quantity}); 
 
                         let orderItemPrice = newOrderItem?.selling_price * newOrderItem?.quantity; 
                         totalToBePaid += orderItemPrice; 

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'; 
 import { useNavigate } from 'react-router-dom'; 
 import { route } from '@/routes'; 
+import axios from 'axios'; 
+import Constants from '@/utils/Constants.jsx'; 
 import useAxios from '@/utils/useAxios.jsx'; 
 import swal from 'sweetalert2'; 
 
@@ -90,7 +92,8 @@ export function useProduct(id = null) {
     async function getProduct(id, { signal } = {}) {
         setLoading(true); 
 
-        return axiosInstance.get(`products/${id}`, { signal })
+        // return axiosInstance.get(`products/${id}`, { signal })
+        return axios.get(`${ Constants?.serverURL }/api/v1/products/${id}`, { signal })
             .then(response => setData(response?.data?.data))
             .catch(error => setErrors(error?.response))
             .finally(() => setLoading(false));

@@ -25,6 +25,15 @@ const productSchema = new Schema({
         // price_sold_to_client: { type: Number }, 
         order_count: { type: Number, default: 0 }, 
         sale_count: { type: Number, default: 0 }, 
+        /** Rating Count */
+        total_rating_value: { type: Number, default: 0 },   // increments of 5 for 5-star, 4 for 4-star, e.t.c.
+        total_rating_count: { type: Number, default: 0 }, 
+        five_star_rating_count: { type: Number, default: 0 }, 
+        four_star_rating_count: { type: Number, default: 0 }, 
+        three_star_rating_count: { type: Number, default: 0 }, 
+        two_star_rating_count: { type: Number, default: 0 }, 
+        one_star_rating_count: { type: Number, default: 0 }, 
+        /** End of Rating Count */
         currency: { type: String, default: 'usd' }, 
         images: [ String ], 
         dimensions: {
@@ -33,8 +42,9 @@ const productSchema = new Schema({
             depth: { type: String },
             weight: { type: String }
         },
-        proposed_delivery_start_date: { type: Date }, 
-        proposed_delivery_destination_reach_date: { type: Date }, 
+        delivery_timeframe: { type: Number },  // in days
+        // proposed_delivery_start_date: { type: Date }, 
+        // proposed_delivery_destination_reach_date: { type: Date }, 
         deleted_at: { type: String, default: null }, 
         deleted_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
     }, 

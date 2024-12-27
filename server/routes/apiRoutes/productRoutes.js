@@ -14,6 +14,19 @@ import { getProducts,
         getPurchasedProducts, 
         addToShop, 
         getSoldProducts } from '../../controllers/productController.js'; 
+import { getProductsPublicVersion, 
+        getFeaturedProducts, 
+        getPopularProducts, 
+        getTopRatedProducts, 
+        getSuggestedProducts } from '../../controllers/otherControllers/publicPages/productController.js'
+
+
+/** Public Pages Routes */
+productRouter.get('/quick-version', getProductsPublicVersion); 
+productRouter.get('/featured', getFeaturedProducts);
+productRouter.get('/popular', getPopularProducts); 
+productRouter.get('/top-rated', getTopRatedProducts); 
+// productRouter.get('/suggested', getSuggestedProducts); 
 
 
 /** Additional Routes */

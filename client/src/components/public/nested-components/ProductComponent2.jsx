@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react'; 
 import AuthContext from '@/context/AuthContext.jsx'; 
 import { CartContext } from '@/context/CartContext.jsx'; 
-import { Link, useLocation } from 'react-router-dom'; 
+import { Link, useLocation, useParams } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import dayjs from 'dayjs';
 import relativeTime from "dayjs/plugin/relativeTime"; 
@@ -9,12 +9,14 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(relativeTime);
 dayjs.extend(utc); 
 import swal from 'sweetalert2'; 
+import formatNumber from '@/utils/FormatNumber.jsx';
 import { useFavorites } from '@/hooks/useFavorites.jsx'; 
 import { useFavorite } from '@/hooks/useFavorite.jsx'; 
 import { useProduct } from '@/hooks/useProduct.jsx'; 
 
 
-export default function ProductComponent2({ itemId, 
+export default function ProductComponent2({ source, 
+                                            itemId, 
                                             productId, 
                                             asin, 
                                             index,
@@ -38,6 +40,7 @@ export default function ProductComponent2({ itemId,
                                             purchaseDate, 
                                             sellingPrice, 
                                             saleDate }) {
+    const params = useParams();
     const { user } = useContext(AuthContext);
     const { cartItems, addToCart, removeFromCart } = useContext(CartContext); 
     const { favorites, getFavorites } = useFavorites(); 
@@ -46,22 +49,20 @@ export default function ProductComponent2({ itemId,
     return (
         <article className="card border-0 mb-5">
             <div className="row align-items-center g-3">
-                <div className="col-sm-12 col-lg-4">
+                <div className="col-sm-12 col-lg-4 d-flex justify-content-center">
                     <Link 
-                        to={ route('products.show', { id: itemId }) } 
+                        to={ route('products.show', { id: itemId, source: params?.source }) } 
                         className="text-decoration-none text-dark">
                             <div id={`carouselExample${itemId}`} className="carousel slide">
                                 <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>
                                     <div className="images">
-                                        <div className="carousel-item active">
-                                            <img src={ imgSrc } className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                        </div>
-                                        <div className="carousel-item">
-                                            <img src="https://plus.unsplash.com/premium_photo-1678739395192-bfdd13322d34?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                        </div>
-                                        <div className="carousel-item">
-                                            <img src="https://images.unsplash.com/photo-1527385352018-3c26dd6c3916?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                        </div>
+                                        { (imgSrc?.length > 0) && (imgSrc?.map((image, index) => {
+                                            return (
+                                                <div className={`carousel-item ${(index==0) && `active`}`}>
+                                                    <img src={ image } className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
+                                                </div>
+                                            )
+                                        }))} 
                                     </div> 
 
                                     <div>
@@ -90,8 +91,8 @@ export default function ProductComponent2({ itemId,
                     <div className="card-body d-flex flex-column gap-0">
                         <h4 className="card-title fs-4">
                             <Link 
-                                to={ route('products.show', { id: itemId }) } 
-                                className="text-decoration-none text-dark">
+                                to={ route('products.show', { id: itemId, source: params?.source }) } 
+                                className="text-decoration-none text-dark word-wrap">
                                     { title }
                             </Link>
                         </h4>
@@ -103,13 +104,13 @@ export default function ProductComponent2({ itemId,
                                 </small>
                             </span>
                         } 
-                        { orderCount && 
+                        { (orderCount>0) && 
                             <span className="card-text">
-                                { formatNumber(Number(orderCount)) }&nbsp;
+                                { (Number(orderCount)>0) && formatNumber(Number(orderCount)) }&nbsp;
                                 bought
                             </span> 
                         }
-                        <span className="card-text">
+                        <span className="card-text fs-5">
                             <small><s>{ oldPrice && '$'+Number(oldPrice)?.toFixed(2) }</s>{ oldPrice && <span>&nbsp;</span>}</small>
                             { (!location.pathname.startsWith('/home/sales')) 
                                 ?   <span className="fw-semibold">

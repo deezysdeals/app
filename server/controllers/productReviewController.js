@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler'; 
 import ProductReview from '../models/ProductReview.js'; 
+import Product from '../models/Product.js';
 
 
 /**
@@ -163,7 +164,27 @@ const createProductReview = asyncHandler(async (req, res) => {
                                                                 deleted_at: null
                                                             }).lean(); 
 
-    if (productReviewExists) return res.status(409).json({ message: "A review already exists for this item. You can delete the already existing review to create a new one!" })
+    if (productReviewExists) return res.status(409).json({ message: "A review already exists for this item. You can delete the already existing review to create a new one!" }); 
+
+    /** Create new product, if does not exist */ 
+    let productUpdate;
+    const productFilter = { _id: product }; 
+    if (rating == 5) 
+        productUpdate = { $inc: { total_rating_value: 5, total_rating_count: 1, five_star_rating_count: 1 } }; 
+    if (rating == 4) 
+        productUpdate = { $inc: { total_rating_value: 4, total_rating_count: 1, four_star_rating_count: 1 } }; 
+    if (rating == 3) 
+        productUpdate = { $inc: { total_rating_value: 3, total_rating_count: 1, three_star_rating_count: 1 } }; 
+    if (rating == 2) 
+        productUpdate = { $inc: { total_rating_value: 2, total_rating_count: 1, two_star_rating_count: 1 } }; 
+    if (rating == 1) 
+        productUpdate = { $inc: { total_rating_value: 1, total_rating_count: 1, one_star_rating_count: 1 } }; 
+
+    const updateProduct = await Product.findOneAndUpdate(productFilter, productUpdate, {
+        new: true
+    }); 
+    if (!updateProduct) return res.status(404).json({ message: 'Product not found' });
+    // console.log(updateProduct); 
 
     const productReview = new ProductReview({
         user: req?.user_id, 
