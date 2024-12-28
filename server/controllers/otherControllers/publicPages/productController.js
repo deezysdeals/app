@@ -25,8 +25,18 @@ const getProductsPublicVersion = asyncHandler(async (req, res) => {
                                 .lean(); 
     if (!products?.length) return res.status(404).json({ message: "No products found!" }); 
 
+    const total = await Product.countDocuments({ deleted_at: null });
+
 	// res.json({ data: products }); 
-    res.json({ data: products });
+    res.json({ 
+                meta: {
+                    current_page, 
+                    limit, 
+                    total_pages: Math.ceil(total / limit), 
+                    total_results: total
+                }, 
+                data: products 
+            });
 });
 
 /**

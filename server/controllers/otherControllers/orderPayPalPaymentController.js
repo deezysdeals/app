@@ -9,11 +9,13 @@ import orderPlacedNoticationMailTemplate from '../../mails/templates/orderNotifi
 import Category from '../../models/Category.js'; 
 import Product from '../../models/Product.js'; 
 import ProductImage from '../../models/ProductImage.js'; 
+import CategoryProduct from '../../models/CategoryProduct.js'; 
 import Order from '../../models/Order.js'; 
 import OrderItem from '../../models/OrderItem.js'; 
 import User from '../../models/User.js'; 
 import Address from '../../models/Address.js'; 
 import Notification from '../../models/Notification.js'; 
+import Brand from '../../models/Brand.js';
 
 
 /**
@@ -92,6 +94,16 @@ const createOrderPayment = async (req, res) => {
                         );
                         // console.log(upsertProduct);
 
+                        /** Find and update the Category/Product relationship table */
+                        const upsertCategoryProduct = await CategoryProduct.findOneAndUpdate(
+                            { category: upsertCategory?._id, product: upsertProduct?._id }, 
+                            { category: upsertCategory?._id, product: upsertProduct?._id }, 
+                            {
+                                new: true,   // Return the updated document
+                                upsert: true // Create a new document if one doesn't exist
+                            }
+                        )
+
                         /** Create new product image (order item image), if does not exist */ 
                         const productImageFilter = { 'image_path.url': response?.data?.image }; 
                         const productImageUpdate = { $set: { product: upsertProduct?._id,
@@ -113,8 +125,8 @@ const createOrderPayment = async (req, res) => {
                             cost_price: upsertProduct?.retail_price, 
                             selling_price: Number(upsertProduct?.retail_price + (10/100))
                         }); 
-                        console.log('Selling Price', newOrderItem?.selling_price); 
-                        console.log({'Test': newOrderItem?.selling_price * newOrderItem?.quantity}); 
+                        // console.log('Selling Price', newOrderItem?.selling_price); 
+                        // console.log({'Test': newOrderItem?.selling_price * newOrderItem?.quantity}); 
 
                         let orderItemPrice = newOrderItem?.selling_price * newOrderItem?.quantity; 
                         totalToBePaid += orderItemPrice; 
@@ -129,8 +141,15 @@ const createOrderPayment = async (req, res) => {
                             console.log('json 1', jsonResponse); 
                             console.log('order id', newOrder?._id)
                             // console.log({ 'totaltobe': totalToBePaid }); 
-                            async function updateOrderWithOrderIDUserAndNotification(jsonResponse) {
+                            async function updateBrandAndOrderWithOrderIDUserAndNotification(jsonResponse) {
                                 try { 
+
+                                    const updateBrandWithOrderCount = await Brand.findOneAndUpdate(
+                                        { _id: upsertProduct?.brand }, 
+                                        { $inc: { order_count: 1 } }, 
+                                        { new: true }
+                                    );
+
                                     const orderFilter = { _id: newOrder?._id }; 
                                     const orderUpdate = { paypal_order_id: jsonResponse?.id,  
                                                         total_to_be_paid: totalToBePaid }; 
@@ -170,7 +189,7 @@ const createOrderPayment = async (req, res) => {
                                 }
 
                             }
-                            await updateOrderWithOrderIDUserAndNotification(jsonResponse);
+                            await updateBrandAndOrderWithOrderIDUserAndNotification(jsonResponse);
 
                             // console.log('total within function', totalToBePaid); 
 

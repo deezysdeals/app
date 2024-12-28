@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react'; 
 import { CartContext } from '@/context/CartContext.jsx'; 
-import { Link } from 'react-router-dom'; 
+import { Link, useParams } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import { useFavorites } from '@/hooks/useFavorites.jsx'; 
 import { useFavorite } from '@/hooks/useFavorite.jsx'; 
@@ -24,7 +24,10 @@ export default function ProductComponent1({ itemId,
     const { favorites, getFavorites } = useFavorites(favoriteQuery); 
     const { createFavorite, getFavorite, deleteFavorite } = useFavorite(); 
 
-    console.log(favorites)
+    console.log(favorites); 
+
+    const params = useParams(); 
+    const source = params?.source ? params?.source : 'shop';
 
     // console.log('cart', cartItems);
 
@@ -33,7 +36,7 @@ export default function ProductComponent1({ itemId,
             <div 
                 className="text-decoration-none">
                     <div className="card border-radius-35 w-100" style={{ height: '100%' }}> 
-                        <Link to={ route('products.show', { id: itemId }) } >
+                        <Link to={ route('products.show', { id: itemId, source: source }) } >
                             <img src={ imgSrc }
                                 className="d-block card-img-top object-fit-cover" style={{ borderRadius: '35px 35px 0 0', width: '225px', height: '142.5px' }} alt="..." />
                         </Link>
@@ -236,7 +239,7 @@ export default function ProductComponent1({ itemId,
                             </div>
                             <h5 className="card-title w-100 text-wrap text-start fs-6 fw-semibold"> 
                                 <Link 
-                                    to={ route('products.show', { id: itemId }) } 
+                                    to={ route('products.show', { id: itemId, source: source }) } 
                                     className="text-decoration-none text-dark">
                                         { (title)?.substring(0,30) } { (title)?.length > 30 && '...' }
                                 </Link>

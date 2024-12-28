@@ -87,7 +87,8 @@ export default function Aside() {
                     </div> 
                     <div className="d-flex pt-3 px-2">
                         <span className="btn btn-sm border-radius-35 d-flex align-items-center">
-                            <Link to={ route('trending') } className="text-decoration-none ps-1 fw-semibold">
+                            {/* <Link to={ route('trending') } className="text-decoration-none ps-1 fw-semibold"> */}
+                            <Link to={ route('products.index', { source: 'shop'}) } className="text-decoration-none ps-1 fw-semibold">
                                 <span className="fw-semibold">See more</span>&nbsp;
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-right-circle-fill"
                                     viewBox="0 0 16 16">

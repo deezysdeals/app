@@ -21,6 +21,7 @@ const brandSchema = new Schema({
         twitter_x: { type: String}, 
         other_social: { type: String }, 
         other_social_handle: { type: String }, 
+        order_count: { type: Number, default: 0 }, 
         deleted_at: { type: String, default: null }, 
         deleted_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
     }, 

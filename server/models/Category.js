@@ -10,6 +10,7 @@ const categorySchema = new Schema({
             unique: true 
         }, 
         link: { type: String }, 
+        order_count: { type: Number, default: 0 }, 
     }, 
     {
         timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }

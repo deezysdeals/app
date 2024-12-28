@@ -69,12 +69,6 @@ const getCategory = asyncHandler(async (req, res) => {
 
     if (!category) return res.status(404).json({ message: `No category matches category ${req?.params?.id}!` }); 
 
-    const subCategories = await SubCategory.find({ category: category?._id })
-                                            .sort('-created_at')
-                                            .lean(); 
-
-    category['sub_categories'] = subCategories;
-
 	res.status(200).json({ data: category }); 
 }); 
 

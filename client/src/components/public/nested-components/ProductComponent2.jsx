@@ -51,7 +51,7 @@ export default function ProductComponent2({ source,
             <div className="row align-items-center g-3">
                 <div className="col-sm-12 col-lg-4 d-flex justify-content-center">
                     <Link 
-                        to={ route('products.show', { id: itemId, source: params?.source }) } 
+                        to={ route('products.show', { id: itemId, source: (params?.source || 'shop') }) } 
                         className="text-decoration-none text-dark">
                             <div id={`carouselExample${itemId}`} className="carousel slide">
                                 <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>

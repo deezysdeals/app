@@ -17,7 +17,7 @@ export default function DealComponent({ key, id, title, description, imgSrc }) {
                         <p className="card-text text-start w-100" style={{ whiteSpace: 'wrap' }}>{ description?.slice(0,30) }</p> 
                         <div className="justify-self-start">
                             <Link 
-                                to={ route('brands.show', { id: id }) } className="btn btn-sm btn-dark border-radius-35 d-flex justify-items-start gap-1">
+                                to={ route('deals.show', { id: id }) } className="btn btn-sm btn-dark border-radius-35 d-flex justify-items-start gap-1">
                                 <span>Find Out More</span>
                                 <span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"

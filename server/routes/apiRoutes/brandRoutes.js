@@ -11,8 +11,18 @@ import { getBrands,
         restoreBrand, 
         destroyBrand
 } from '../../controllers/brandController.js'; 
+import { getPopularBrands, 
+        getBrandsPublicVersion, 
+        getBrandProducts } from '../../controllers/otherControllers/publicPages/brandController.js'
 
 
+/** Public Pages Routes */
+brandRouter.get('/quick-version', getBrandsPublicVersion); 
+brandRouter.get('/popular', getPopularBrands); 
+brandRouter.get('/:brand/products', getBrandProducts); 
+
+
+/** Main Routes */
 brandRouter.route('/')
                 .get(getBrands)
                 .post(authenticated, createBrand); 

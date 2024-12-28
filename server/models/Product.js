@@ -42,9 +42,11 @@ const productSchema = new Schema({
             depth: { type: String },
             weight: { type: String }
         },
-        delivery_timeframe: { type: Number },  // in days
+        delivery_timeframe_min: { type: Number },  // in days
+        delivery_timeframe_max: { type: Number },  // in days
         // proposed_delivery_start_date: { type: Date }, 
         // proposed_delivery_destination_reach_date: { type: Date }, 
+        hide: { type: Boolean, default: false }, 
         deleted_at: { type: String, default: null }, 
         deleted_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
     }, 
@@ -72,7 +74,11 @@ productSchema.virtual('retail_price_virtual').get(function () {
 });
 productSchema.virtual('retail_price_virtual').set(function (value) {
   this.retail_price = Math.round(value * 100); 
-});
+}); 
+
+productSchema.virtual('rating').get(function () {
+  return this.total_rating_value / this.total_rating_count
+})
 
 productSchema.set('toJSON', {
   virtuals: true,

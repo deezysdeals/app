@@ -11,6 +11,15 @@ import { getCategories,
         restoreCategory, 
         destroyCategory
 } from '../../controllers/categoryController.js'; 
+import { getCategoriesPublicVersion, 
+        getPopularCategories, 
+        getCategoryProducts } from '../../controllers/otherControllers/publicPages/categoryController.js'
+
+
+/** Public Pages Routes */
+categoryRouter.get('/quick-version', getCategoriesPublicVersion); 
+categoryRouter.get('/popular', getPopularCategories); 
+categoryRouter.get('/:category/products', getCategoryProducts); 
 
 
 categoryRouter.route('/')

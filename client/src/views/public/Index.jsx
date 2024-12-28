@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import { useCategoriesExt } from '@/hooks/external/useFakeStoreCategories.jsx'; 
+import { usePopularCategories } from '@/hooks/public/usePopularCategories.jsx'; 
 import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx'; 
-import { useFeaturedProducts } from '../../hooks/public/useFeaturedProducts.jsx'; 
-import { usePopularProducts } from '../../hooks/public/usePopularProducts.jsx'; 
-import { useTopRatedProducts } from '../../hooks/public/useTopRatedProducts.jsx'; 
+import { useFeaturedProducts } from '@/hooks/public/useFeaturedProducts.jsx'; 
+import { usePopularProducts } from '@/hooks/public/usePopularProducts.jsx'; 
+import { useTopRatedProducts } from '@/hooks/public/useTopRatedProducts.jsx'; 
 import { useProducts } from '@/hooks/useProducts.jsx'; 
-import { useBrands } from '@/hooks/useBrands.jsx'; 
+// import { useBrands } from '@/hooks/useBrands.jsx'; 
+import { usePopularBrands } from '@/hooks/public/usePopularBrands.jsx'; 
 import { useDeals } from '@/hooks/useDeals.jsx'; 
 import Aside from '@/components/public/Aside.jsx'; 
 import Layout from '@/components/public/Layout.jsx';
@@ -19,15 +21,26 @@ import BrandComponent from '@/components/public/nested-components/BrandComponent
 export default function Index() { 
     const { categoriesExt } = useCategoriesExt(); 
     const { productsExt } = useProductsExt(); 
-    // console.log(categoriesExt); 
-    // console.log(productsExt); 
+    console.log(categoriesExt); 
+    console.log(productsExt); 
 
+    const { popularCategories } = usePopularCategories(); 
+    console.log(popularCategories);
     const { featuredProducts } = useFeaturedProducts(); 
     console.log(featuredProducts);
     const { popularProducts } = usePopularProducts(); 
     console.log(popularProducts); 
     const { topRatedProducts } = useTopRatedProducts(); 
     console.log(topRatedProducts);
+
+    let popularCategoriesList; 
+    if (popularCategories?.data?.length > 0) {
+        popularCategoriesList = popularCategories; 
+        console.log(popularCategoriesList); 
+    } else {
+        popularCategoriesList = categoriesExt; 
+        console.log(popularCategoriesList); 
+    }; 
 
     let featuredProductsList; 
     if (featuredProducts?.data?.length > 0) {
@@ -50,12 +63,8 @@ export default function Index() {
         topRatedProductsList = productsExt;
     }
 
-    const [brandQuery, setBrandQuery] = useState({ 
-        page: 1, 
-        limit: 20, 
-    }); 
-    const { brands, getBrands } = useBrands(brandQuery); 
-    console.log(brands); 
+    const { popularBrands, getPopularBrands } = usePopularBrands(); 
+    console.log(popularBrands); 
     const [dealQuery, setDealQuery] = useState({ 
         page: 1, 
         limit: 20, 
@@ -80,8 +89,8 @@ export default function Index() {
                                     const ratingCalculated = (Number(product?.total_rating_value) / Number(product?.total_rating_count)) || 5; 
                                     return (
                                         <ProductComponent1 
-                                            key = { product?.id } 
-                                            itemId = { product?.id } 
+                                            key = { product?.id || product?._id } 
+                                            itemId = { product?.id || product?._id } 
                                             asin = { product?.asin || product?.id } 
                                             imgSrc =  { product?.images }
                                             title = { product?.title } 
@@ -92,7 +101,6 @@ export default function Index() {
                                             category = { product?.category } />
                                     )
                                 }))}
-                        
                             </nav>
                         </div> 
 
@@ -120,8 +128,7 @@ export default function Index() {
                                     const ratingCalculated = (Number(product?.total_rating_value) / Number(product?.total_rating_count)) || 5; 
                                     return (
                                         <ProductComponent1 
-                                            key = { product?.id } 
-                                            itemId = { product?.id } 
+                                            key = { product?.id || product?._id } 
                                             asin = { product?.asin || product?.id } 
                                             imgSrc =  { product?.images }
                                             title = { product?.title } 
@@ -161,8 +168,7 @@ export default function Index() {
                                     // console.log('rating calculated', ratingCalculated);
                                     return (
                                         <ProductComponent1 
-                                            key = { product?.id } 
-                                            itemId = { product?.id } 
+                                                                                        itemId = { product?.id || product?._id } 
                                             asin = { product?.asin || product?.id } 
                                             imgSrc =  { product?.images }
                                             title = { product?.title } 
@@ -184,10 +190,11 @@ export default function Index() {
                         <div className="nav-scroller">
                             <nav className="nav justify-content-between py-4"> 
 
-                                {(categoriesExt?.length > 0) && (categoriesExt?.map(category => {
+                                {(popularCategoriesList?.data?.length > 0) && (popularCategoriesList?.data?.map((category, index) => {
+                                    console.log(category);
                                     return (
-                                        <article key={ category } className="">
-                                            <Link to={ route('categories.show', { id: category }) } className="btn btn-outline-dark border-radius-35 px-5 py-2 fw-bold text-decoration-none text-capitalize">{ category }</Link>
+                                        <article key={ category?._id || category?.toString() } className="">
+                                            <Link to={ route('categories.show', { id: (category?._id || category?.toString()) }) } className="btn btn-outline-dark border-radius-35 px-5 py-2 fw-bold text-decoration-none text-capitalize">{ (category?.name || category?.toString()) }</Link>
                                         </article> 
                                     )
                                 }))}
@@ -233,15 +240,16 @@ export default function Index() {
 
                         <div className="nav-scroller py-1 mb-3">
                             <nav className="nav justify-content-between py-3">
-                                { (brands?.data?.length > 0) && brands?.data?.map((brand, index) => {
+                                { (popularBrands?.data?.length > 0) && popularBrands?.data?.map((brand, index) => {
                                     return ( 
-                                        // <span key={ brand?._id }>
-                                            <BrandComponent 
-                                                key={ brand?._id } 
-                                                id={ brand?._id } 
-                                                brand={ brand?.name } 
-                                                imgSrc={ brand?.logo_path?.url } />
-                                        // </span>
+                                        <article key={ brand?._id } className="">
+                                            <Link 
+                                                to={ route('brands.show', { id: brand?._id }) } className="text-dark text-decoration-none d-flex flex-column align-items-center gap-2">
+                                                    <BrandComponent 
+                                                        name={ brand?.name } 
+                                                        imgSrc={ brand?.logo_path?.url} />
+                                            </Link>
+                                        </article>
                                     )
                                 }) }
                                 {/* <BrandComponent 

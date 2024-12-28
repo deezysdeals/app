@@ -6,6 +6,7 @@ import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx';
 
 export default function Suggestions() { 
     const { productsExt } = useProductsExt(); 
+    console.log(productsExt)
     
     return (
         <section className="suggestions pt-5 mt-2 px-3">
@@ -14,7 +15,7 @@ export default function Suggestions() {
             <div className="nav-scroller">
                 <nav className="nav w-100 justify-content-between py-3" style={{ height: '325px', overflowY: 'hidden' }}>
             
-                    { (productsExt?.length > 0) && (productsExt?.map(product => {
+                    { (productsExt?.data?.length > 0) && (productsExt?.data?.map(product => {
                         return (
                             <ProductComponent1 
                                 key = { product?.id } 

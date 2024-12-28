@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'; 
 import { useNavigate } from 'react-router-dom'; 
 import { route } from '@/routes'; 
+import axios from 'axios'; 
+import Constants from '@/utils/Constants.jsx'; 
 import useAxios from '@/utils/useAxios.jsx'; 
 import swal from 'sweetalert2'; 
 
@@ -61,7 +63,7 @@ export function useDeal(id = null) {
     async function getDeal(id, page, limit) {
         setLoading(true); 
 
-        return axiosInstance.get(`deals/${id}?page=${page}&limit=${limit}`)
+        return axios.get(`${ Constants?.serverURL }/api/v1/deals/${id}?page=${page}&limit=${limit}`)
             .then(response => setData(response?.data))
             .catch(error => setErrors(error?.response))
             .finally(() => setLoading(false));

@@ -11,8 +11,14 @@ import { getDeals,
         restoreDeal, 
         destroyDeal
 } from '../../controllers/dealController.js'; 
+import { getDealProducts } from '../../controllers/otherControllers/publicPages/dealController.js'
 
 
+/** Public Pages Routes */
+dealRouter.get('/:deal/products', getDealProducts); 
+
+
+/** Main Routes */
 dealRouter.route('/')
                 .get(getDeals)
                 .post(authenticated, createDeal); 

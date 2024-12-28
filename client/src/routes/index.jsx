@@ -100,8 +100,11 @@ const routeNames = {
     'brands.show': '/brands/:id/show', 
     'brands.index': '/brands', 
 
+    'deals.show': '/deals/:id/show', 
+    'deals.index': '/deals', 
+
     'categories.show': '/categories/:id/show', 
-    'categories.index': '/categories', 
+    'categories.index': '/categories/:source', 
 
     'cart': '/cart', 
     'paid': '/paid', 
