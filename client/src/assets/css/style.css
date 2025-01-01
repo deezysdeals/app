@@ -805,17 +805,23 @@ main .grid .main .dashboard-content .dashboard-boxes .line {
 main .grid .main .dashboard-content .dashboard-boxes .line.line-1 {
     display: grid;
     grid-template-areas:
-        "order-purchase"
+        "order-expenditure"
+        "sale-purchase"
         "client-checkin"
         "client-volume";
 }
 
-main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .order-purchase {
+main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .order-expenditure {
     display: grid;
     grid-template-columns: 1fr;
 }
 
-main .grid .main .dashboard-content .dashboard-boxes .line.line-2 {
+main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .sale-purchase {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+main .grid .main .dashboard-content .dashboard-boxes .line.line-3 {
     display: grid;
     grid-template-columns: 2fr 3fr;
     grid-template-areas:
@@ -823,8 +829,12 @@ main .grid .main .dashboard-content .dashboard-boxes .line.line-2 {
         "orders orders";
 }
 
-main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .order-purchase {
-    grid-area: order-purchase;
+main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .order-expenditure {
+    grid-area: order-expenditure;
+}
+
+main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .sale-purchase {
+    grid-area: sale-purchase;
 }
 
 main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .client-checkin {
@@ -835,11 +845,11 @@ main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .client-volume
     grid-area: client-volume;
 }
 
-main .grid .main .dashboard-content .dashboard-boxes .line.line-2 .statistics {
+main .grid .main .dashboard-content .dashboard-boxes .line.line-3 .statistics {
     grid-area: statistics;
 }
 
-main .grid .main .dashboard-content .dashboard-boxes .line.line-2 .orders {
+main .grid .main .dashboard-content .dashboard-boxes .line.line-3 .orders {
     grid-area: orders;
 }
 
@@ -1210,16 +1220,22 @@ main .grid .main .dashboard-content .profile-form .fields {
         display: grid;
         /* grid-template-columns: repeat(2, 1fr); */
         grid-template-areas:
-            "order-purchase order-purchase"
+            "order-expenditure order-expenditure"
+            "sale-purchase sale-purchase"
             "client-checkin client-volume";
     }
 
-    main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .order-purchase {
+    main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .order-expenditure {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
     }
 
-    main .grid .main .dashboard-content .dashboard-boxes .line.line-2 {
+    main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .sale-purchase {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    main .grid .main .dashboard-content .dashboard-boxes .line.line-3 {
         display: grid;
         grid-template-columns: 2fr 3fr;
         grid-template-areas:
@@ -1347,12 +1363,13 @@ main .grid .main .dashboard-content .profile-form .fields {
     main .grid .main .dashboard-content .dashboard-boxes .line.line-1 {
         display: grid;
         grid-template-areas:
-            "order-purchase"
+            "order-expenditure"
+            "sale-purchase"
             "client-checkin"
             "client-volume";
     }
 
-    main .grid .main .dashboard-content .dashboard-boxes .line.line-2 {
+    main .grid .main .dashboard-content .dashboard-boxes .line.line-3 {
         display: grid;
         grid-template-columns: 2fr 3fr;
         grid-template-areas:
@@ -1374,11 +1391,12 @@ main .grid .main .dashboard-content .profile-form .fields {
     main .grid .main .dashboard-content .dashboard-boxes .line.line-1 {
         display: grid;
         grid-template-areas:
-            "order-purchase order-purchase"
+            "order-expenditure order-expenditure"
+            "sale-purchase sale-purchase"
             "client-checkin client-volume";
     }
 
-    main .grid .main .dashboard-content .dashboard-boxes .line.line-2 {
+    main .grid .main .dashboard-content .dashboard-boxes .line.line-3 {
         display: grid;
         grid-template-columns: 2fr 3fr;
         grid-template-areas:

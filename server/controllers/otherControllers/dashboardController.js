@@ -12,6 +12,7 @@ import { getYesterdayDateRange,
         getCurrentMonthDateRange, 
         getPreviousYearDateRange, 
         getCurrentYearDateRange } from '../../utils/date_range.js'; 
+import OrderItem from '../../models/OrderItem.js';
 /** Initialising Date Range Manipulation Functions */ 
 const { yesterdayStart, yesterdayEnd } = getYesterdayDateRange(); 
 const { todayStart, todayEnd } = getTodayDateRange(); 
@@ -187,13 +188,13 @@ const getOrders = asyncHandler(async (req, res) => {
     async function getTopThreeHighestValues() {
         try {
             const topThreeOrders = await Order.find()
-                .sort({ total_to_be_paid: -1 }) 
-                .limit(3) 
-                .populate({
-                    path: 'user', 
-                    select: 'first_name last_name username user_image_path' 
-                })
-                .lean(); 
+                                            .sort({ total_to_be_paid: -1 }) 
+                                            .limit(3) 
+                                            .populate({
+                                                path: 'user', 
+                                                select: 'first_name last_name username user_image_path' 
+                                            })
+                                            .lean(); 
             
             return topThreeOrders;
         } catch (error) {
@@ -209,12 +210,166 @@ const getOrders = asyncHandler(async (req, res) => {
     // console.log('yes',topThreeOrders)
     /** End of Getting the top Orders */ 
 
+    /** Getting the latest 10 Orders */
+    async function getLatestTenOrders() {
+        try {
+            const latestTenOrders = await Order.find()
+                                                .sort({ created_at: -1 }) 
+                                                .limit(10) 
+                                                .populate({
+                                                    path: 'user', 
+                                                    select: 'first_name last_name username user_image_path' 
+                                                })
+                                                .lean(); 
+            return latestTenOrders;
+        } catch (error) {
+            console.error('Error retrieving top ten latest orders:', error);
+        }
+    }
+
+    let latestTenOrders; 
+    
+    await getLatestTenOrders().then(orders => {
+        latestTenOrders = orders; 
+    });
+    /** End of Getting the latest 10 Orders */
+
     res.json({ data: { total_results: ordersCount, 
                         total_amount: { total_paid: totalPaid, 
                                         total_paid_previous: totalPaidPrevious }, 
-                        top_3: topThreeOrders
+                        top_3: topThreeOrders, 
+                        latest_10: latestTenOrders
             }});
 }); 
+
+
+/**
+ * GET TOTAL EXPENDITURE
+ */
+const getTotalExpenditure = asyncHandler(async (req, res) => {
+    const userFound = await User.findOne({ _id: req?.user_id }).lean(); 
+
+    const totalExpenditure = userFound?.total_amount_spent_on_orders;
+
+    res.json({ data: totalExpenditure });
+}); 
+
+
+/**
+ * GET ALL SALES
+ */
+const getSales = asyncHandler(async (req, res) => {
+    const range = req?.query?.range; 
+
+    /** Sales sum and count */
+    let totalSold, totalSoldPrevious, salesCount, salesCountPrevious; 
+
+    const rangeStart = (range == 'today') ? todayStart 
+                        : (range == 'this-week') ? weekStart 
+                        : (range == 'this-month') ? monthStart 
+                        : (range == 'this-year') ? yearStart 
+                        : 'all' 
+    const previousRangeStart = (range == 'today') ? yesterdayStart 
+                                : (range == 'this-week') ? lastWeekStart
+                                : (range == 'this-month') ? lastMonthStart 
+                                : (range == 'this-year') ? lastYearStart
+                                : 'all'
+
+    const rangeEnd = (range == 'today') ? todayEnd 
+                        : (range == 'this-week') ? weekEnd
+                        : (range == 'this-month') ? monthEnd 
+                        : (range == 'this-year') ? yearEnd 
+                        : 'all' 
+    const previousRangeEnd = (range == 'today') ? yesterdayEnd 
+                                : (range == 'this-week') ? lastWeekEnd
+                                : (range == 'this-month') ? lastMonthEnd 
+                                : (range == 'this-year') ? lastYearEnd 
+                                : 'all' 
+
+    async function calculateTotalAmount() {
+        try {
+            let total, totalPrevious;
+
+            if ((range == 'today') || (range == 'this-week') || (range == 'this-month') || (range == 'this-year')) {
+                /** Current */
+                total = await OrderItem.aggregate([
+                    {
+                        $match: { deleted_at: null, 
+                                // selling_price: { $exists: true }, 
+                                // purchased_for_resale: true, 
+                                created_at: { $gte: rangeStart, $lte: rangeEnd } }
+                    },
+                    {
+                        $group: {
+                            _id: null, 
+                            totalAmount: { $sum: "$selling_price" }
+                        }
+                    }
+                ]); 
+                salesCount = await Product.find({ deleted_at: null, 
+                                                    // selling_price: { $exists: true }, 
+                                                    // purchased_for_resale: true, 
+                                                    created_at: { $gte: rangeStart, 
+                                                                $lte: rangeEnd } }).countDocuments(); 
+                /** End of Current */
+                /** Previous */
+                totalPrevious = await OrderItem.aggregate([
+                    {
+                        $match: { deleted_at: null, 
+                                // selling_price: { $exists: true }, 
+                                // purchased_for_resale: true, 
+                                created_at: { $gte: previousRangeStart, $lte: previousRangeEnd } }
+                    },
+                    {
+                        $group: {
+                            _id: null, 
+                            totalAmount: { $sum: "$selling_price" }
+                        }
+                    }
+                ]); 
+                salesCountPrevious = await OrderItem.find({ deleted_at: null, 
+                                                            // selling_price: { $exists: true }, 
+                                                            // purchased_for_resale: true, 
+                                                            created_at: { $gte: previousRangeStart, 
+                                                                        $lte: previousRangeEnd } }).countDocuments(); 
+                /** End of Previous */
+            } else {
+                total = await OrderItem.aggregate([
+                    {
+                        // $match: { deleted_at: null, selling_price: { $exists: true } }
+                        $match: { deleted_at: null, 
+                                // purchased_for_resale: true 
+                                }
+                    },
+                    {
+                        $group: {
+                            _id: null, 
+                            totalAmount: { $sum: "$selling_price" }
+                        }
+                    }
+                ]); 
+                salesCount = await OrderItem.find({ deleted_at: null, 
+                                                    // selling_price: { $exists: true },  }).countDocuments(); 
+                                                    // purchased_for_resale: true 
+                                                    }).countDocuments(); 
+            }
+            
+            totalSold = total?.length > 0 ? total[0].totalAmount : 0;
+            console.log('Total Amount:', totalSold);
+            totalSoldPrevious = totalPrevious?.length > 0 ? totalPrevious[0].totalAmount : 0;
+            console.log('Total Amount Previous:', totalSoldPrevious);
+        } catch (error) {
+            console.error('Error calculating total amount:', error);
+        }
+    } 
+    await calculateTotalAmount(); 
+    /** End of Sales sum and count */ 
+
+    res.json({ data: { total_results: salesCount, 
+                        total_amount: { total_sold: totalSold, 
+                                        total_sold_previous: totalSoldPrevious }
+            }});
+});
 
 
 /**
@@ -529,6 +684,8 @@ const getRatings = asyncHandler(async (req, res) => {
 
 
 export { getOrders, 
+        getTotalExpenditure, 
+        getSales, 
         getPurchases, 
         getCheckIns, 
         getClientsGrowth, 

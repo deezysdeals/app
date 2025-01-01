@@ -246,7 +246,7 @@ const createOrder = async (req, res) => {
  */
 const getOrder = asyncHandler(async (req, res) => {
 	const order = await Order.findOne({ _id: req?.params?.id })
-                            .select(['-created_at', '-updated_at', '-deleted_at'])
+                            .select(['-deleted_at'])
                             .populate({
                                 path: 'user', 
                                 select: 'first_name last_name username' 

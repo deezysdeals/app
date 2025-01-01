@@ -1,4 +1,6 @@
 import { useState } from 'react'; 
+import { Link } from 'react-router-dom'; 
+import { route } from '@/routes';
 import dayjs from 'dayjs';
 import relativeTime from "dayjs/plugin/relativeTime"; 
 import utc from 'dayjs/plugin/utc';
@@ -11,6 +13,8 @@ import { useClientsGrowth } from '@/hooks/dashboard/useClientsGrowth.jsx';
 import { useOrders } from '@/hooks/dashboard/useOrders.jsx'; 
 import { usePurchases } from '@/hooks/dashboard/usePurchases.jsx'; 
 import { useRatings } from '@/hooks/dashboard/useRatings.jsx'; 
+import { useSales } from '@/hooks/dashboard/useSales.jsx'; 
+import { useTotalExpenditure } from '@/hooks/dashboard/useTotalExpenditure.jsx'; 
 import RatingChart from './RatingChart';
 
 
@@ -19,6 +23,7 @@ export default function DashboardBoxes() {
     const [clientGrowthRange, setClientGrowthRange] = useState('all'); 
     const [orderRange, setOrderRange] = useState('all'); 
     const [purchaseRange, setPurchaseRange] = useState('all'); 
+    const [saleRange, setSaleRange] = useState('all'); 
     const [ratingsRange, setRatingsRange] = useState('all'); 
     
     // console.log(orderRange); 
@@ -27,11 +32,14 @@ export default function DashboardBoxes() {
     const { clientsGrowth, getClientsGrowth } = useClientsGrowth(clientGrowthRange); 
     const { orders, getOrders } = useOrders(orderRange); 
     const { purchases, getPurchases } = usePurchases(purchaseRange); 
+    const { sales, getSales } = useSales(saleRange); 
     const { ratings, getRatings } = useRatings(ratingsRange); 
+    const { totalExpenditure, getTotalExpenditure } = useTotalExpenditure(); 
+    // console.log(totalExpenditure);
 
     // console.log(checkIns); 
     // console.log(clientsGrowth); 
-    // console.log(orders); 
+    console.log(orders); 
     // console.log(purchases); 
     // console.log(ratings); 
 
@@ -64,6 +72,13 @@ export default function DashboardBoxes() {
 
     const purchasePercentageDifference = calculatePercentageDifference(totalPurchasesCurrent, totalPurchasesPrevious); 
     /** End of For Purchases */ 
+
+    /** For Sales */ 
+    const totalSalesCurrent = Number(sales?.data?.total_amount?.total_sold); 
+    const totalSalesPrevious = Number(sales?.data?.total_amount?.total_sold_previous); 
+
+    const salePercentageDifference = calculatePercentageDifference(totalSalesCurrent, totalSalesPrevious); 
+    /** End of For Sales */ 
 
     /** For Orders */ 
     const totalOrdersCurrent = orders?.data?.total_amount?.total_paid; 
@@ -98,7 +113,7 @@ export default function DashboardBoxes() {
     return (
         <section className="dashboard-boxes d-flex flex-column gap-4">
             <div className="line line-1">
-                <section className="order-purchase gap-4">
+                <section className="order-expenditure gap-4">
                     <div className="order d-flex justify-content-between p-3 border-radius-25 box-shadow-1 bg-secondary text-white">
                         <div className="d-flex flex-column justify-content-between gap-2">
                             <h2 className="fs-6">Total Orders&nbsp;<span className="fw-semibold">({ orders?.data?.total_results })</span></h2>
@@ -207,6 +222,128 @@ export default function DashboardBoxes() {
                                                 : (orderRange == 'this-month') ? 'vs last month' 
                                                 : (orderRange == 'this-year') ? 'vs last year' 
                                                 : '' }</small>
+                                    </span>
+                                </span> 
+                            }
+                        </div>
+                    </div>
+                    <div className="expenditure d-flex justify-content-between p-3 border-radius-25 box-shadow-1">
+                        <div className="d-flex flex-column justify-content-between gap-2">
+                            <h2 className="fs-6">Total Expenditure</h2>
+                            <span className="fs-4 fw-semibold">${ (totalExpenditure?.data)?.toLocaleString('en') }</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="sale-purchase gap-4">
+                    <div className="sale d-flex justify-content-between p-3 border-radius-25 box-shadow-1">
+                        <div className="d-flex flex-column justify-content-between gap-2">
+                            <h2 className="fs-6">Total Sales&nbsp;<span className="fw-semibold">({ sales?.data?.total_results })</span></h2>
+                            <span className="fs-4 fw-semibold">${ (sales?.data?.total_amount?.total_sold)?.toLocaleString('en') }</span>
+                        </div>
+            
+                        <div className="d-flex flex-column justify-content-between align-items-end gap-2">
+                            <span className="dropdown">
+                                <span className="text-decoration-none text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    className="bi bi-three-dots" viewBox="0 0 16 16">
+                                        <path
+                                            d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+                                    </svg> 
+                                </span>
+
+                                <ul className="dropdown-menu">
+                                    <li>
+                                        <span 
+                                            type="button" 
+                                            onClick={ async () => { 
+                                                setSaleRange('today'); 
+                                                await getSales(saleRange); 
+                                            }}
+                                            className="dropdown-item">
+                                                Today
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span 
+                                            type="button" 
+                                            onClick={ async () => { 
+                                                setSaleRange('this-week'); 
+                                                await getSales(saleRange); 
+                                            }}
+                                            className="dropdown-item">
+                                                This Week
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span 
+                                            type="button" 
+                                            onClick={ async () => { 
+                                                setSaleRange('this-month');
+                                                await getSales(saleRange); 
+                                            }}
+                                            className="dropdown-item">
+                                                This Month
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span 
+                                            type="button" 
+                                            onClick={ async () => { 
+                                                setSaleRange('this-year'); 
+                                                await getSales(saleRange);  
+                                            }}
+                                            className="dropdown-item">
+                                                This Year
+                                        </span>
+                                    </li>
+                                    <li>
+                                        <span 
+                                            type="button" 
+                                            onClick={ async () => { 
+                                                setSaleRange('all'); 
+                                                await getSales(saleRange); 
+                                            }}
+                                            className="dropdown-item">
+                                                All Time
+                                        </span>
+                                    </li>
+                                </ul>
+                            </span>
+                            { (saleRange != 'all') && 
+                                <span className="d-flex justify-content-end align-items-center gap-1 flex-wrap">
+                                    <span className={`badge rounded-pill ${ ((totalSalesPrevious>totalSalesCurrent)||(totalSalesPrevious==totalSalesCurrent)) 
+                                        ? 'text-bg-danger' : 'text-bg-success'}`}>
+                                        <span>
+                                            { (totalSalesPrevious<totalSalesCurrent) 
+                                                ?   <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor"
+                                                        className="bi bi-arrow-up-right" viewBox="0 0 16 16">
+                                                        <path fillRule="evenodd"
+                                                            d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
+                                                    </svg> 
+                                                : (totalSalesPrevious>totalSalesCurrent) 
+                                                    ?   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-left" viewBox="0 0 16 16">
+                                                            <path fill-rule="evenodd" d="M2 13.5a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 0-1H3.707L13.854 2.854a.5.5 0 0 0-.708-.708L3 12.293V7.5a.5.5 0 0 0-1 0z"/>
+                                                        </svg> 
+                                                        : '' }
+                                        </span>
+                                        <span> 
+                                            <small>
+                                                { (((totalSalesPrevious>totalSalesCurrent)&&(Number(salePercentageDifference)?.toFixed()!=0))
+                                                    ? '-'
+                                                        : ((totalSalesPrevious<totalSalesCurrent)&&(Number(salePercentageDifference)?.toFixed()!=0)) 
+                                                            ? '+' 
+                                                                : '' ) }
+                                                { Number(salePercentageDifference)?.toFixed() }%
+                                            </small> 
+                                        </span>
+                                    </span>
+                                    <span>
+                                        <small>{ (saleRange == 'today') ? 'vs yesterday' 
+                                                    : (saleRange == 'this-week') ? 'vs last week' 
+                                                    : (saleRange == 'this-month') ? 'vs last month' 
+                                                    : (saleRange == 'this-year') ? 'vs last year' 
+                                                    : '' }</small>
                                     </span>
                                 </span> 
                             }
@@ -557,7 +694,7 @@ export default function DashboardBoxes() {
                 </div>
             </div>
 
-            <div className="line line-2">
+            <div className="line line-3">
                 <div className="statistics box-shadow-1 border-radius-25 p-3 d-flex flex-column justify-content-between gap-2">
                     <div className="d-flex align-items-center justify-content-between">
                         <div className="d-flex flex-column">
@@ -720,6 +857,43 @@ export default function DashboardBoxes() {
                     </section>
                 </div>
             </div>
+
+            <section className="line line-4">
+                <div class="latest-orders table-responsive box-shadow-1 border-radius-25 p-3 d-flex flex-column justify-content-between gap-2">
+                    {/* <h3>Latest Orders</h3> */}
+                    <h2 className="fs-6" style={{ textShadow: '2px 2px white, -2px -2px white' }}>Latest Orders</h2>
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">By</th>
+                            <th scope="col">On</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            { (orders?.data?.latest_10?.length > 0) && ((orders?.data?.latest_10)?.map((order, index) => {
+                                return (
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>${ order?.total_to_be_paid ? order?.total_to_be_paid : 0 }</td>
+                                        <td>
+                                            <Link 
+                                                to={ route('home.users.show', { username: order?.user?.username }) } 
+                                                className="text-dark">
+                                                    { order?.user?.first_name + ' ' + order?.user?.last_name }
+                                            </Link>
+                                        </td>
+                                        <td className="text-secondary">
+                                            <small>{ dayjs.utc(order?.created_at).fromNow() }</small>
+                                        </td>
+                                    </tr>
+                                )
+                            })) }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </section>
     )
 }

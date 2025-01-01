@@ -4,6 +4,8 @@ import authenticated from '../../middleware/authenticated.js';
 import roles from '../../config/allowedRoles.js'; 
 import checkRoles from '../../middleware/checkRoles.js'; 
 import { getOrders, 
+        getTotalExpenditure, 
+        getSales, 
         getPurchases, 
         getCheckIns, 
         getClientsGrowth, 
@@ -13,6 +15,8 @@ import { getOrders,
 dashboardRouter.use(authenticated); 
 
 dashboardRouter.get('/orders', getOrders); 
+dashboardRouter.get('/total-expenditure', getTotalExpenditure); 
+dashboardRouter.get('/sales', getSales); 
 dashboardRouter.get('/purchases', getPurchases); 
 dashboardRouter.get('/check-ins', getCheckIns); 
 dashboardRouter.get('/client-growth', getClientsGrowth); 

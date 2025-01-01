@@ -50,7 +50,7 @@ export default function Show() {
                                     </section>
                                     <section className="barcode pt-3 d-flex justify-content-end" style={{ textAlign: 'center' }}>
                                         <img alt='Barcode Generator TEC-IT'
-                                        src={`https://barcode.tec-it.com/barcode.ashx?data=${(order?.data?.paypal_order_id)?.replace(/[a-zA-Z]/g, '')?.slice(0,13)}&code=EAN13`}/>
+                                        src={`https://barcode.tec-it.com/barcode.ashx?data=${(order?.data?.paypal_order_id)?.replace(/[a-zA-Z]/g, '')?.slice(0,12)}&code=EAN13`}/>
                                     </section>
                                 </div>
                             ) }

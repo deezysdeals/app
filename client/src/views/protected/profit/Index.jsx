@@ -41,8 +41,8 @@ export default function Index() {
         page: 1, 
         limit: 10, 
     }); 
-    const { profits, getProfits } = useProfits(); 
-    console.log(profits);
+    const { profits, getProfits } = useProfits(profitQuery); 
+    // console.log(profits);
 
     return (
         <Layout>
@@ -345,7 +345,6 @@ export default function Index() {
                                 let previousPage = ((profits?.meta?.current_page >= 1) ? (profits?.meta?.current_page - 1) : 1)
                                 setProfitQuery(prevState => ({
                                     ...prevState, 
-                                    // role: profitQuery?.role, 
                                     page: previousPage
                                 })); 
                                 await getProfits(profitQuery); 

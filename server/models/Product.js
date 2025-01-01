@@ -25,6 +25,7 @@ const productSchema = new Schema({
         // price_sold_to_client: { type: Number }, 
         order_count: { type: Number, default: 0 }, 
         sale_count: { type: Number, default: 0 }, 
+        accumulated_sale_price: { type: Number, default: 0 }, 
         /** Rating Count */
         total_rating_value: { type: Number, default: 0 },   // increments of 5 for 5-star, 4 for 4-star, e.t.c.
         total_rating_count: { type: Number, default: 0 }, 
