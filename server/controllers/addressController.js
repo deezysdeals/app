@@ -20,10 +20,13 @@ const createAddress = asyncHandler(async (req, res) => {
 			town_city, 
 			state_region, 
 			country, 
-			delivery_instructions } = req?.body;
+			delivery_instructions } = req?.body; 
+
+	const defaultAddress = await Address.findOne({ user: req?.user_id, default: true }).lean();
 
 	const address = new Address({
-		user: req.user_id,
+		user: req.user_id, 
+		default: defaultAddress ? false : true,
 		full_name,
 		phone ,
 		address_line_1, 

@@ -54,6 +54,7 @@ const createOrderPayment = async (req, res) => {
             return res.status(400).json({ message: 'No order items. You must add at least one item!' }); 
 
         } else if (cart && cart?.length > 0) { 
+            console.log('Cart"', cart);
             const cartResolve = cart?.map(async (item, index) => { 
                 async function fetchProductAndProcessOrder() {
                     try {
@@ -128,7 +129,7 @@ const createOrderPayment = async (req, res) => {
                         // console.log('Selling Price', newOrderItem?.selling_price); 
                         // console.log({'Test': newOrderItem?.selling_price * newOrderItem?.quantity}); 
 
-                        let orderItemPrice = newOrderItem?.selling_price * newOrderItem?.quantity; 
+                        let orderItemPrice = (newOrderItem?.selling_price || upsertProduct?.retail_price) * newOrderItem?.quantity; 
                         totalToBePaid += orderItemPrice; 
                         // console.log({ 'totaltobe': totalToBePaid }); 
                         // console.log({'Cart length:': cart?.length}); 

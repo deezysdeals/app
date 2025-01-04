@@ -8,7 +8,10 @@ const getOrderItems = asyncHandler(async (req, res) => {
 
     const skip = (current_page - 1) * limit; 
 
-	const orderItems = await OrderItem.find({ deleted_at: null })
+    let orderItems, orderItemsCount;
+
+    if ((req?.role == 'superadmin') || (req?.role == 'admin') || (req?.role == 'dispatcher')) {
+        orderItems = await OrderItem.find({ deleted_at: null })
                                     .sort('-created_at')
                                     .skip(skip)
                                     .limit(limit)
@@ -23,11 +26,29 @@ const getOrderItems = asyncHandler(async (req, res) => {
                                         select: 'first_name last_name username' 
                                     })
                                     .lean(); 
+        
+        orderItemsCount = await OrderItem.find({ deleted_at: null }).countDocuments(); 
+    } else {
+        orderItems = await OrderItem.find({ user: req?.user_id, deleted_at: null })
+                                    .sort('-created_at')
+                                    .skip(skip)
+                                    .limit(limit)
+                                    .populate({
+                                        path: 'order', 
+                                    })
+                                    .populate({
+                                        path: 'product', 
+                                    })
+                                    .populate({
+                                        path: 'user', 
+                                        select: 'first_name last_name username' 
+                                    })
+                                    .lean(); 
+
+        orderItemsCount = await OrderItem.find({ user: req?.user_id, deleted_at: null }).countDocuments(); 
+    }
                                     
     if (!orderItems?.length) return res.status(404).json({ message: "No order items found!" }); 
-
-    // Order items count 
-    const orderItemsCount = await OrderItem.find({ deleted_at: null }).countDocuments(); 
 
     res.json({ 
                 meta: {

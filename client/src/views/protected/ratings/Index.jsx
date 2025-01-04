@@ -239,7 +239,7 @@ export default function Index() {
                                                                                                                                 <InactiveStar />
                                                                                                                                 <InactiveStar />
                                                                                                                             </span> 
-                                                                                                                                : (productReview?.rating == 4) 
+                                                                                                                                : (productReview?.rating == 1) 
                                                                                                                                 ?   <span>
                                                                                                                                         <ActiveStar />
                                                                                                                                         <InactiveStar />
@@ -466,7 +466,7 @@ export default function Index() {
                                                                                                 <InactiveStar />
                                                                                                 <InactiveStar />
                                                                                             </span> 
-                                                                                                : (productReview?.rating == 4) 
+                                                                                                : (productReview?.rating == 1) 
                                                                                                 ?   <span>
                                                                                                         <ActiveStar />
                                                                                                         <InactiveStar />

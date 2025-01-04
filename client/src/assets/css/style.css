@@ -799,7 +799,7 @@ main .grid .aside.dashboard-aside .sidenav .active {
 main .grid .main .dashboard-content .dashboard-boxes .line {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    /* gap: 1.5rem; */
 }
 
 main .grid .main .dashboard-content .dashboard-boxes .line.line-1 {

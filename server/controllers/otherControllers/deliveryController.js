@@ -17,7 +17,8 @@ const getDeliveries = asyncHandler(async (req, res) => {
     let deliveriesList = []; 
 
     if (deliveryStatus == 'all') {
-        deliveries = await Order.find({ deleted_at: null })
+        if ((req?.role == 'superadmin') || (req?.role == 'admin') || (req?.role == 'dispatcher')) {
+            deliveries = await Order.find({ deleted_at: null })
                                     .sort('-created_at')
                                     .skip(skip)
                                     .limit(limit)
@@ -26,13 +27,28 @@ const getDeliveries = asyncHandler(async (req, res) => {
                                         select: 'first_name last_name username' 
                                     })
                                     .lean(); 
-        if (!deliveries?.length) return res.status(404).json({ message: "No deliveries found!" }); 
+            if (!deliveries?.length) return res.status(404).json({ message: "No deliveries found!" }); 
 
-        deliveriesCount = await Order.countDocuments({ deleted_at: null });
+            deliveriesCount = await Order.countDocuments({ deleted_at: null });
+        } else {
+            deliveries = await Order.find({ user: req?.user_id, deleted_at: null })
+                                    .sort('-created_at')
+                                    .skip(skip)
+                                    .limit(limit)
+                                    .populate({
+                                        path: 'user', 
+                                        select: 'first_name last_name username' 
+                                    })
+                                    .lean(); 
+            if (!deliveries?.length) return res.status(404).json({ message: "No deliveries found!" }); 
+
+            deliveriesCount = await Order.countDocuments({ user: req?.user_id, deleted_at: null });
+        }
 
     } else {
 
-        deliveries = await Order.find({ deleted_at: null, delivery_status: deliveryStatus }) 
+        if ((req?.role == 'superadmin') || (req?.role == 'admin') || (req?.role == 'dispatcher')) {
+            deliveries = await Order.find({ deleted_at: null, delivery_status: deliveryStatus }) 
                                     .sort('-created_at')
                                     .skip(skip)
                                     .limit(limit)
@@ -41,9 +57,24 @@ const getDeliveries = asyncHandler(async (req, res) => {
                                         select: 'first_name last_name username' 
                                     })
                                     .lean(); 
-        if (!deliveries?.length) return res.status(404).json({ message: "No deliveries found!" }); 
+            if (!deliveries?.length) return res.status(404).json({ message: "No deliveries found!" }); 
 
-        deliveriesCount = await Order.countDocuments({ deleted_at: null, delivery_status: deliveryStatus });
+            deliveriesCount = await Order.countDocuments({ deleted_at: null, delivery_status: deliveryStatus });
+        } else {
+            deliveries = await Order.find({ user: req?.user_id, deleted_at: null, delivery_status: deliveryStatus }) 
+                                    .sort('-created_at')
+                                    .skip(skip)
+                                    .limit(limit)
+                                    .populate({
+                                        path: 'user', 
+                                        select: 'first_name last_name username' 
+                                    })
+                                    .lean(); 
+            if (!deliveries?.length) return res.status(404).json({ message: "No deliveries found!" }); 
+
+            deliveriesCount = await Order.countDocuments({ user: req?.user_id, deleted_at: null, delivery_status: deliveryStatus });
+        }
+        
     }
 
     /** Order Items within Deliveries */ 

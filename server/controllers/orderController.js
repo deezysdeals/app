@@ -28,33 +28,64 @@ const getOrders = asyncHandler(async (req, res) => {
     let ordersList = [];
 
     if (paymentStatus == 'all') {
-        orders = await Order.find({ deleted_at: null })
-                            .sort('-created_at')
-                            .skip(skip)
-                            .limit(limit)
-                            .populate({
-                                path: 'user', 
-                                select: 'first_name last_name username' 
-                            })
-                            .lean(); 
-        if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
+        if ((req?.role == 'superadmin') || (req?.role == 'admin') || (req?.role == 'dispatcher')) {
+            orders = await Order.find({ deleted_at: null })
+                                .sort('-created_at')
+                                .skip(skip)
+                                .limit(limit)
+                                .populate({
+                                    path: 'user', 
+                                    select: 'first_name last_name username' 
+                                })
+                                .lean(); 
+            if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
 
-        ordersCount = await Order.countDocuments({ deleted_at: null });
+            ordersCount = await Order.countDocuments({ deleted_at: null });
+        } else {
+            orders = await Order.find({ user: req?.user_id, deleted_at: null })
+                                .sort('-created_at')
+                                .skip(skip)
+                                .limit(limit)
+                                .populate({
+                                    path: 'user', 
+                                    select: 'first_name last_name username' 
+                                })
+                                .lean(); 
+            if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
+
+            ordersCount = await Order.countDocuments({ user: req?.user_id, deleted_at: null });
+        }
 
     } else {
 
-        orders = await Order.find({ deleted_at: null, paid: paymentStatus }) 
-                            .sort('-created_at')
-                            .skip(skip)
-                            .limit(limit)
-                            .populate({
-                                path: 'user', 
-                                select: 'first_name last_name username' 
-                            })
-                            .lean(); 
-        if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
+        if ((req?.role == 'superadmin') || (req?.role == 'admin') || (req?.role == 'dispatcher')) {
+            orders = await Order.find({ deleted_at: null, paid: paymentStatus }) 
+                                .sort('-created_at')
+                                .skip(skip)
+                                .limit(limit)
+                                .populate({
+                                    path: 'user', 
+                                    select: 'first_name last_name username' 
+                                })
+                                .lean(); 
+            if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
 
-        ordersCount = await Order.countDocuments({ deleted_at: null, paid: paymentStatus });
+            ordersCount = await Order.countDocuments({ deleted_at: null, paid: paymentStatus });
+        } else {
+            orders = await Order.find({ user: req?.user_id, deleted_at: null, paid: paymentStatus }) 
+                                .sort('-created_at')
+                                .skip(skip)
+                                .limit(limit)
+                                .populate({
+                                    path: 'user', 
+                                    select: 'first_name last_name username' 
+                                })
+                                .lean(); 
+            if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
+
+            ordersCount = await Order.countDocuments({ user: req?.user_id, deleted_at: null, paid: paymentStatus });
+        }
+        
     }
 
     /** Order Items within Orders */ 

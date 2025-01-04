@@ -11,7 +11,7 @@ export default function Cart() {
     const [cartToggle, setCartToggle] = useState(false); 
     const location = useLocation(); 
 
-    // console.log('cart items', cartItems);
+    console.log('cart items', cartItems);
 
     const handleApplyDiscount = () => {
         applyDiscount(discountCode); 

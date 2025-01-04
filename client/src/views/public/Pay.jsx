@@ -343,16 +343,18 @@ export default function Pay() {
                         <h4 className="fw-semibold border-bottom pb-1 fs-6">Cart Items (Preview)</h4>
                         <ol className='list-unstyled d-flex flex-column gap-1'> 
                             {(cartItems?.length > 0) && (cartItems?.map((item, index) => {
+                                // console.log(item); 
+                                // console.log(item?.img); 
                                 return (
                                     <li key={ index } className="ordered-item row align-items-center gx-5 gy-1 py-1">
                                         <div className="col-md-2">
                                             <div id={`carousel2ModalItem${index}`} className="carousel slide">
                                                 <div className="carousel-inner position-relative" style={{ width: '75px', height: '75px' }}>
                                                     <div className="images"> 
-                                                        { (item?.img?.length > 0) && (item?.img?.map((image, index) => {
+                                                        { (item?.img?.length > 0) && ([item?.img]?.map((image, index) => {
                                                             return (
                                                                 <div className={`carousel-item ${(index==0) && `active`}`}>
-                                                                    <img src={ image } className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
+                                                                    <img src={ image || item?.img } className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
                                                                 </div>
                                                             )
                                                         })) }
@@ -397,7 +399,7 @@ const SubmitPayment = ({ isPaying, setIsPaying, billingAddress }) => {
         const formState = await cardFieldsForm.getState();
 
         if (!formState.isFormValid) {
-            return alert("The payment form is invalid");
+            return alert("The payment form is invalid"); 
         }
         setIsPaying(true); 
 
