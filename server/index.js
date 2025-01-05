@@ -45,12 +45,12 @@ app.disable('x-powered-by');
 app.use(expressJSON()); 
 app.use(urlencoded({ extended: true })); 
 // app.use(cors()); 
-// app.use(cors({
-//     origin: 'http://localhost:5174', 
-//     credentials: true // Allow cookies to be sent
-// })); 
+app.use(cors({
+    origin: 'https://deezysdeals.com', 
+    credentials: true // Allow cookies to be sent
+})); 
 app.use(cookieParser()); 
-app.use(cors(corsOptions)); 
+// app.use(cors(corsOptions)); 
 app.use(fileupload({useTempFiles: true})); 
 
 app.use('/', expressStatic(join(__dirname, 'public'))); 
