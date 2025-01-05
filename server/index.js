@@ -22,6 +22,7 @@ import router from './routes/api.js';
 const PORT = process.env.PORT || 5001; 
 
 
+app.set('trust proxy', true); 
 app.use(helmet()); 
 
 const limiter = rateLimit({
