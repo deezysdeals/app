@@ -45,10 +45,18 @@ app.disable('x-powered-by');
 app.use(expressJSON()); 
 app.use(urlencoded({ extended: true })); 
 // app.use(cors()); 
-app.use(cors({
-    origin: 'https://deezysdeals.com', 
-    credentials: true // Allow cookies to be sent
-})); 
+// app.use(cors({
+//     origin: 'https://deezysdeals.com', 
+//     credentials: true // Allow cookies to be sent
+// })); 
+// Specify allowed origin
+const corsOptions = {
+  origin: 'https://www.deezysdeals.com',  // The site you want to allow
+  methods: ['GET', 'POST', 'OPTIONS'],  // Allow specific methods
+  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow specific headers
+};
+
+app.use(cors(corsOptions)); 
 app.use(cookieParser()); 
 // app.use(cors(corsOptions)); 
 app.use(fileupload({useTempFiles: true})); 
