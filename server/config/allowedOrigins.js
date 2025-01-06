@@ -1,4 +1,5 @@
 const origins = [
+    'https://www.deezysdeals.com/'
     'https://deezysdeals.com', 
     'https://www.deezysdeals.com', 
     'https://deezysdeals.online', 
