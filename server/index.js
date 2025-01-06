@@ -22,7 +22,6 @@ import router from './routes/api.js';
 const PORT = process.env.PORT || 5001; 
 
 
-app.set('trust proxy', true); 
 app.use(helmet()); 
 
 const limiter = rateLimit({
@@ -46,19 +45,11 @@ app.use(expressJSON());
 app.use(urlencoded({ extended: true })); 
 // app.use(cors()); 
 // app.use(cors({
-//     origin: 'https://deezysdeals.com', 
+//     origin: 'http://localhost:5174', 
 //     credentials: true // Allow cookies to be sent
 // })); 
-// Specify allowed origin
-const corsOptions = {
-  origin: 'https://www.deezysdeals.com',  // The site you want to allow
-  methods: ['GET', 'POST', 'OPTIONS'],  // Allow specific methods
-  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow specific headers
-};
-
-app.use(cors(corsOptions)); 
 app.use(cookieParser()); 
-// app.use(cors(corsOptions)); 
+app.use(cors(corsOptions)); 
 app.use(fileupload({useTempFiles: true})); 
 
 app.use('/', expressStatic(join(__dirname, 'public'))); 
