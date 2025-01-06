@@ -50,6 +50,7 @@ app.use(urlencoded({ extended: true }));
 // })); 
 app.use(cookieParser()); 
 app.use(cors(corsOptions)); 
+app.options('*', cors(corsOptions));
 app.use(fileupload({useTempFiles: true})); 
 
 app.use('/', expressStatic(join(__dirname, 'public'))); 
