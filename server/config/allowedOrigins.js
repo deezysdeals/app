@@ -4,6 +4,7 @@ const origins = [
     'www.deezysdeals.com', 
     'http://deezysdeals.com', 
     'http://www.deezysdeals.com', 
+    'https://app-main-a7t0.onrender.com/', 
     'https://deezysdeals.online', 
     'https://www.deezysdeals.online', 
     'https://maxralph.store', 
