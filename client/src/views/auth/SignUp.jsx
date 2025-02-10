@@ -38,7 +38,7 @@ export default function SignUp() {
     return (
         <Layout>
             <h2 className="fw-bold fs-6 d-flex justify-content-end mb-3">Sign Up</h2>
-            <form onSubmit={ handleSubmit } id="auth-form" className="auth-form" >
+            <form onSubmit={ handleSubmit } id="auth-form" className="auth-form">
                 <div className="form border border-dark mb-3">
                     <label htmlFor="" className="label">Email:</label>
                     <input 
