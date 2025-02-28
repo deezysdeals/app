@@ -1,7 +1,7 @@
 version: 1
 services:
   - type: web
-    name: deezysdeals-client
+    name: deezysdeals
     env: node
     plan: free
     buildCommand: npm install && npm run build
