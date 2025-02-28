@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'; 
+import { useContext, useEffect, useState } from 'react'; 
+import AuthContext from '@/context/AuthContext.jsx'; 
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import dayjs from 'dayjs';
@@ -20,7 +21,9 @@ import ProductComponent1 from '@/components/protected/nested-components/ProductC
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
-export default function Index() { 
+export default function Index() {
+    const { user } = useContext(AuthContext); 
+
     /** Voice-to-Text Search funtionality */ 
     const [searchKey, setSearchKey] = useState(''); 
 
@@ -41,6 +44,7 @@ export default function Index() {
     const [productQuery, setProductQuery] = useState({
         page: 1, 
         limit: 10, 
+        search_key: ''
     }); 
     const { products, getProducts } = useProducts(productQuery); 
     const { deleteProduct } = useProduct(); 
@@ -54,11 +58,13 @@ export default function Index() {
                         <h2 className="fs-4">Products</h2> 
 
                         <div className="">
-                            <Link to={ route('home.products.create') } className="btn btn-sm btn-dark px-3 border-radius-35">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="17.5" height="17.5" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
-                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-                                </svg>
-                            </Link>
+                            { ((user?.user?.role == 'superadmin') || (user?.user?.role == 'admin')) &&
+                                <Link to={ route('home.products.create') } className="btn btn-sm btn-dark px-3 border-radius-35">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="17.5" height="17.5" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
+                                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                                    </svg>
+                                </Link>
+                            }
                         </div>
                     </section>
 
@@ -95,7 +101,7 @@ export default function Index() {
                                         setProductQuery(prevState => ({
                                             ...prevState, 
                                             page: firstPage, 
-                                            search: searchKey
+                                            search_key: searchKey
                                         })); 
                                         await getProducts(productQuery); 
                                         setIsListening(false); 

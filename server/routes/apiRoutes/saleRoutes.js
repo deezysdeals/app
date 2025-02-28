@@ -8,7 +8,7 @@ import { getSales } from '../../controllers/otherControllers/saleController.js';
 
 saleRouter.use(authenticated); 
 
-saleRouter.get('/', getSales); 
+saleRouter.get('/', checkRoles(roles.admin, roles.superAdmin), getSales); 
 
 
 export default saleRouter; 

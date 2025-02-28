@@ -206,7 +206,7 @@ export default function DashboardBoxes() {
                                                             d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
                                                     </svg> 
                                                 : (totalOrdersPrevious>totalOrdersCurrent) 
-                                                    ?   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-left" viewBox="0 0 16 16">
+                                                    ?   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-down-left" viewBox="0 0 16 16">
                                                             <path fill-rule="evenodd" d="M2 13.5a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 0-1H3.707L13.854 2.854a.5.5 0 0 0-.708-.708L3 12.293V7.5a.5.5 0 0 0-1 0z"/>
                                                         </svg> 
                                                         : '' }
@@ -330,7 +330,7 @@ export default function DashboardBoxes() {
                                                                     d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
                                                             </svg> 
                                                         : (totalSalesPrevious>totalSalesCurrent) 
-                                                            ?   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-left" viewBox="0 0 16 16">
+                                                            ?   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-down-left" viewBox="0 0 16 16">
                                                                     <path fill-rule="evenodd" d="M2 13.5a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 0-1H3.707L13.854 2.854a.5.5 0 0 0-.708-.708L3 12.293V7.5a.5.5 0 0 0-1 0z"/>
                                                                 </svg> 
                                                                 : '' }
@@ -443,7 +443,7 @@ export default function DashboardBoxes() {
                                                                     d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
                                                             </svg> 
                                                         : (totalPurchasesPrevious>totalPurchasesCurrent) 
-                                                            ?   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-left" viewBox="0 0 16 16">
+                                                            ?   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-down-left" viewBox="0 0 16 16">
                                                                     <path fill-rule="evenodd" d="M2 13.5a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 0-1H3.707L13.854 2.854a.5.5 0 0 0-.708-.708L3 12.293V7.5a.5.5 0 0 0-1 0z"/>
                                                                 </svg> 
                                                                 : '' }
@@ -551,7 +551,7 @@ export default function DashboardBoxes() {
                                                         d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
                                                 </svg> 
                                             : (totalCheckInsPrevious>totalCheckInsCurrent) 
-                                                ?   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-left" viewBox="0 0 16 16">
+                                                ?   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-down-left" viewBox="0 0 16 16">
                                                         <path fill-rule="evenodd" d="M2 13.5a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 0-1H3.707L13.854 2.854a.5.5 0 0 0-.708-.708L3 12.293V7.5a.5.5 0 0 0-1 0z"/>
                                                     </svg> 
                                                     : '' }
@@ -675,7 +675,7 @@ export default function DashboardBoxes() {
                                                         d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
                                                 </svg> 
                                             : (totalClientsGrowthPrevious>totalClientsGrowthCurrent) 
-                                                ?   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-left" viewBox="0 0 16 16">
+                                                ?   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-down-left" viewBox="0 0 16 16">
                                                         <path fill-rule="evenodd" d="M2 13.5a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 0-1H3.707L13.854 2.854a.5.5 0 0 0-.708-.708L3 12.293V7.5a.5.5 0 0 0-1 0z"/>
                                                     </svg> 
                                                     : '' }
@@ -871,12 +871,12 @@ export default function DashboardBoxes() {
             ) }
 
             <section className="line line-4">
-                <div class="latest-orders table-responsive box-shadow-1 border-radius-25 p-3 d-flex flex-column justify-content-between gap-2">
+                <div className="latest-orders table-responsive box-shadow-1 border-radius-25 p-3 d-flex flex-column justify-content-between gap-2">
                     {/* <h3>Latest Orders</h3> */}
                     <h2 className="fs-6" style={{ textShadow: '2px 2px white, -2px -2px white' }}>Latest Orders</h2>
                     { (orders?.data?.latest_10?.length > 0) 
                         ? 
-                            <table class="table table-borderless">
+                            <table className="table table-borderless">
                                 <thead>
                                     <tr>
                                     <th scope="col">#</th>
@@ -888,7 +888,7 @@ export default function DashboardBoxes() {
                                 <tbody>
                                     { (orders?.data?.latest_10?.length > 0) && ((orders?.data?.latest_10)?.map((order, index) => {
                                         return (
-                                            <tr>
+                                            <tr key={order?._id}>
                                                 <th scope="row">{ index+1 }</th>
                                                 <td>${ order?.total_to_be_paid ? order?.total_to_be_paid : 0 }</td>
                                                 <td>

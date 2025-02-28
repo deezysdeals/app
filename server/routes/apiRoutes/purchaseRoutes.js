@@ -8,7 +8,7 @@ import { getPurchases } from '../../controllers/otherControllers/purchaseControl
 
 purchaseRouter.use(authenticated); 
 
-purchaseRouter.get('/', getPurchases); 
+purchaseRouter.get('/', checkRoles(roles.admin, roles.superAdmin), getPurchases); 
 
 
 export default purchaseRouter; 

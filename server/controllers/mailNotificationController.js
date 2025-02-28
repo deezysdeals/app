@@ -10,24 +10,40 @@ const getMailNotifications = asyncHandler(async (req, res) => {
     const limit = parseInt(req?.query?.limit) || 10; 
     const skip = (current_page - 1) * limit; 
 
-    const notifications = await Notification.find({ deleted_at: null, user: req?.user_id })
-                                            .sort('-created_at')
-                                            .skip(skip)
-                                            .limit(limit)
-                                            .populate({
-                                                path: 'order'
-                                            })
-                                            .lean(); 
-    if (!notifications?.length) return res.status(404).json({ message: "No notifications found!" }); 
+    let notifications, notificationsCount;
 
-    const total = await Notification.countDocuments({ deleted_at: null }); 
+    if ((req?.role == 'individual') || (req?.role == 'vendor') || (req?.role == 'dispatcher')) {
+        notifications = await Notification.find({ deleted_at: null, user: req?.user_id })
+                                                .sort('-created_at')
+                                                .skip(skip)
+                                                .limit(limit)
+                                                .populate({
+                                                    path: 'order'
+                                                })
+                                                .lean(); 
+        if (!notifications?.length) return res.status(404).json({ message: "No notifications found!" }); 
+
+        notificationsCount = await Notification.countDocuments({ deleted_at: null, user: req?.user_id });
+    } else if ((req?.role == 'admin') || (req?.role == 'superadmin')) {
+        notifications = await Notification.find({ deleted_at: null })
+                                                .sort('-created_at')
+                                                .skip(skip)
+                                                .limit(limit)
+                                                .populate({
+                                                    path: 'order'
+                                                })
+                                                .lean(); 
+        if (!notifications?.length) return res.status(404).json({ message: "No notifications found!" }); 
+
+        notificationsCount = await Notification.countDocuments({ deleted_at: null });
+    }
 
     res.json({ 
                 meta: {
                     current_page, 
                     limit, 
-                    total_pages: Math.ceil(total / limit), 
-                    total_results: total
+                    total_pages: Math.ceil(notificationsCount / limit), 
+                    total_results: notificationsCount
                 }, 
                 data: notifications 
             });

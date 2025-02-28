@@ -23,9 +23,9 @@ orderItemRouter.route('/:id')
                 .get(getOrderItem)
                 .put(updateOrderItem)
                 .patch(deleteOrderItem)
-                .delete(destroyOrderItem); 
+                .delete(checkRoles(roles.admin, roles.superAdmin), destroyOrderItem); 
 
-orderItemRouter.patch('/:id/restore', restoreOrderItem);
+orderItemRouter.patch('/:id/restore', checkRoles(roles.admin, roles.superAdmin), restoreOrderItem);
 
 
 export default orderItemRouter; 

@@ -35,23 +35,6 @@ export function useBrand(id = null) {
             })
             .catch(error => {
                 setErrors(error?.response); 
-                if (error?.response?.status == 409) {
-                    swal.fire({
-                        text: `${error?.response?.data?.message}`, 
-                        color: '#900000', 
-                        width: 325, 
-                        position: 'top', 
-                        showConfirmButton: false
-                    });
-                } else {
-                    swal.fire({
-                        text: `${error?.response?.status}: An error occured!`, 
-                        color: '#900000', 
-                        width: 325, 
-                        position: 'top', 
-                        showConfirmButton: false
-                    });
-                }
                 console.log(error);
             })
             .finally(() => setLoading(false));

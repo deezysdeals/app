@@ -2,6 +2,11 @@ import dotenv from 'dotenv';
 dotenv.config(); 
 import asyncHandler from "express-async-handler"; 
 import { TwitterApi } from 'twitter-api-v2'; 
+import got from 'got';
+import crypto from 'crypto';
+import OAuth from 'oauth-1.0a';
+import { createInterface } from 'readline';
+import { stringify } from 'querystring';
 
 
 const twitterClient = new TwitterApi({
@@ -18,14 +23,19 @@ const tweet = asyncHandler(async (req, res) => {
         // const tweet = await twitterClient.v2.tweet(message); 
         // res.status(201).json({ data: tweet }); 
 
-        const got = require('got');
-        const crypto = require('crypto');
-        const OAuth = require('oauth-1.0a');
-        const qs = require('querystring');
+        // const got = require('got');
+        // const crypto = require('crypto');
+        // const OAuth = require('oauth-1.0a');
+        // const qs = require('querystring');
 
-        const readline = require('readline').createInterface({
-        input: process.stdin,
-        output: process.stdout
+        // const readline = require('readline').createInterface({
+        //     input: process.stdin,
+        //     output: process.stdout
+        // }); 
+
+        const readline = createInterface({
+            input: process.stdin,
+            output: process.stdout
         });
 
 

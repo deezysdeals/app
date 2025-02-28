@@ -15,15 +15,22 @@ import { getProductVariations,
 
 productVariationRouter.route('/')
                 .get(getProductVariations)
-                .post(authenticated, createProductVariation); 
+                .post(authenticated, checkRoles(roles.vendor,
+                                                roles.admin, 
+                                                roles.superAdmin), createProductVariation); 
 
 productVariationRouter.route('/:id')
                 .get(getProductVariation)
-                .put(authenticated, updateProductVariation)
-                .patch(authenticated, deleteProductVariation)
-                .delete(authenticated, destroyProductVariation); 
+                .put(authenticated, checkRoles(roles.vendor,
+                                                roles.admin,
+                                                roles.superAdmin), updateProductVariation)
+                .patch(authenticated, checkRoles(roles.vendor,
+                                                roles.admin,
+                                                roles.superAdmin), deleteProductVariation)
+                .delete(authenticated, checkRoles(roles.admin, roles.superAdmin), destroyProductVariation); 
 
-productVariationRouter.patch('/:id/restore', authenticated, restoreProductVariation); 
+productVariationRouter.patch('/:id/restore', authenticated, checkRoles(roles.admin, 
+                                                                        roles.superAdmin), restoreProductVariation); 
 
 
 export default productVariationRouter; 

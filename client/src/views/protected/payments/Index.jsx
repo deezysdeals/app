@@ -61,7 +61,7 @@ export default function Index() {
 
                     <section className="d-flex justify-content-between flex-wrap gap-2 pt-4"> 
                         <div className="search">
-                            <div className="search-container border border-dark" style={{ maxWidth: '375px' }}>
+                            {/* <div className="search-container border border-dark" style={{ maxWidth: '375px' }}>
                                 { !isListening &&
                                     <span 
                                         type="button" 
@@ -98,7 +98,7 @@ export default function Index() {
                                                 stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
                                         </svg>
                                 </span>
-                            </div>
+                            </div> */}
                         </div>
                         <span>
                             { (payments?.data?.length > 0) 

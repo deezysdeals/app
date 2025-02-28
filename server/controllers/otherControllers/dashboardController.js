@@ -64,7 +64,7 @@ const getOrders = asyncHandler(async (req, res) => {
         try {
             let total, totalPrevious;
 
-            if ((userFound?.role != 'admin') && (userFound?.role != 'dispatcher')) { 
+            if ((userFound?.role != 'super-admin') || (userFound?.role != 'admin') || (userFound?.role != 'dispatcher')) { 
                 if ((range == 'today') || (range == 'this-week') || (range == 'this-month') || (range == 'this-year')) {
                     /** Current */
                     total = await Order.aggregate([

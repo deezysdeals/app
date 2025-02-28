@@ -24,15 +24,15 @@ categoryRouter.get('/:category/products', getCategoryProducts);
 
 categoryRouter.route('/')
                 .get(getCategories)
-                .post(authenticated, createCategory); 
+                .post(authenticated, checkRoles(roles.admin, roles.superAdmin), createCategory); 
 
 categoryRouter.route('/:id')
                 .get(getCategory)
-                .put(authenticated, updateCategory)
-                .patch(authenticated, deleteCategory)
-                .delete(authenticated, destroyCategory); 
+                .put(authenticated, checkRoles(roles.admin, roles.superAdmin), updateCategory)
+                .patch(authenticated, checkRoles(roles.admin, roles.superAdmin), deleteCategory)
+                .delete(authenticated, checkRoles(roles.admin, roles.superAdmin), destroyCategory); 
 
-categoryRouter.patch('/:id/restore', restoreCategory)
+categoryRouter.patch('/:id/restore', checkRoles(roles.admin, roles.superAdmin), restoreCategory)
 
 
 export default categoryRouter; 

@@ -22,8 +22,15 @@ const getProducts = asyncHandler(async (req, res) => {
     const current_page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 10; 
     const skip = (current_page - 1) * limit; 
+    const search_key = req?.query?.search_key; 
+    // console.log('search_key', search_key);
 
-	const products = await Product.find({ deleted_at: null })
+    let products, total;
+
+    // if (search_key && (search_key != '') && (search_key != null) && (search_key != undefined)) {
+    if (!search_key) {
+        console.log('here 1')
+        products = await Product.find({ deleted_at: null })
                                 // .sort('-created_at')
                                 .sort('-updated_at')
                                 .skip(skip)
@@ -32,9 +39,24 @@ const getProducts = asyncHandler(async (req, res) => {
                                     path: 'brand', 
                                 })
                                 .lean(); 
-    if (!products?.length) return res.status(404).json({ message: "No products found!" }); 
+        if (!products?.length) return res.status(404).json({ message: "No products found!" }); 
 
-    const total = await Product.countDocuments({ deleted_at: null }); 
+        total = await Product.countDocuments({ deleted_at: null }); 
+    } else {
+        console.log('here 2')
+        products = await Product.find({ title: new RegExp(search_key, 'i'), deleted_at: null })
+                                // .sort('-created_at')
+                                .sort('-updated_at')
+                                .skip(skip)
+                                .limit(limit)
+                                .populate({
+                                    path: 'brand', 
+                                })
+                                .lean(); 
+        if (!products?.length) return res.status(404).json({ message: "No products found!" }); 
+
+        total = await Product.countDocuments({ title: new RegExp(search_key, 'i'), deleted_at: null }); 
+    }
 
     let productsList = []; 
 

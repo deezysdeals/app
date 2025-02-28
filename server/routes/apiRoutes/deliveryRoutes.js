@@ -14,7 +14,7 @@ deliveryRouter.use(authenticated);
 deliveryRouter.get('/', getDeliveries); 
 
 deliveryRouter.route('/:id')
-                .patch(markDelivered); 
+                .patch(checkRoles(roles.dispatcher, roles.admin, roles.superAdmin), markDelivered); 
 
 
 export default deliveryRouter; 

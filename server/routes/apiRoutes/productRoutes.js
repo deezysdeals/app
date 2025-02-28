@@ -30,25 +30,29 @@ productRouter.get('/top-rated', getTopRatedProducts);
 
 
 /** Additional Routes */
-productRouter.get('/purchases', getPurchasedProducts); 
-productRouter.get('/sales-of-purchases', getSoldProducts); 
+productRouter.get('/purchases', authenticated, checkRoles(roles.admin, roles.superAdmin), getPurchasedProducts); 
+productRouter.get('/sales-of-purchases', authenticated, checkRoles(roles.admin, roles.superAdmin), getSoldProducts); 
 
 
 /** Main Routes */
-productRouter.post('/add-to-shop/:id', authenticated, addToShop); 
+productRouter.post('/add-to-shop/:id', authenticated, checkRoles(roles.admin, roles.superAdmin), addToShop); 
 
-productRouter.patch('/:id/restore', authenticated, restoreProduct); 
+productRouter.patch('/:id/restore', authenticated, checkRoles(roles.admin, roles.superAdmin), restoreProduct); 
 
 productRouter.route('/:id')
                 .get(getProduct)
-                .put(authenticated, updateProduct)
-                .patch(authenticated, deleteProduct)
+                .put(authenticated, checkRoles(roles.vendor,
+                                                roles.admin, 
+                                                roles.superAdmin), updateProduct)
+                .patch(authenticated, checkRoles(roles.vendor,
+                                                roles.admin, 
+                                                roles.superAdmin), deleteProduct)
                 .delete(authenticated, destroyProduct); 
                 // .post(authenticated, addToShop)
 
 productRouter.route('/')
                 .get(getProducts)
-                .post(authenticated, createProduct); 
+                .post(authenticated, checkRoles(roles.admin, roles.superAdmin), createProduct); 
 
 
 export default productRouter; 

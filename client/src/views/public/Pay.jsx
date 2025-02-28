@@ -41,7 +41,7 @@ export default function Pay() {
         "data-page-type": "product-details",
         components: "buttons,card-fields",
         "data-sdk-integration-source": "developer-studio",
-    };
+    }; 
 
     const [billingAddress, setBillingAddress] =
         useState({

@@ -25,15 +25,16 @@ brandRouter.get('/:brand/products', getBrandProducts);
 /** Main Routes */
 brandRouter.route('/')
                 .get(getBrands)
-                .post(authenticated, createBrand); 
+                // .post(authenticated, (checkRoles(roles.admin) || checkRoles(roles.dispatcher)), createBrand); 
+                .post(authenticated, checkRoles(roles.admin, roles.superAdmin), createBrand); 
 
 brandRouter.route('/:id')
                 .get(getBrand)
-                .put(authenticated, updateBrand)
-                .patch(authenticated, deleteBrand)
-                .delete(authenticated, destroyBrand); 
+                .put(authenticated, checkRoles(roles.admin, roles.superAdmin), updateBrand)
+                .patch(authenticated, checkRoles(roles.admin, roles.superAdmin), deleteBrand)
+                .delete(authenticated, checkRoles(roles.admin, roles.superAdmin), destroyBrand); 
 
-brandRouter.patch('/:id/restore', authenticated, restoreBrand);
+brandRouter.patch('/:id/restore', authenticated, checkRoles(roles.admin, roles.superAdmin), restoreBrand);
 
 
 export default brandRouter; 

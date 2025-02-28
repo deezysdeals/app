@@ -15,13 +15,17 @@ import { getProductImages,
 
 productImageRouter.route('/')
                 .get(getProductImages)
-                .post(authenticated, createProductImage); 
+                .post(authenticated, 
+                        checkRoles(roles.vendor, 
+                                roles.admin, 
+                                roles.superAdmin), 
+                        createProductImage); 
 
 productImageRouter.route('/:id')
                 .get(getProductImage)
-                .put(updateProductImage)
-                .patch(deleteProductImage)
-                .delete(destroyProductImage); 
+                .put(authenticated, checkRoles(roles.admin, roles.superAdmin), updateProductImage)
+                .patch(authenticated, checkRoles(roles.admin, roles.superAdmin), deleteProductImage)
+                .delete(authenticated, checkRoles(roles.admin, roles.superAdmin), destroyProductImage); 
 
 productImageRouter.patch('/:id/restore', authenticated, restoreProductImage); 
 

@@ -8,7 +8,7 @@ import { getProfits } from '../../controllers/otherControllers/profitController.
 
 profitRouter.use(authenticated); 
 
-profitRouter.get('/', getProfits); 
+profitRouter.get('/', checkRoles(roles.admin, roles.superAdmin), getProfits); 
 
 
 export default profitRouter; 

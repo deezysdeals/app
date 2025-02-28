@@ -113,7 +113,7 @@ export default function Index() {
 
                     <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 py-3"> 
                         <div className="search">
-                            <div className="search-container border border-dark" style={{ maxWidth: '375px' }}>
+                            {/* <div className="search-container border border-dark" style={{ maxWidth: '375px' }}>
                                 { !isListening &&
                                     <span 
                                         type="button" 
@@ -143,7 +143,7 @@ export default function Index() {
                                         setOrderQuery(prevState => ({
                                             ...prevState, 
                                             page: firstPage, 
-                                            search: searchKey
+                                            search_key: searchKey
                                         })); 
                                         await getOrders(orderQuery); 
                                         setIsListening(false); 
@@ -156,7 +156,7 @@ export default function Index() {
                                                 stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
                                         </svg>
                                 </span>
-                            </div>
+                            </div> */}
                         </div>
                         <span className="text-end">
                             { (orders?.data?.length > 0) 

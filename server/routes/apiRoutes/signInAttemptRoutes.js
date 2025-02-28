@@ -10,7 +10,7 @@ import { getSignInAttempts,
 } from '../../controllers/authControllers/signInAttemptController.js'; 
 
 
-signInAttemptRouter.use(authenticated); 
+signInAttemptRouter.use(authenticated, checkRoles(roles.admin, roles.superAdmin), ); 
 
 signInAttemptRouter.get('/', getSignInAttempts); 
 

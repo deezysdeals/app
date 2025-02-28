@@ -15,13 +15,13 @@ import { getSubCategories,
 
 subCategoryRouter.route('/')
                 .get(getSubCategories)
-                .post(authenticated, createSubCategory); 
+                .post(authenticated, checkRoles(roles.vendor, roles.admin, roles.superAdmin), createSubCategory); 
 
 subCategoryRouter.route('/:id')
                 .get(getSubCategory)
-                .put(updateSubCategory)
-                .patch(deleteSubCategory)
-                .delete(destroySubCategory); 
+                .put(authenticated, checkRoles(roles.vendor, roles.admin, roles.superAdmin), updateSubCategory)
+                .patch(authenticated, checkRoles(roles.admin, roles.superAdmin), deleteSubCategory)
+                .delete(authenticated, checkRoles(roles.admin, roles.superAdmin), destroySubCategory); 
         
 subCategoryRouter.patch('/:id/restore', restoreSubCategory); 
 

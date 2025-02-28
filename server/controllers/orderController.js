@@ -16,11 +16,13 @@ import orderPlacedNoticationMailTemplate from '../mails/templates/orderNotificat
  * GET ALL ORDERS
  */
 const getOrders = asyncHandler(async (req, res) => { 
-    const paymentStatus = req?.query?.payment_status
+    const paymentStatus = req?.query?.payment_status; 
     const limit = parseInt(req?.query?.limit) || 10; 
     const current_page = parseInt(req?.query?.page) || 1;
     // console.log(paymentStatus, limit, current_page);
     const skip = (current_page - 1) * limit; 
+    const search_key = req?.query?.search_key; 
+    // console.log('search_key', search_key);
 
     // console.log('payment status', paymentStatus);
 
@@ -29,18 +31,37 @@ const getOrders = asyncHandler(async (req, res) => {
 
     if (paymentStatus == 'all') {
         if ((req?.role == 'superadmin') || (req?.role == 'admin') || (req?.role == 'dispatcher')) {
-            orders = await Order.find({ deleted_at: null })
-                                .sort('-created_at')
-                                .skip(skip)
-                                .limit(limit)
-                                .populate({
-                                    path: 'user', 
-                                    select: 'first_name last_name username' 
-                                })
-                                .lean(); 
-            if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
+            if (search_key) {
+                // blogCategories = await BlogCategory.find({ name: new RegExp(searchQuery, 'i'), deleted_at: null })
+                //                             .sort('-created_at')
+                //                             .lean(); 
+                            
+                orders = await Order.find({ _id: new RegExp(search_key, 'i'), deleted_at: null })
+                                    .sort('-created_at')
+                                    .skip(skip)
+                                    .limit(limit)
+                                    .populate({
+                                        path: 'user', 
+                                        select: 'first_name last_name username' 
+                                    })
+                                    .lean(); 
+                if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
 
-            ordersCount = await Order.countDocuments({ deleted_at: null });
+                ordersCount = await Order.countDocuments({ _id: new RegExp(search_key, 'i'), deleted_at: null });
+            } else {
+                orders = await Order.find({ deleted_at: null })
+                                    .sort('-created_at')
+                                    .skip(skip)
+                                    .limit(limit)
+                                    .populate({
+                                        path: 'user', 
+                                        select: 'first_name last_name username' 
+                                    })
+                                    .lean(); 
+                if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
+
+                ordersCount = await Order.countDocuments({ deleted_at: null });
+            }
         } else {
             orders = await Order.find({ user: req?.user_id, deleted_at: null })
                                 .sort('-created_at')

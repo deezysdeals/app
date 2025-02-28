@@ -23,9 +23,9 @@ productReviewRouter.route('/:id')
                 .get(getProductReview)
                 .put(authenticated, updateProductReview)
                 .patch(authenticated, deleteProductReview)
-                .delete(authenticated, destroyProductReview); 
+                .delete(authenticated, checkRoles(roles.admin, roles.superAdmin), destroyProductReview); 
 
-productReviewRouter.patch('/:id/restore', authenticated, restoreProductReview); 
+productReviewRouter.patch('/:id/restore', authenticated, checkRoles(roles.admin, roles.superAdmin), restoreProductReview); 
 
 
 export default productReviewRouter; 

@@ -190,7 +190,7 @@ export default function Index() {
                                                                 ?   <img 
                                                                         src={ brandItem?.logo_path?.url } 
                                                                         className="img-fluid object-fit-cover border-radius-15" 
-                                                                        style={{ width: '100%', height: '100%' }} 
+                                                                        style={{ width: '100%', height: '100%', maxWidth: '250px', maxHeight: '250px' }} 
                                                                         alt={ brandItem?.name } /> 
                                                                 :   <span className="w-100 d-flex justify-content-center">
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">

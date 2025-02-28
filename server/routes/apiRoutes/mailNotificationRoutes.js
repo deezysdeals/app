@@ -18,9 +18,9 @@ mailNotificationRouter.get('/', getMailNotifications);
 mailNotificationRouter.route('/:id')
                 .put(readMailNotification)
                 .patch(deleteMailNotification)
-                .delete(destroyMailNotification); 
+                .delete(checkRoles(roles.admin, roles.superAdmin), destroyMailNotification); 
 
-mailNotificationRouter.patch('/:id/restore', restoreMailNotification);
+mailNotificationRouter.patch('/:id/restore', checkRoles(roles.admin, roles.superAdmin), restoreMailNotification);
 
 
 export default mailNotificationRouter; 

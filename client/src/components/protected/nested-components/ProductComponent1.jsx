@@ -123,7 +123,8 @@ export default function ProductComponent1({ itemId,
                                         className="btn btn-sm btn-dark border-radius-35 py-0 fw-semibold"> 
                                             View { (location?.pathname)?.startsWith('/home/ordered-items') && `Item` } Details
                                     </span> }
-                                { (location?.pathname)?.startsWith('/home/products') &&
+                                { ((location?.pathname)?.startsWith('/home/products') &&
+                                    ((user?.user?.role == 'superadmin') || (user?.user?.role == 'admin'))) &&
                                     <div className="dropdown">
                                         <span className="text-decoration-none text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -258,7 +259,8 @@ export default function ProductComponent1({ itemId,
                                                 }
                                     </span> 
                                     <div className="d-flex pt-1">
-                                        { (location.pathname.startsWith('/home/ordered-items')) 
+                                        { ((location.pathname.startsWith('/home/ordered-items')) &&
+                                            ((user?.user?.role == 'individual') || (user?.user?.role == 'vendor'))) 
                                             ?   <div>
                                                     <span 
                                                         type="button"

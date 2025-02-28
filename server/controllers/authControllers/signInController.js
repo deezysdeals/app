@@ -70,8 +70,9 @@ const signInUser = asyncHandler(async (req, res) => {
             res.cookie('jwt', refresh, {
                 httpOnly: true, 
                 secure: true, 
-                sameSite: 'Lax', 
-                maxAge: 5 * 60 * 60 * 1000      // 1 hour
+                sameSite: 'None', 
+                maxAge: 12 * 60 * 60 * 1000      // 12 hours
+                // maxAge: 5 * 60 * 60 * 1000      // 1 hour
                 // maxAge: 1 * 60 * 1000      // 1 minute
             }); 
             // res.cookie('jwt', refresh, { httpOnly: true, secure: true, sameSite: 'Strict' });

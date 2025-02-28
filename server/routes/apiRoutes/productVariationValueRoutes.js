@@ -19,11 +19,15 @@ productVariationValueRouter.route('/')
 
 productVariationValueRouter.route('/:id')
                 .get(getProductVariationValue)
-                .put(authenticated, updateProductVariationValue)
-                .patch(authenticated, deleteProductVariationValue)
+                .put(authenticated, checkRoles(roles.vendor,
+                                                roles.admin, 
+                                                roles.superAdmin), updateProductVariationValue)
+                .patch(authenticated, checkRoles(roles.vendor, 
+                                                roles.admin, 
+                                                roles.superAdmin), deleteProductVariationValue)
                 .delete(authenticated, destroyProductVariationValue); 
 
-productVariationValueRouter.route('/:id/restore', authenticated, restoreProductVariationValue)
+productVariationValueRouter.route('/:id/restore', authenticated, checkRoles(roles.admin, roles.superAdmin), restoreProductVariationValue)
 
 
 export default productVariationValueRouter; 

@@ -6,6 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 import dayjs from 'dayjs'; 
 import axios from 'axios'; 
 import Constants from '@/utils/Constants.jsx'; 
+import swal from 'sweetalert2'; 
 
 const baseURL = `${ Constants?.serverURL }/api/v1`; 
 
@@ -39,12 +40,14 @@ const useAxios = () => {
         //     withCredentials: true 
         // }); 
 
-        const response = await axios.post(`${ baseURL }/auth/refresh-token`, {
+        const response = await axios.post(`${ baseURL }/auth/refresh-token`, {}, 
+        {
             headers: {
                 'Authorization': `Bearer ${ authTokens?.access }`, 
                 'Content-Type': 'application/json', 
             }
-        }, { 
+        }, 
+        { 
             withCredentials: true 
         }); 
 
@@ -60,10 +63,37 @@ const useAxios = () => {
     axiosInstance.interceptors.response.use(
         response => response, 
         error => {
+            console.log('error:', error); 
             if (error?.response?.status === 401) { 
                 signOut();
                 navigate(route('sign-in'));
-            }; 
+            } else if ((error?.status == 403) || (error?.response?.status == 403)) {
+                swal.fire({
+                    text: `${error?.response?.data?.message || error?.response?.statusText}`, 
+                    // text: `${error?.response?.statusText}`, 
+                    color: '#900000', 
+                    width: 325, 
+                    position: 'top', 
+                    showConfirmButton: false
+                });
+            } else if (error?.response?.status == 409) {
+                swal.fire({
+                    text: `${error?.response?.data?.message}`, 
+                    color: '#900000', 
+                    width: 325, 
+                    position: 'top', 
+                    showConfirmButton: false
+                });
+            } 
+            // else if (error?.response?.status == 500) {
+            //     swal.fire({
+            //         text: `${error?.response?.status}: An error occured!`, 
+            //         color: '#900000', 
+            //         width: 325, 
+            //         position: 'top', 
+            //         showConfirmButton: false
+            //     });
+            // }
             return Promise.reject(error);
         }
     ) 

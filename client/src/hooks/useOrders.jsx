@@ -20,7 +20,7 @@ export function useOrders(orderQuery) {
         console.log(orderQuery); 
         setOrders([]); 
         // console.log(orders);
-        return axiosInstance.get(`orders?page=${orderQuery?.page}&limit=${orderQuery?.limit}&payment_status=${orderQuery?.payment_status}`, { signal }) 
+        return axiosInstance.get(`orders?page=${orderQuery?.page}&limit=${orderQuery?.limit}&payment_status=${orderQuery?.payment_status}&search_key=${orderQuery?.search_key}`, { signal }) 
             .then(response => { 
                 console.log(response?.data)
                 setOrders(response?.data)

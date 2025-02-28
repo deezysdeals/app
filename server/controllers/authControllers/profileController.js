@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler'; 
-const cloudinaryImageUpload = require('../../config/imageUpload/cloudinary'); 
+// const cloudinaryImageUpload = require('../../config/imageUpload/cloudinary'); 
+import cloudinaryImageUpload from '../../config/imageUpload/cloudinary.js';
 import User from '../../models/User.js'; 
 
 

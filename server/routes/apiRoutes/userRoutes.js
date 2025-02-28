@@ -22,6 +22,8 @@ import { getUsers,
 } from '../../controllers/userController.js'; 
 
 
+userRouter.use(authenticated); 
+
 /** Additional Routes */
 userRouter.get('/:username/client-queries', getUserClientQueries); 
 userRouter.get('/:username/deliveries', getUserDeliveries); 
@@ -34,19 +36,18 @@ userRouter.get('/:username/query-responses', getUserQueryResponses);
 
 
 /** Main Routes */
-userRouter.use(authenticated); 
 
 userRouter.route('/')
-                .get(getUsers)
+                .get(checkRoles(roles.admin, roles.superAdmin), getUsers)
                 .post(createUser); 
 
 userRouter.route('/:username')
                 .get(getUser)
                 .put(updateUser)
                 .patch(deleteUser)
-                .delete(destroyUser); 
+                .delete(checkRoles(roles.admin, roles.superAdmin), destroyUser); 
 
-userRouter.patch('/:id/restore', restoreUser); 
+userRouter.patch('/:id/restore', checkRoles(roles.admin, roles.superAdmin), restoreUser); 
 
 
 

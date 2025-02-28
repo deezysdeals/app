@@ -15,15 +15,15 @@ import { getDeliveryModes,
 
 deliveryModeRouter.route('/')
                 .get(getDeliveryModes)
-                .post(authenticated, createDeliveryMode); 
+                .post(authenticated, checkRoles(roles.admin, roles.superAdmin), createDeliveryMode); 
 
 deliveryModeRouter.route('/:id')
                 .get(getDeliveryMode)
-                .put(authenticated, updateDeliveryMode)
-                .patch(authenticated, deleteDeliveryMode)
-                .delete(authenticated, destroyDeliveryMode); 
+                .put(authenticated, checkRoles(roles.admin, roles.superAdmin), updateDeliveryMode)
+                .patch(authenticated, checkRoles(roles.admin, roles.superAdmin), deleteDeliveryMode)
+                .delete(authenticated, checkRoles(roles.admin, roles.superAdmin), destroyDeliveryMode); 
 
-deliveryModeRouter.route('/:id/restore', authenticated, restoreDeliveryMode);
+deliveryModeRouter.route('/:id/restore', authenticated, checkRoles(roles.admin, roles.superAdmin), restoreDeliveryMode);
 
 
 export default deliveryModeRouter; 
