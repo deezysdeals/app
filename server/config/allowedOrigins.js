@@ -1,15 +1,6 @@
-const origins = [
-    'https://www.deezysdeals.com', 
-    'http://www.deezysdeals.com', 
+const allowedOrigins = [
     'https://deezysdeals.com', 
-    'http://deezysdeals.com', 
-    'https://app-main-a7t0.onrender.com', 
-    'http://app-main-a7t0.onrender.com', 
-    'www.deezysdeals.com', 
-    'https://deezysdeals.online', 
-    'http://deezysdeals.online', 
-    'https://www.deezysdeals.online', 
-    'http://www.deezysdeals.online', 
+    'https://www.deezysdeals.com', 
     'https://maxralph.store', 
     'https://www.maxralph.store', 
     'http://localhost:5174', 
@@ -24,4 +15,4 @@ const origins = [
 ];
 
 
-export default origins;
+export default allowedOrigins;

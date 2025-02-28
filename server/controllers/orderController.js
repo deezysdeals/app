@@ -32,10 +32,6 @@ const getOrders = asyncHandler(async (req, res) => {
     if (paymentStatus == 'all') {
         if ((req?.role == 'superadmin') || (req?.role == 'admin') || (req?.role == 'dispatcher')) {
             if (search_key) {
-                // blogCategories = await BlogCategory.find({ name: new RegExp(searchQuery, 'i'), deleted_at: null })
-                //                             .sort('-created_at')
-                //                             .lean(); 
-                            
                 orders = await Order.find({ _id: new RegExp(search_key, 'i'), deleted_at: null })
                                     .sort('-created_at')
                                     .skip(skip)

@@ -29,7 +29,6 @@ const getProducts = asyncHandler(async (req, res) => {
 
     // if (search_key && (search_key != '') && (search_key != null) && (search_key != undefined)) {
     if (!search_key) {
-        console.log('here 1')
         products = await Product.find({ deleted_at: null })
                                 // .sort('-created_at')
                                 .sort('-updated_at')
@@ -43,7 +42,6 @@ const getProducts = asyncHandler(async (req, res) => {
 
         total = await Product.countDocuments({ deleted_at: null }); 
     } else {
-        console.log('here 2')
         products = await Product.find({ title: new RegExp(search_key, 'i'), deleted_at: null })
                                 // .sort('-created_at')
                                 .sort('-updated_at')

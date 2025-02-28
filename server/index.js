@@ -41,16 +41,21 @@ app.use(morgan(':remote-addr - :remote-user [:date[iso]] ":method :url HTTP/:htt
 dbConnection(); 
 
 app.disable('x-powered-by'); 
+
 app.use(expressJSON()); 
+
 app.use(urlencoded({ extended: true })); 
+
+app.use(cookieParser()); 
+
 // app.use(cors()); 
 // app.use(cors({
 //     origin: 'http://localhost:5174', 
 //     credentials: true // Allow cookies to be sent
 // })); 
-app.use(cookieParser()); 
 app.use(cors(corsOptions)); 
 // app.options('*', cors(corsOptions));
+
 app.use(fileupload({useTempFiles: true})); 
 
 app.use('/', expressStatic(join(__dirname, 'public'))); 
