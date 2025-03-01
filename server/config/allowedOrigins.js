@@ -1,6 +1,6 @@
 const allowedOrigins = [
-    'https://deezysdeals.com', 
     'https://www.deezysdeals.com', 
+    'https://deezysdeals.com', 
     'https://maxralph.store', 
     'https://www.maxralph.store', 
     'http://localhost:5174', 
