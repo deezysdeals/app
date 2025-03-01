@@ -16,7 +16,7 @@ import cors from 'cors';
 import fileupload from 'express-fileupload'; 
 import mongoose from 'mongoose';
 import errorHandler from './middleware/errorHandler.js'; 
-// import corsOptions from './config/corsOptions.js'; 
+import corsOptions from './config/corsOptions.js'; 
 import dbConnection from './config/dbConnect.js'; 
 import router from './routes/api.js'; 
 const PORT = process.env.PORT || 5001; 
@@ -48,19 +48,13 @@ app.use(urlencoded({ extended: true }));
 
 app.use(cookieParser()); 
 
-// app.use(cors()); 
+app.use(cors()); 
 // app.use(cors({
 //     origin: 'http://localhost:5174', 
 //     credentials: true // Allow cookies to be sent
 // })); 
 
-const corsOptions = {
-    origin: 'https://www.deezysdeals.com',
-    allowedHeaders: 'Content-Type, Authorization'  // Specify headers that are allowed
-}; 
-
-app.use(cors(corsOptions)); 
-// app.options('*', cors(corsOptions));
+// app.use(cors(corsOptions)); 
 
 app.use(fileupload({useTempFiles: true})); 
 
