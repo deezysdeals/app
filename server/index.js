@@ -48,13 +48,13 @@ app.use(urlencoded({ extended: true }));
 
 app.use(cookieParser()); 
 
-app.use(cors()); 
+// app.use(cors()); 
 // app.use(cors({
 //     origin: 'http://localhost:5174', 
 //     credentials: true // Allow cookies to be sent
 // })); 
 
-// app.use(cors(corsOptions)); 
+app.use(cors(corsOptions)); 
 
 app.use(fileupload({useTempFiles: true})); 
 
