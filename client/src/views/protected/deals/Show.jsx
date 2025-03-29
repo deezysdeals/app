@@ -79,7 +79,7 @@ export default function Show() {
                                         { (deal?.data?.data?.products?.length > 0) && deal?.data?.data?.products?.map((product, index) => {
                                             return ( 
                                                 <li 
-                                                    key={ product?._id } 
+                                                    key={ product?._id || index } 
                                                     className="box-shadow-1 border-radius-25 mb-3 py-3 px-2 cursor-pointer">
                                                         <span className="d-flex justify-content-end px-3 pt-2">
                                                             <Link 

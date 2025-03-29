@@ -19,11 +19,13 @@ export function useBrands(brandQuery) {
     async function getBrands(brandQuery, { signal } = {}) { 
         // console.log(brandQuery);
 
-        setBrands([]); 
+        brandQuery?.search?.length && setBrands([]); 
         // return axiosInstance.get(`brands?page=${brandQuery?.page}&limit=${brandQuery?.limit}&search=${brandQuery?.search}`, { signal }) 
         return axios.get(`${ Constants?.serverURL }/api/v1/brands?page=${brandQuery?.page}&limit=${brandQuery?.limit}&search=${brandQuery?.search}`, { signal }) 
             .then(response => setBrands(response?.data))
-            .catch(error => console.log(error));
+            .catch(error => {
+                // console.log(error);
+            });
     } 
 
     return { brands, getBrands, setBrands }; 

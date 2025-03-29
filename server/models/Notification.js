@@ -12,7 +12,9 @@ const notificationSchema = new Schema({
             required: true, 
             enum: ['bonus', 'delivery', 'enquiry', 'order', 'delivery-arrival'], 
             default: 'bonus'
-        }, 
+        },
+        deleted_at: { type: String, default: null }, 
+        deleted_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
     }, 
     {
         timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }

@@ -15,7 +15,7 @@ export function useUsers(userQuery) {
     }, [userQuery]); 
 
     async function getUsers(userQuery, { signal } = {}) { 
-        console.log(userQuery);
+        // console.log(userQuery);
         return axiosInstance.get(`users?role=${userQuery?.role}&range=${userQuery?.range}&page=${userQuery?.page}&limit=${userQuery?.limit}`, { signal }) 
             .then(response => setUsers(response?.data))
             .catch(error => console.log(error));

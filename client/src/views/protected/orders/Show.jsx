@@ -14,7 +14,7 @@ export default function Show() {
     const location = useLocation(); 
     const params = useParams(); 
     const { order, getOrder } = useOrder(params?.id); 
-    console.log(order); 
+    // console.log(order); 
 
     const handlePrint = () => {
         window.print();
@@ -128,7 +128,7 @@ export default function Show() {
                                             </div>
                                             <div className="col-md-10">
                                                 <div className="d-flex align-items-center justify-content-between gap-1 flex-wrap">
-                                                    <h5>{ orderItem?.product?.title }</h5>
+                                                    <h5>{ orderItem?.product?.title?.slice(0,23) }{ (orderItem?.product?.title?.length > 23) && '...'}</h5>
                                                     <div className=""><small className="quantity">{ orderItem?.quantity }</small>&nbsp;x&nbsp;<span className="cost fw-semibold">${ (orderItem?.selling_price)?.toFixed(2) }</span></div>
                                                 </div>
                                             </div> 

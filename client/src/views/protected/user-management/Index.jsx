@@ -10,11 +10,8 @@ import swal from 'sweetalert2';
 import { useVoiceToText } from '@/utils/useVoiceToText.jsx'; 
 import { useUsers } from '@/hooks/useUsers.jsx'; 
 import scrollToTop from '@/utils/ScrollToTop.jsx'; 
-import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
-import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
-import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
-import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
 import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
+import PaginationLinks from '@/components/PaginationLinks.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
@@ -23,9 +20,10 @@ export default function Index() {
     const [searchKey, setSearchKey] = useState(''); 
 
     useEffect(() => {
-        if (searchKey) {
-            console.log('search for:', searchKey);
-        }
+        setUserQuery(prev => ({
+            ...prev,
+            search: searchKey,
+        }));
     }, [searchKey]);
 
     const { handleStartListening, 
@@ -41,6 +39,7 @@ export default function Index() {
         role: 'individual', 
         page: 1, 
         limit: 10, 
+        search_key: searchKey
     }); 
     const { users, getUsers } = useUsers(userQuery); 
     // console.log(users); 
@@ -145,8 +144,16 @@ export default function Index() {
 
                                 <span 
                                     type="button" 
-                                    onClick={ () => {
+                                    onClick={ async () => {
                                         setSearchKey(voiceText); 
+                                        scrollToTop(); 
+                                        let firstPage = 1
+                                        setUserQuery(prevState => ({
+                                            ...prevState, 
+                                            page: firstPage, 
+                                            search: searchKey
+                                        })); 
+                                        await getUsers(userQuery)
                                         setIsListening(false); 
                                         // console.log('search', searchKey);
                                     } }
@@ -274,67 +281,12 @@ export default function Index() {
                     </section>
                 </div>
 
-                { ((users?.data?.length > 0)) && 
-                    <section className="pagination-links py-5 d-flex justify-content-end gap-2 pe-2"> 
-                        <span 
-                            type="button" 
-                            onClick={ async () => { 
-                                scrollToTop(); 
-                                let firstPage = 1
-                                setUserQuery(prevState => ({
-                                    ...prevState, 
-                                    // role: userQuery?.role, 
-                                    page: firstPage
-                                })); 
-                                await getUsers(); 
-                            } }>
-                                <First /> 
-                        </span> 
-                        <span 
-                            type="button" 
-                            onClick={ async () => { 
-                                scrollToTop(); 
-                                let previousPage = ((users?.meta?.current_page >= 1) ? (users?.meta?.current_page - 1) : 1)
-                                setUserQuery(prevState => ({
-                                    ...prevState, 
-                                    // role: userQuery?.role, 
-                                    page: previousPage
-                                })); 
-                                await getUsers(); 
-                            } }>
-                                <Previous /> 
-                        </span> 
-                        <span 
-                            type="button" 
-                            onClick={ async () => { 
-                                scrollToTop(); 
-                                let nextPage = ((users?.meta?.current_page < users?.meta?.total_pages) ? (users?.meta?.current_page + 1) : users?.meta?.total_pages)
-                                setUserQuery(prevState => ({
-                                    ...prevState, 
-                                    // role: userQuery?.role, 
-                                    page: nextPage
-                                })); 
-                                await getUsers(); 
-                                // console.log('user page', userQuery?.page)
-                            } }>
-                            <Next /> 
-                        </span> 
-                        <span 
-                            type="button" 
-                            onClick={ async () => { 
-                                scrollToTop(); 
-                                let lastPage = users?.meta?.total_pages
-                                setUserQuery(prevState => ({
-                                    ...prevState, 
-                                    // role: userQuery?.role, 
-                                    page: lastPage
-                                })); 
-                                await getUsers(); 
-                            } }>
-                                <Last />
-                        </span>
-                    </section> 
-                }
+                { (users?.data?.length > 0) 
+                    && <PaginationLinks 
+                            items={ users } 
+                            getItems={ getUsers } 
+                            query={ userQuery } 
+                            setQuery={ setUserQuery } /> }
             </div>
         </Layout>
     )

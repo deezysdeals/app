@@ -20,7 +20,9 @@ export function useProducts(productQuery) {
         // return axiosInstance.get(`products?page=${page}&limit=${limit}`, { signal }) 
         return axios.get(`${ Constants?.serverURL }/api/v1/products?page=${productQuery?.page}&limit=${productQuery?.limit}&search_key=${productQuery?.search_key}`, { signal })
             .then(response => setProducts(response?.data))
-            .catch(error => console.log(error));
+            .catch(error => {
+                // console.log(error);
+            });
     } 
 
     return { products, getProducts, setProducts }; 

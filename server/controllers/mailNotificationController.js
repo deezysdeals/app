@@ -14,25 +14,25 @@ const getMailNotifications = asyncHandler(async (req, res) => {
 
     if ((req?.role == 'individual') || (req?.role == 'vendor') || (req?.role == 'dispatcher')) {
         notifications = await Notification.find({ deleted_at: null, user: req?.user_id })
-                                                .sort('-created_at')
-                                                .skip(skip)
-                                                .limit(limit)
-                                                .populate({
-                                                    path: 'order'
-                                                })
-                                                .lean(); 
+                                            .sort('-created_at')
+                                            .skip(skip)
+                                            .limit(limit)
+                                            .populate({
+                                                path: 'order'
+                                            })
+                                            .lean(); 
         if (!notifications?.length) return res.status(404).json({ message: "No notifications found!" }); 
 
         notificationsCount = await Notification.countDocuments({ deleted_at: null, user: req?.user_id });
     } else if ((req?.role == 'admin') || (req?.role == 'superadmin')) {
         notifications = await Notification.find({ deleted_at: null })
-                                                .sort('-created_at')
-                                                .skip(skip)
-                                                .limit(limit)
-                                                .populate({
-                                                    path: 'order'
-                                                })
-                                                .lean(); 
+                                            .sort('-created_at')
+                                            .skip(skip)
+                                            .limit(limit)
+                                            .populate({
+                                                path: 'order'
+                                            })
+                                            .lean(); 
         if (!notifications?.length) return res.status(404).json({ message: "No notifications found!" }); 
 
         notificationsCount = await Notification.countDocuments({ deleted_at: null });

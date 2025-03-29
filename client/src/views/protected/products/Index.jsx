@@ -7,16 +7,11 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(relativeTime);
 dayjs.extend(utc); 
-import swal from 'sweetalert2'; 
 import { useVoiceToText } from '@/utils/useVoiceToText.jsx'; 
 import { useProducts } from '@/hooks/useProducts.jsx'; 
-import { useProduct } from '@/hooks/useProduct.jsx'; 
 import scrollToTop from '@/utils/ScrollToTop.jsx'; 
-import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
-import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
-import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
-import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
 import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
+import PaginationLinks from '@/components/PaginationLinks.jsx'; 
 import ProductComponent1 from '@/components/protected/nested-components/ProductComponent1.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
@@ -28,9 +23,10 @@ export default function Index() {
     const [searchKey, setSearchKey] = useState(''); 
 
     useEffect(() => {
-        if (searchKey) {
-            console.log('search for:', searchKey);
-        }
+        setProductQuery(prev => ({
+            ...prev,
+            search_key: searchKey,
+        }));
     }, [searchKey]);
 
     const { handleStartListening, 
@@ -47,7 +43,6 @@ export default function Index() {
         search_key: ''
     }); 
     const { products, getProducts } = useProducts(productQuery); 
-    const { deleteProduct } = useProduct(); 
     // console.log(products); 
 
     return (
@@ -116,14 +111,14 @@ export default function Index() {
                                 </span>
                             </div>
                         </div>
-                        <span>
+                        <div>
                             { (products?.data?.length > 0) 
                                 && <PaginationMeter 
                                         current_page={ products?.meta?.current_page } 
                                         limit={ products?.meta?.limit } 
                                         total_pages={ products?.meta?.total_pages } 
                                         total_results={ products?.meta?.total_results } /> } 
-                        </span>
+                        </div>
                     </section>
 
                     <section className="py-3"> 
@@ -160,69 +155,12 @@ export default function Index() {
                     </section>
                 </div>
 
-                { (products?.data?.length > 0) && 
-                    <section className="pagination-links py-5 d-flex justify-content-end gap-2 pe-2"> 
-                        <span 
-                            type="button" 
-                            onClick={ async () => { 
-                                scrollToTop(); 
-                                // await getProducts(1); 
-                                let firstPage = 1
-                                    setProductQuery(prevState => ({
-                                        ...prevState, 
-                                        page: firstPage
-                                    })); 
-                                    await getProducts(productQuery); 
-                                } }>
-                                <First /> 
-                        </span> 
-                        <span 
-                            type="button" 
-                            onClick={ async () => { 
-                                scrollToTop(); 
-                                // await getProducts((products?.meta?.current_page >= 1) ? (products?.meta?.current_page - 1) : 1); 
-                                let previousPage = ((products?.meta?.current_page >= 1) ? (products?.meta?.current_page - 1) : 1)
-                                setProductQuery(prevState => ({
-                                    ...prevState, 
-                                    // role: productQuery?.role, 
-                                    page: previousPage
-                                })); 
-                                await getProducts(productQuery); 
-                            } }>
-                                <Previous /> 
-                        </span> 
-                        <span 
-                            type="button" 
-                            onClick={ async () => { 
-                                scrollToTop(); 
-                                // await getProducts((products?.meta?.current_page < products?.meta?.total_pages) ? (products?.meta?.current_page + 1) : products?.meta?.total_pages); 
-                                let nextPage = ((products?.meta?.current_page < products?.meta?.total_pages) ? (products?.meta?.current_page + 1) : products?.meta?.total_pages)
-                                setProductQuery(prevState => ({
-                                    ...prevState, 
-                                    // role: productQuery?.role, 
-                                    page: nextPage
-                                })); 
-                                await getProducts(productQuery); 
-                            } }>
-                            <Next /> 
-                        </span> 
-                        <span 
-                            type="button" 
-                            onClick={ async () => { 
-                                scrollToTop(); 
-                                // await getProducts(products?.meta?.total_pages); 
-                                let lastPage = products?.meta?.total_pages
-                                setProductQuery(prevState => ({
-                                    ...prevState, 
-                                    // role: productQuery?.role, 
-                                    page: lastPage
-                                })); 
-                                await getProducts(productQuery); 
-                            } }>
-                                <Last />
-                        </span>
-                    </section> 
-                }
+                { (products?.data?.length > 0) 
+                    && <PaginationLinks 
+                            items={ products } 
+                            getItems={ getProducts } 
+                            query={ productQuery } 
+                            setQuery={ setProductQuery } /> }
             </div>
         </Layout>
     )

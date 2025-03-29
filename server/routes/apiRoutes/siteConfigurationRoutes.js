@@ -14,7 +14,7 @@ import { getSiteConfigurations,
 siteConfigurationRouter.route('/')
                 .get(getSiteConfigurations)
                 .post(authenticated, checkRoles(roles.admin, roles.superAdmin), createSiteConfigurations)
-                .patch(authenticated, checkRoles(roles.admin, roles.superAdmin), createUpdateSiteConfigurations); 
+                .patch(authenticated, createUpdateSiteConfigurations); 
 
 
 export default siteConfigurationRouter; 

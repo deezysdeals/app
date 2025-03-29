@@ -168,7 +168,7 @@ export default function Index() {
                                     // console.log('rating calculated', ratingCalculated);
                                     return (
                                         <ProductComponent1 
-                                                                                        itemId = { product?.id || product?._id } 
+                                            itemId = { product?.id || product?._id } 
                                             asin = { product?.asin || product?.id } 
                                             imgSrc =  { product?.images }
                                             title = { product?.title } 

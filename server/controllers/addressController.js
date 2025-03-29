@@ -3,7 +3,7 @@ import Address from '../models/Address.js';
 
 
 const getAddresses = asyncHandler(async (req, res) => {
-	const addresses = await Address.find({ user: req?.user_id })
+	const addresses = await Address.find({ user: req?.user_id, deleted_at: null })
 									.sort('-created_at')
 									.lean(); 
     if (!addresses?.length) return res.status(404).json({ message: "No addresses found!" });
@@ -120,7 +120,7 @@ const deleteAddress = asyncHandler(async (req, res) => {
 
 	if (!address) return res.status(404).json({ message: `No address matches the address ${id}!` }); 
 
-	if (address.deleted_at == '') address.deleted_at = new Date().toISOString();
+	if (address.deleted_at == '' || address.deleted_at == null) address.deleted_at = new Date().toISOString();
 
 	// address.deleted_at = new Date().toISOString();
 	// // address.deleted_by = req?.user_id; 

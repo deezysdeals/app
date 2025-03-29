@@ -12,11 +12,8 @@ import { useProductReviews } from '@/hooks/useProductReviews.jsx';
 import { useProductReview } from '@/hooks/useProductReview.jsx'; 
 import formatNumber from '@/utils/FormatNumber.jsx'; 
 import scrollToTop from '@/utils/ScrollToTop.jsx'; 
-import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
-import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
-import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
-import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
 import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
+import PaginationLinks from '@/components/PaginationLinks.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
@@ -44,7 +41,7 @@ export default function Index() {
     }); 
     // console.log(productReviewQuery); 
     const { productReviews, getProductReviews } = useProductReviews(productReviewQuery); 
-    console.log(productReviews); 
+    // console.log(productReviews); 
     const { deleteProductReview } = useProductReview(); 
 
     return (
@@ -496,60 +493,12 @@ export default function Index() {
                     </div> 
                 </div> 
 
-                <section className="pagination-links py-5 d-flex justify-content-end gap-2 pe-2"> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            let firstPage = 1
-                            setProductReviewQuery(prevState => ({
-                                ...prevState, 
-                                page: firstPage
-                            })); 
-                            await getProductReviews(); 
-                            } }>
-                            <First /> 
-                    </span> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            let previousPage = ((productReviews?.meta?.current_page >= 1) ? (productReviews?.meta?.current_page - 1) : 1)
-                            setProductReviewQuery(prevState => ({
-                                ...prevState, 
-                                page: previousPage
-                            })); 
-                            await getProductReviews(); 
-                        } }>
-                            <Previous /> 
-                    </span> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            let nextPage = ((productReviews?.meta?.current_page < productReviews?.meta?.total_pages) ? (productReviews?.meta?.current_page + 1) : productReviews?.meta?.total_pages)
-                            setProductReviewQuery(prevState => ({
-                                ...prevState, 
-                                page: nextPage
-                            })); 
-                            await getProductReviews(); 
-                        } }>
-                        <Next /> 
-                    </span> 
-                    <span 
-                        type="button" 
-                        onClick={ async () => { 
-                            scrollToTop(); 
-                            let lastPage = productReviews?.meta?.total_pages
-                            setProductReviewQuery(prevState => ({
-                                ...prevState, 
-                                page: lastPage
-                            })); 
-                            await getProductReviews(); 
-                        } }>
-                            <Last />
-                    </span>
-                </section>
+                { (productReviews?.data?.length > 0) 
+                    && <PaginationLinks 
+                            items={ productReviews } 
+                            getItems={ getProductReviews } 
+                            query={ productReviewQuery } 
+                            setQuery={ setProductReviewQuery } /> } 
             </div>
         </Layout>
     )

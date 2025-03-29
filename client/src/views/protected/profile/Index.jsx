@@ -1,8 +1,7 @@
-import { useContext, useState } from 'react'; 
+import { useContext, useEffect } from 'react'; 
 import AuthContext from '@/context/AuthContext.jsx'; 
-import { Link } from 'react-router-dom'; 
-import { route } from '@/routes'; 
 import useImageHandler from '@/utils/useImageHandler';
+import swal from 'sweetalert2'; 
 import { useAddresses } from '@/hooks/useAddresses.jsx'; 
 import { useAddress } from '@/hooks/useAddress.jsx'; 
 import { useUser } from '@/hooks/useUser.jsx'; 
@@ -10,12 +9,12 @@ import Layout from '@/components/protected/Layout.jsx';
 
 
 export default function Index() { 
-    const { user, signOut } = useContext(AuthContext); 
-    const { addresses, getAddresses } = useAddresses(); 
-    const { address, getAddress, createAddress, updateAddress, makeDefaultAddress } = useAddress(); 
+    const { user } = useContext(AuthContext); 
+    const { addresses, getAddresses, setAddresses } = useAddresses(); 
+    const { address, createAddress, makeDefaultAddress, deleteAddress } = useAddress(); 
     const { retrievedUser, getUser, updateUser } = useUser(user?.user?.username); 
-    console.log(retrievedUser); 
-    console.log(user?.user?.username); 
+    // console.log(retrievedUser?.data); 
+    // console.log(user?.user?.username); 
     const { image, handleImageClick, handleImageChange } = useImageHandler();
     // console.log(addresses); 
 
@@ -48,6 +47,15 @@ export default function Index() {
         await getAddresses();
     }; 
 
+    const removeAddressFromList = async (addressId) => {
+        setAddresses((prevAddresses) => ({
+            ...prevAddresses,
+            data: addresses?.data?.filter(address => address?._id !== addressId),
+        }));
+
+        await getAddresses();
+    };
+
     return ( 
         <Layout>
             <div className="main">
@@ -57,34 +65,34 @@ export default function Index() {
                     <div className="py-3"> 
                         <form onSubmit={ handleProfileUpdate } encType="multipart/form-data" id="profile-form"> 
                             <section className="d-flex align-items-center flex-wrap column-gap-5 row-gap-3">
-                                <div className="logo row g-2 ">
-                                        <div className="mb-3 position-relative"> 
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                id="image-upload-input"
-                                                style={{ display: 'none' }} 
-                                                onChange={ (e) => { retrievedUser.setData({
-                                                                        ...retrievedUser?.data,
-                                                                        user_image: e.target.files[0], 
-                                                                    });
-                                                                    handleImageChange(e)} }
-                                            />
+                                <div className="logo row g-2">
+                                    <div className="mb-3 position-relative"> 
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            id="image-upload-input"
+                                            style={{ display: 'none' }} 
+                                            onChange={ (e) => { retrievedUser.setData({
+                                                                    ...retrievedUser?.data,
+                                                                    user_image: e.target.files[0], 
+                                                                });
+                                                                handleImageChange(e)} }
+                                        />
 
-                                            <div onClick={handleImageClick} className="cursor-pointer border-radius-15 d-flex justify-content-center align-items-center" style={{ width: '200px', height: '200px', backgroundColor: '#f0f0f0' }}>
-                                                { (image || retrievedUser?.data?.user_image_path?.url) ? (
-                                                    <img src={image || retrievedUser?.data?.user_image_path?.url} alt="Preview" className="border-radius-15" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                ) : (
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">
-                                                            <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-                                                            <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                )}
-                                            </div> 
+                                        <div onClick={handleImageClick} className="cursor-pointer border-radius-15 d-flex justify-content-center align-items-center" style={{ width: '200px', height: '200px', backgroundColor: '#f0f0f0' }}>
+                                            { (image || retrievedUser?.data?.user_image_path?.url) ? (
+                                                <img src={image || retrievedUser?.data?.user_image_path?.url} alt="Preview" className="border-radius-15" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            ) : (
+                                                <span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">
+                                                        <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                                                        <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>
+                                                    </svg>
+                                                </span>
+                                            )}
                                         </div> 
                                     </div> 
+                                </div> 
                                 <div className="d-flex flex-column">
                                     <h3>{ retrievedUser?.data?.first_name + ' ' + retrievedUser?.data?.last_name }</h3> 
                                     <span className="fw-semibold">@{ retrievedUser?.data?.username }</span>
@@ -238,8 +246,8 @@ export default function Index() {
                                                 </button>
                                             </div> 
                                             <form onSubmit={ handleAddAddress }>
-                                                <div className="modal-body" style={{ paddingRight: '2rem', paddingLeft: '2rem' }}>
-                                                    {/* <div className="row g-2">
+                                                <div className="modal-body">
+                                                    <div className="row g-2">
                                                         <div className="col-md">
                                                             <div className="mb-3">
                                                                 <div className="input-group">
@@ -250,7 +258,7 @@ export default function Index() {
                                                                         onChange={ event => address.setData({
                                                                             ...address?.data,
                                                                             full_name: event.target.value,
-                                                                        }) }
+                                                                        }) } 
                                                                         placeholder="e.g. Pae Daezi" 
                                                                         id="full_name" 
                                                                         className="form-control border-radius-35" 
@@ -262,146 +270,177 @@ export default function Index() {
                                                         </div>
                                                     </div>
                                                     <div className="row g-2">
+                                                        <span className="border-radius-35 fw-semibold form-field-required px-3">Address</span>
+                                                    </div>
+                                                    <div className="row g-2">
                                                         <div className="col-md">
                                                             <div className="mb-3">
                                                                 <div className="input-group">
-                                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">Address Line 1</span>
-                                                                    <input 
+                                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">Line 1</span>
+                                                                    <textarea 
                                                                         type="text" 
                                                                         value={ address?.data?.address_line_1 ?? '' } 
                                                                         onChange={ event => address.setData({
                                                                             ...address?.data,
                                                                             address_line_1: event.target.value,
-                                                                        }) }
+                                                                        }) } 
                                                                         placeholder="e.g. 123 Boulevard Street" 
                                                                         id="address_line_1" 
                                                                         className="form-control border-radius-35" 
                                                                         aria-label="Address Line 1" 
                                                                         aria-describedby="address line 1" 
+                                                                        required>
+                                                                    </textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row g-2">
+                                                        <div className="col-md">
+                                                            <div className="mb-3">
+                                                                <div className="input-group">
+                                                                    <span className="input-group-text border-radius-35 fw-semibold">Line 2</span>
+                                                                    <textarea 
+                                                                        type="text" 
+                                                                        value={ address?.data?.address_line_2 ?? '' } 
+                                                                        onChange={ event => address.setData({
+                                                                            ...address?.data,
+                                                                            address_line_2: event.target.value,
+                                                                        }) } 
+                                                                        placeholder="e.g. 123 Boulevard Street" 
+                                                                        id="address_line_2" 
+                                                                        className="form-control border-radius-35" 
+                                                                        aria-label="Address Line 2" 
+                                                                        aria-describedby="address line 2">
+                                                                    </textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row g-2">
+                                                        <div className="col-md">
+                                                            <div className="mb-3">
+                                                                <div className="input-group">
+                                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">Post Code</span>
+                                                                    <input 
+                                                                        type="text" 
+                                                                        value={ address?.data?.post_code ?? '' } 
+                                                                        onChange={ event => address.setData({
+                                                                            ...address?.data,
+                                                                            post_code: event.target.value,
+                                                                        }) } 
+                                                                        placeholder="e.g. 12345" 
+                                                                        id="post_code" 
+                                                                        className="form-control border-radius-35" 
+                                                                        aria-label="Post code" 
+                                                                        aria-describedby="post code" 
                                                                         required />
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div> */}
-                                                    <div className="row mb-3 gap-3">
-                                                        <div className="form border border-dark col-sm-12 col-md-5 col-lg-6">
-                                                            <label htmlFor="" className="label" id="full_name">Full Name:</label>
-                                                            <input 
-                                                                type="text" 
-                                                                value={ address?.data?.full_name ?? '' } 
-                                                                onChange={ event => address.setData({
-                                                                    ...address?.data,
-                                                                    full_name: event.target.value,
-                                                                }) } 
-                                                                placeholder="e.g. Pae Daezi" 
-                                                                data-target="full_name" />
+                                                    </div>
+                                                    <div className="row g-2">
+                                                        <div className="col-md">
+                                                            <div className="mb-3">
+                                                                <div className="input-group">
+                                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">Town/City</span>
+                                                                    <input 
+                                                                        type="text" 
+                                                                        value={ address?.data?.town_city ?? '' } 
+                                                                        onChange={ event => address.setData({
+                                                                            ...address?.data,
+                                                                            town_city: event.target.value,
+                                                                        }) } 
+                                                                        placeholder="e.g. Mountain View" 
+                                                                        id="town_city" 
+                                                                        className="form-control border-radius-35" 
+                                                                        aria-label="Town/city" 
+                                                                        aria-describedby="town/city" 
+                                                                        required />
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div> 
-                                                    <div className="row mb-3 gap-3">
-                                                        <div className="form border border-dark col-sm-12 col-md-5 col-lg-6">
-                                                            <label htmlFor="" className="label" id="address_line_1">Address Line 1:</label>
-                                                            <input 
-                                                                type="text" 
-                                                                value={ address?.data?.address_line_1 ?? '' } 
-                                                                onChange={ event => address.setData({
-                                                                    ...address?.data,
-                                                                    address_line_1: event.target.value,
-                                                                }) } 
-                                                                placeholder="e.g. 123 Boulevard Street" 
-                                                                data-target="address_line_1" />
+                                                    </div>
+                                                    <div className="row g-2">
+                                                        <div className="col-md">
+                                                            <div className="mb-3">
+                                                                <div className="input-group">
+                                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">State/Origin</span>
+                                                                    <input 
+                                                                        type="text" 
+                                                                        value={ address?.data?.state_region ?? '' } 
+                                                                        onChange={ event => address.setData({
+                                                                            ...address?.data,
+                                                                            state_region: event.target.value,
+                                                                        }) } 
+                                                                        placeholder="e.g. Virginia" 
+                                                                        id="state_region"
+                                                                        className="form-control border-radius-35" 
+                                                                        aria-label="State/origin" 
+                                                                        aria-describedby="state/origin" 
+                                                                        required />
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div> 
-                                                    <div className="row mb-3 gap-3">
-                                                        <div className="form border border-dark col-sm-12 col-md-5 col-lg-6">
-                                                            <label htmlFor="" className="label" id="address_line_2">Address Line 2:</label>
-                                                            <input 
-                                                                type="text" 
-                                                                value={ address?.data?.address_line_2 ?? '' } 
-                                                                onChange={ event => address.setData({
-                                                                    ...address?.data,
-                                                                    address_line_2: event.target.value,
-                                                                }) } 
-                                                                placeholder="e.g. 123 Boulevard Street" 
-                                                                data-target="address_line_2" />
+                                                    </div>
+                                                    <div className="row g-2">
+                                                        <div className="col-md">
+                                                            <div className="mb-3">
+                                                                <div className="input-group">
+                                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">Country</span>
+                                                                    <input 
+                                                                        type="text" 
+                                                                        value={ address?.data?.country ?? '' } 
+                                                                        onChange={ event => address.setData({
+                                                                            ...address?.data,
+                                                                            country: event.target.value,
+                                                                        }) } 
+                                                                        placeholder="e.g. USA" 
+                                                                        id="country"
+                                                                        className="form-control border-radius-35" 
+                                                                        aria-label="Country" 
+                                                                        aria-describedby="country" 
+                                                                        required />
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div> 
-                                                    <div className="row mb-3 gap-3">
-                                                        <div className="form border border-dark col-sm-12 col-md-5 col-lg-6">
-                                                            <label htmlFor="" className="label" id="post_code">Post Code:</label>
-                                                            <input 
-                                                                type="text" 
-                                                                value={ address?.data?.post_code ?? '' } 
-                                                                onChange={ event => address.setData({
-                                                                    ...address?.data,
-                                                                    post_code: event.target.value,
-                                                                }) } 
-                                                                placeholder="e.g. 12345" 
-                                                                data-target="post_code" />
+                                                    </div>
+                                                    <div className="row g-2">
+                                                        <div className="col-md">
+                                                            <div className="mb-3">
+                                                                <div className="input-group">
+                                                                    <span className="input-group-text border-radius-35 fw-semibold form-field-required">Phone</span>
+                                                                    <input 
+                                                                        type="text" 
+                                                                        value={ address?.data?.phone ?? '' } 
+                                                                        onChange={ event => address.setData({
+                                                                            ...address?.data,
+                                                                            phone: event.target.value,
+                                                                        }) } 
+                                                                        placeholder="e.g. +123456789" 
+                                                                        id="phone"
+                                                                        className="form-control border-radius-35" 
+                                                                        aria-label="Phone" 
+                                                                        aria-describedby="phone" 
+                                                                        required />
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div> 
-                                                    <div className="row mb-3 gap-3">
-                                                        <div className="form border border-dark col-sm-12 col-md-5 col-lg-6">
-                                                            <label htmlFor="" className="label" id="town_city">Town/City:</label>
-                                                            <input 
-                                                                type="text" 
-                                                                value={ address?.data?.town_city ?? '' } 
-                                                                onChange={ event => address.setData({
-                                                                    ...address?.data,
-                                                                    town_city: event.target.value,
-                                                                }) } 
-                                                                placeholder="e.g. Mountain View" 
-                                                                data-target="town_city" />
-                                                        </div>
-                                                    </div> 
-                                                    <div className="row mb-3 gap-3">
-                                                        <div className="form border border-dark col-sm-12 col-md-5 col-lg-6">
-                                                            <label htmlFor="" className="label" id="state_region">State/Region:</label>
-                                                            <input 
-                                                                type="text" 
-                                                                value={ address?.data?.state_region ?? '' } 
-                                                                onChange={ event => address.setData({
-                                                                    ...address?.data,
-                                                                    state_region: event.target.value,
-                                                                }) } 
-                                                                placeholder="e.g. Virginia" 
-                                                                data-target="state_region" />
-                                                        </div>
-                                                    </div> 
-                                                    <div className="row mb-3 gap-3">
-                                                        <div className="form border border-dark col-sm-12 col-md-5 col-lg-6">
-                                                            <label htmlFor="" className="label" id="country">Country:</label>
-                                                            <input 
-                                                                type="text" 
-                                                                value={ address?.data?.country ?? '' } 
-                                                                onChange={ event => address.setData({
-                                                                    ...address?.data,
-                                                                    country: event.target.value,
-                                                                }) } 
-                                                                placeholder="e.g. USA" 
-                                                                data-target="country" />
-                                                        </div>
-                                                    </div> 
-                                                    <div className="row mb-3 gap-3">
-                                                        <div className="form border border-dark col-sm-12 col-md-5 col-lg-6">
-                                                            <label htmlFor="" className="label" id="phone">Phone:</label>
-                                                            <input 
-                                                                type="text" 
-                                                                value={ address?.data?.phone ?? '' } 
-                                                                onChange={ event => address.setData({
-                                                                    ...address?.data,
-                                                                    phone: event.target.value,
-                                                                }) } 
-                                                                placeholder="e.g. +123456789" 
-                                                                data-target="phone" />
-                                                        </div>
-                                                    </div> 
+                                                    </div>
                                                 </div>
                                                 <div className="modal-footer">
-                                                    <button type="submit" className="border-0">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                                            <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
-                                                        </svg>
-                                                    </button>
+                                                    <div className="pb-3 d-flex justify-content-end">
+                                                        <button type="submit" className="btn btn-dark px-3 border-radius-35">
+                                                            <span>Save</span>&nbsp;
+                                                            <span>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-arrow-right-circle"
+                                                                    viewBox="0 0 16 16">
+                                                                    <path fillRule="evenodd"
+                                                                        d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+                                                                </svg>
+                                                            </span>
+                                                        </button>
+                                                    </div>
                                                 </div> 
                                             </form>
                                         </div>
@@ -412,7 +451,9 @@ export default function Index() {
                             <section className="address-boxes pt-4">
                                 <div className="row"> 
                                     {(addresses?.data?.length > 0) && 
-                                        (addresses?.data?.sort((a, b) => (b?.default === true ? 1 : 0) - (a?.default === true ? 1 : 0))?.map((address, index) => { 
+                                        (addresses?.data
+                                                ?.sort((a, b) => (b?.default === true ? 1 : 0) - (a?.default === true ? 1 : 0))
+                                                ?.map((address, index) => { 
                                         // if (address?.default == true) {
                                             return (
                                                 <div key={ index } className="col-sm-6 mb-3">
@@ -420,20 +461,63 @@ export default function Index() {
                                                         <div className="card-body d-flex flex-column gap-1"> 
                                                             <div className="d-flex justify-content-between align-items-center flex-wrap pb-2">
                                                                 <span className="fw-semibold">#{ index + 1 }</span>
-                                                                { address?.default === false 
-                                                                    ? <span 
-                                                                            type="button" 
-                                                                            onClick={ async () =>{
-                                                                                await makeDefaultAddress(address); 
-                                                                                await getAddresses();
-                                                                            } }
-                                                                            className="btn btn-sm btn-secondary border-radius-35 py-0 fw-semibold">
-                                                                                Make Default
-                                                                        </span> 
-                                                                            : <span 
-                                                                                    className="btn btn-sm btn-success border-radius-35 py-0 fw-semibold">
-                                                                                        Default
-                                                                                </span> }
+                                                                <div className="d-flex justify-content-end">
+                                                                    { address?.default === false 
+                                                                        ? <span 
+                                                                                type="button" 
+                                                                                onClick={ async () =>{
+                                                                                    await makeDefaultAddress(address); 
+                                                                                    await getAddresses();
+                                                                                } }
+                                                                                className="btn btn-sm btn-secondary border-radius-35 py-0 fw-semibold">
+                                                                                    Make Default
+                                                                            </span> 
+                                                                                : <span 
+                                                                                        className="btn btn-sm btn-success border-radius-35 py-0 fw-semibold">
+                                                                                            Default
+                                                                                    </span> }
+                                                                    <div className="dropdown ms-4">
+                                                                        <span className="text-decoration-none text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                                                            className="bi bi-three-dots" viewBox="0 0 16 16">
+                                                                                <path
+                                                                                    d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3" />
+                                                                            </svg> 
+                                                                        </span>
+                                
+                                                                        <ul className="dropdown-menu"> 
+                                                                            <li 
+                                                                                onClick={ () => {
+                                                                                    swal.fire({
+                                                                                        text: "Are you sure you want to delete this?", 
+                                                                                        showCancelButton: true,
+                                                                                        confirmButtonColor: "#FF0000",
+                                                                                        cancelButtonColor: "#414741",
+                                                                                        confirmButtonText: "Yes!", 
+                                                                                        cancelButtonText: "No!", 
+                                                                                        customClass: {
+                                                                                            confirmButton: 'swal2-button', 
+                                                                                            cancelButton: 'swal2-button'
+                                                                                        }, 
+                                                                                    }).then((result) => {
+                                                                                        if (result.isConfirmed) {
+                                                                                            deleteAddress(address);
+                                                                                            removeAddressFromList(address?._id); 
+                                                                                            getAddresses();
+                                                                                            // console.log(result)
+                                                                                        }
+                                                                                    });
+                                                                                }}>
+                                                                                <span className="dropdown-item d-flex align-items-center gap-1">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FF0000" className="bi bi-trash2" viewBox="0 0 16 16">
+                                                                                        <path d="M14 3a.7.7 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225A.7.7 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2M3.215 4.207l1.493 8.957a1 1 0 0 0 .986.836h4.612a1 1 0 0 0 .986-.836l1.493-8.957C11.69 4.689 9.954 5 8 5s-3.69-.311-4.785-.793"/>
+                                                                                    </svg>
+                                                                                    <span className="text-danger fw-semibold cursor-pointer">Delete</span>
+                                                                                </span> 
+                                                                            </li> 
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                             <h4 className="card-title fs-5">{ address?.full_name }</h4>
                                                             <span className="card-text fw-semibold">{ address?.address_line_1 }</span>

@@ -17,15 +17,17 @@ export function useOrders(orderQuery) {
 
     // async function getOrders(range = 'all', type = 'all', page = 1, { signal } = {}) { 
     async function getOrders(orderQuery, { signal } = {}) { 
-        console.log(orderQuery); 
-        setOrders([]); 
+        // console.log(orderQuery); 
+        // if(orderQuery?.payment_status != 'all') setOrders([]); 
         // console.log(orders);
-        return axiosInstance.get(`orders?page=${orderQuery?.page}&limit=${orderQuery?.limit}&payment_status=${orderQuery?.payment_status}&search_key=${orderQuery?.search_key}`, { signal }) 
+        return axiosInstance.get(`orders?page=${orderQuery?.page}&limit=${orderQuery?.limit}&payment_status=${orderQuery?.payment_status}`, { signal }) 
             .then(response => { 
-                console.log(response?.data)
-                setOrders(response?.data)
+                // console.log(response?.data);
+                setOrders(response?.data);
             })
-            .catch(error => console.log(error)); 
+            .catch(error => {
+                // console.log(error);
+            }); 
     } 
 
     return { orders, getOrders }; 

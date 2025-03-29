@@ -42,14 +42,14 @@ const createUpdateSiteConfigurations = asyncHandler(async (req, res) => {
             homepage_product_review_footer_2, 
             homepage_product_review_footer_3 } = req?.body; 
 
-    const { homepage_hero_image_path, 
-            homepage_footer_image_path } = req?.files;
+    // const { homepage_hero_image_path, 
+    //         homepage_footer_image_path } = req?.files;
 
     console.log('Received files:', req?.files); // Log files for debugging
 
-    if (!req?.files || !homepage_hero_image_path) {
-        return res.status(400).json({ message: 'Hero image is missing' });
-    }
+    // if (!req?.files || !req?.files?.homepage_hero_image_path) {
+    //     return res.status(400).json({ message: 'Hero image is missing' });
+    // }
 
     let configurations = await SiteConfiguration.findOne({ initial_setup: true }).exec();
 
@@ -60,9 +60,9 @@ const createUpdateSiteConfigurations = asyncHandler(async (req, res) => {
     // }
 
     // Hero image upload
-    if (homepage_hero_image_path) {
+    if (req?.files?.homepage_hero_image_path) {
         try {
-            let heroImageUpload = await cloudinaryImageUpload(homepage_hero_image_path.tempFilePath, "deezysdeals_site_images");
+            let heroImageUpload = await cloudinaryImageUpload(req?.files?.homepage_hero_image_path.tempFilePath, "deezysdeals_site_images");
             console.log('Hero image upload result:', heroImageUpload); // Debug log
             if (!heroImageUpload) {
                 return res.status(400).json({ message: "Hero image upload failed" });
@@ -75,9 +75,9 @@ const createUpdateSiteConfigurations = asyncHandler(async (req, res) => {
     }
 
     // Footer image upload
-    if (homepage_footer_image_path) {
+    if (req?.files?.homepage_footer_image_path) {
         try {
-            let footerImageUpload = await cloudinaryImageUpload(homepage_footer_image_path.tempFilePath, "deezysdeals_site_images");
+            let footerImageUpload = await cloudinaryImageUpload(req?.files?.homepage_footer_image_path.tempFilePath, "deezysdeals_site_images");
             console.log('Footer image upload result:', footerImageUpload); // Debug log
             if (!footerImageUpload) {
                 return res.status(400).json({ message: "Footer image upload failed" });

@@ -15,14 +15,16 @@ export function usePurchases(purchaseQuery) {
     }, [purchaseQuery]); 
 
     async function getPurchases(purchaseQuery, { signal } = {}) { 
-        console.log(purchaseQuery); 
-        setPurchases([]); 
+        // console.log(purchaseQuery); 
+        // setPurchases([]); 
         return axiosInstance.get(`purchases?page=${purchaseQuery?.page}&limit=${purchaseQuery?.limit}`, { signal }) 
             .then(response => { 
-                console.log(response?.data)
-                setPurchases(response?.data)
+                // console.log(response?.data);
+                setPurchases(response?.data);
             })
-            .catch(error => console.log(error)); 
+            .catch(error => {
+                // console.log(error);
+            }); 
     } 
 
     return { purchases, getPurchases }; 

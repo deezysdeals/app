@@ -89,7 +89,10 @@ export function useAddress(id = null) {
     async function deleteAddress(address) {
         return axiosInstance.patch(`addresses/${address?._id}`)
             .then(() => {})
-            .catch(error => setErrors(error?.response))
+            .catch(error => {
+                console.log(error?.response);
+                setErrors(error?.response);
+            })
             .finally(() => setLoading(false)); 
     } 
 

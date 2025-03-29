@@ -7,7 +7,7 @@ import Layout from '@/components/protected/Layout.jsx';
 
 export default function Index() { 
     const { siteConfiguration, updateSiteConfiguration, getSiteConfiguration } = useSiteConfiguration(); 
-    console.log(siteConfiguration); 
+    // console.log(siteConfiguration); 
 
     /** Handle image file input*/ 
     // const [heroImage, setHeroImage] = useState(null);
@@ -60,15 +60,16 @@ export default function Index() {
             && formData.append('homepage_hero_text_2_heading', siteConfiguration?.data?.homepage_hero_text_2_heading); 
         siteConfiguration?.data?.homepage_hero_text_2_content 
             && formData.append('homepage_hero_text_2_content', siteConfiguration?.data?.homepage_hero_text_2_content); 
-        siteConfiguration?.data?.homepage_hero_image_path 
-            && formData.append('homepage_hero_image_path', siteConfiguration?.data?.homepage_hero_image_path); 
+        (images?.['image0']) 
+            && formData.append('homepage_hero_image_path', images?.['image0']); 
         // formData.append('homepage_product_review_footer_1', siteConfiguration?.data?.homepage_product_review_footer_1); 
         // formData.append('homepage_product_review_footer_2', siteConfiguration?.data?.homepage_product_review_footer_2); 
         // formData.append('homepage_product_review_footer_3', siteConfiguration?.data?.homepage_product_review_footer_3); 
-        siteConfiguration?.data?.homepage_footer_image_path 
-            && formData.append('homepage_footer_image_path', siteConfiguration?.data?.homepage_footer_image_path); 
+        (images?.['image1']) 
+            && formData.append('homepage_footer_image_path', images?.['image1']); 
 
         await updateSiteConfiguration(formData); 
+        // await getSiteConfiguration();
     }
 
     return (
@@ -104,28 +105,28 @@ export default function Index() {
 
                                                     <div 
                                                         onClick={() => handleImageClick(0)} 
-                                                        className="cursor-pointer border-radius-15 d-flex justify-content-center align-items-center" style={{ width: '100px', height: '100px', backgroundColor: '#f0f0f0' }}>
-                                                        { images?.['image0'] ? (
-                                                            <img src={images?.['image0']} alt="Preview" className="border-radius-15" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        className="cursor-pointer border-radius-15 d-flex justify-content-center align-items-center" style={{ width: '300px', height: '200px', backgroundColor: '#f0f0f0' }}>
+                                                        { (siteConfiguration?.data?.homepage_hero_image_path || images?.['image0']) ? (
+                                                            <img src={siteConfiguration?.data?.homepage_footer_image_path?.url || images?.['image0']} alt="Preview" className="border-radius-15" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                                         ) : (
                                                             <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">
                                                                     <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
                                                                     <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>
                                                                 </svg>
                                                             </span>
-                                                        )}
+                                                        ) }
                                                     </div> 
 
                                                     {/* Remove button */}
-                                                    {images?.['image0'] && (
+                                                    { images?.['image0'] && (
                                                         <span 
                                                         onClick={() => handleRemoveImage(0)} 
                                                         className="bg-transparent border-0"
                                                         style={{
                                                             position: 'absolute', 
                                                             top: '0', 
-                                                            left: '105px', 
+                                                            left: '305px', 
                                                             cursor: 'pointer',
                                                         }}
                                                         >
@@ -137,10 +138,6 @@ export default function Index() {
                                                 </div> 
                                             </div> 
 
-
-                                            {/* <span>
-                                                <img src="https://plus.unsplash.com/premium_photo-1682435561654-20d84cef00eb?q=80&amp;w=1018&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.0.3&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="object-fit-cover border border-secondary border-2 border-radius-35 box-shadow-1" style={{ width: '300px', height: '150px' }} alt="" />
-                                            </span>  */}
                                             <button type="submit" className="btn btn-dark border-radius-35 py-0 mb-2">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-cloud-arrow-up-fill" viewBox="0 0 16 16">
                                                     <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 5.146a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0z"/>
@@ -151,16 +148,7 @@ export default function Index() {
 
                                 <section className="main-home-hero pt-3">
                                     <h4 className="border-bottom pb-1 fs-6">b. Footer Image</h4>
-                                    {/* <div className="d-flex align-items-end gap-3 py-2">
-                                        <span>
-                                            <img src="https://images.unsplash.com/photo-1593351799227-75df2026356b?q=80&w=1390&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="object-fit-cover border border-secondary border-2 border-radius-35 box-shadow-1" style={{ width: '300px', height: '150px' }} alt="" />
-                                        </span> 
-                                        <span className="btn btn-dark border-radius-35 py-0 mb-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-cloud-arrow-up-fill" viewBox="0 0 16 16">
-                                                <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 5.146a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0z"/>
-                                            </svg>
-                                        </span>
-                                    </div> */}
+
                                     <form 
                                         onSubmit={ submitSiteConfiguration } 
                                         encType='multipart/form-data' 
@@ -172,7 +160,7 @@ export default function Index() {
                                                         accept="image/*"
                                                         id={`image-upload-input-${1}`}
                                                         style={{ display: 'none' }} 
-                                                        onChange={ (e) => { siteConfiguration.setData({
+                                                        onChange={ (e) => { siteConfiguration?.setData({
                                                                                 ...siteConfiguration?.data,
                                                                                 homepage_footer_image_path: e.target.files[0], 
                                                                             });
@@ -181,12 +169,12 @@ export default function Index() {
 
                                                     <div 
                                                         onClick={() => handleImageClick(1)} 
-                                                        className="cursor-pointer border-radius-15 d-flex justify-content-center align-items-center" style={{ width: '100px', height: '100px', backgroundColor: '#f0f0f0' }}>
-                                                        { images?.['image1'] ? (
-                                                            <img src={images?.['image1']} alt="Preview" className="border-radius-15" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        className="cursor-pointer border-radius-15 d-flex justify-content-center align-items-center" style={{ width: '300px', height: '200px', backgroundColor: '#f0f0f0' }}>
+                                                        { (siteConfiguration?.data?.homepage_footer_image_path) || images?.['image1'] ? (
+                                                            <img src={siteConfiguration?.data?.homepage_footer_image_path?.url || images?.['image1']} alt="Preview" className="border-radius-15" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                                         ) : (
                                                             <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">
                                                                     <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
                                                                     <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>
                                                                 </svg>
@@ -202,7 +190,7 @@ export default function Index() {
                                                         style={{
                                                             position: 'absolute', 
                                                             top: '0', 
-                                                            left: '105px', 
+                                                            left: '305px', 
                                                             cursor: 'pointer',
                                                         }}
                                                         >
@@ -214,10 +202,6 @@ export default function Index() {
                                                 </div> 
                                             </div> 
 
-
-                                            {/* <span>
-                                                <img src="https://plus.unsplash.com/premium_photo-1682435561654-20d84cef00eb?q=80&amp;w=1018&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.0.3&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="object-fit-cover border border-secondary border-2 border-radius-35 box-shadow-1" style={{ width: '300px', height: '150px' }} alt="" />
-                                            </span>  */}
                                             <button type="submit" className="btn btn-dark border-radius-35 py-0 mb-2">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-cloud-arrow-up-fill" viewBox="0 0 16 16">
                                                     <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2m2.354 5.146a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0z"/>

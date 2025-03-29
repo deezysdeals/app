@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'; 
+import { useContext, useEffect, useState } from 'react'; 
 import AuthContext from '@/context/AuthContext.jsx'; 
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes';
@@ -29,8 +29,22 @@ export default function DashboardBoxes() {
     const [purchaseRange, setPurchaseRange] = useState('all'); 
     const [saleRange, setSaleRange] = useState('all'); 
     const [ratingsRange, setRatingsRange] = useState('all'); 
-    
     // console.log(orderRange); 
+
+    useEffect(() => {
+        // Action you want to perform whenever any of the states change
+        console.log('State has changed');
+        console.log({
+        checkInRange,
+        clientGrowthRange,
+        orderRange,
+        purchaseRange,
+        saleRange,
+        ratingsRange
+        });
+
+        // You can also perform more complex logic here
+    }, [checkInRange, clientGrowthRange, orderRange, purchaseRange, saleRange, ratingsRange]);
 
     const { checkIns, getCheckIns } = useCheckIns(checkInRange); 
     const { clientsGrowth, getClientsGrowth } = useClientsGrowth(clientGrowthRange); 
@@ -705,7 +719,7 @@ export default function DashboardBoxes() {
             </div>
 
             { ((user?.user?.role == 'superadmin') || (user?.user?.role == 'admin')) && (
-                <div className="line line-3">
+                <div className="line line-3 gap-3">
                     <div className="statistics box-shadow-1 border-radius-25 p-3 d-flex flex-column justify-content-between gap-2">
                         <div className="d-flex align-items-center justify-content-between">
                             <div className="d-flex flex-column">

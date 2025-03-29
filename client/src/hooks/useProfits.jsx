@@ -15,14 +15,16 @@ export function useProfits(profitQuery) {
     }, [profitQuery]); 
 
     async function getProfits(profitQuery, { signal } = {}) { 
-        console.log(profitQuery); 
-        setProfits([]); 
+        // console.log(profitQuery); 
+        // setProfits([]); 
         return axiosInstance.get(`profits?page=${profitQuery?.page}&limit=${profitQuery?.limit}`, { signal }) 
             .then(response => { 
-                console.log(response?.data)
-                setProfits(response?.data)
+                // console.log(response?.data);
+                setProfits(response?.data);
             })
-            .catch(error => console.log(error)); 
+            .catch(error => {
+                // console.log(error);
+            }); 
     } 
 
     return { profits, getProfits }; 

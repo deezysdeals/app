@@ -2,15 +2,12 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import swal from 'sweetalert2'; 
+import scrollToTop from '@/utils/ScrollToTop.jsx'; 
 import { useVoiceToText } from '@/utils/useVoiceToText.jsx'; 
 import { useBrands } from '@/hooks/useBrands.jsx'; 
 import { useBrand } from '@/hooks/useBrand.jsx'; 
-import scrollToTop from '@/utils/ScrollToTop.jsx'; 
-import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
-import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
-import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
-import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
 import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
+import PaginationLinks from '@/components/PaginationLinks.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
@@ -18,11 +15,12 @@ export default function Index() {
     /** Voice-to-Text Search funtionality */ 
     const [searchKey, setSearchKey] = useState(''); 
 
-    // useEffect(() => {
-    //     if (searchKey) {
-    //         console.log('search for:', searchKey);
-    //     }
-    // }, [searchKey]);
+    useEffect(() => {
+        setBrandQuery(prev => ({
+            ...prev,
+            search: searchKey,
+        }));
+    }, [searchKey]);
 
     const { handleStartListening, 
             // handleStopListening, 
@@ -38,6 +36,7 @@ export default function Index() {
         search: searchKey
     }); 
     const { brands, getBrands } = useBrands(brandQuery); 
+    // console.log(brands);
     const { deleteBrand } = useBrand(); 
     // console.log(brands); 
 
@@ -213,69 +212,12 @@ export default function Index() {
                     </section>
                 </div> 
 
-                { (brands?.data?.length > 0) && 
-                    <section className="pagination-links py-5 d-flex justify-content-end gap-2 pe-2"> 
-                        <span 
-                            type="button" 
-                            onClick={ async () => { 
-                                scrollToTop(); 
-                                // await getBrands(1); 
-                                let firstPage = 1
-                                    setBrandQuery(prevState => ({
-                                        ...prevState, 
-                                        page: firstPage
-                                    })); 
-                                    await getBrands(); 
-                                } }>
-                                <First /> 
-                        </span> 
-                        <span 
-                            type="button" 
-                            onClick={ async () => { 
-                                scrollToTop(); 
-                                // await getBrands((brands?.meta?.current_page >= 1) ? (brands?.meta?.current_page - 1) : 1); 
-                                let previousPage = ((brands?.meta?.current_page >= 1) ? (brands?.meta?.current_page - 1) : 1)
-                                setBrandQuery(prevState => ({
-                                    ...prevState, 
-                                    // role: brandQuery?.role, 
-                                    page: previousPage
-                                })); 
-                                await getBrands(); 
-                            } }>
-                                <Previous /> 
-                        </span> 
-                        <span 
-                            type="button" 
-                            onClick={ async () => { 
-                                scrollToTop(); 
-                                // await getBrands((brands?.meta?.current_page < brands?.meta?.total_pages) ? (brands?.meta?.current_page + 1) : brands?.meta?.total_pages); 
-                                let nextPage = ((brands?.meta?.current_page < brands?.meta?.total_pages) ? (brands?.meta?.current_page + 1) : brands?.meta?.total_pages)
-                                setBrandQuery(prevState => ({
-                                    ...prevState, 
-                                    // role: brandQuery?.role, 
-                                    page: nextPage
-                                })); 
-                                await getBrands(); 
-                            } }>
-                            <Next /> 
-                        </span> 
-                        <span 
-                            type="button" 
-                            onClick={ async () => { 
-                                scrollToTop(); 
-                                // await getBrands(brands?.meta?.total_pages); 
-                                let lastPage = brands?.meta?.total_pages
-                                setBrandQuery(prevState => ({
-                                    ...prevState, 
-                                    // role: brandQuery?.role, 
-                                    page: lastPage
-                                })); 
-                                await getBrands(); 
-                            } }>
-                                <Last />
-                        </span>
-                    </section> 
-                }
+                { (brands?.data?.length > 0) 
+                    && <PaginationLinks 
+                            items={ brands } 
+                            getItems={ getBrands } 
+                            query={ brandQuery } 
+                            setQuery={ setBrandQuery } /> }
             </div>
         </Layout>
     )

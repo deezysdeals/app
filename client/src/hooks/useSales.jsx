@@ -15,14 +15,16 @@ export function useSales(saleQuery) {
     }, [saleQuery]); 
 
     async function getSales(saleQuery, { signal } = {}) { 
-        console.log(saleQuery); 
-        setSales([]); 
+        // console.log(saleQuery); 
+        // setSales([]); 
         return axiosInstance.get(`sales?page=${saleQuery?.page}&limit=${saleQuery?.limit}`, { signal }) 
             .then(response => { 
-                console.log(response?.data)
-                setSales(response?.data)
+                // console.log(response?.data);
+                setSales(response?.data);
             })
-            .catch(error => console.log(error)); 
+            .catch(error => {
+                // console.log(error);
+            }); 
     } 
 
     return { sales, getSales }; 

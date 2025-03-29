@@ -14,22 +14,45 @@ import DealProduct from '../models/DealProduct.js';
 const getDeals = asyncHandler(async (req, res) => { 
     const current_page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 10; 
-
     const skip = (current_page - 1) * limit; 
+    const search_key = req?.query?.search_key;
 
-	const deals = await Deal.find({ deleted_at: null })
-                            .sort('-created_at')
-                            .skip(skip)
-                            .limit(limit)
-                            .populate({
-                                path: 'user_specifically_for',
-                                select: 'first_name last_name username'
-                            })
-                            .populate({
-                                path: 'user',
-                                select: 'first_name last_name username'
-                            })
-                            .lean(); 
+    let deals;
+
+    if (!search_key) {
+        deals = await Deal.find({ deleted_at: null })
+                        .sort('-created_at')
+                        .skip(skip)
+                        .limit(limit)
+                        .populate({
+                            path: 'user_specifically_for',
+                            select: 'first_name last_name username'
+                        })
+                        .populate({
+                            path: 'user',
+                            select: 'first_name last_name username'
+                        })
+                        .lean(); 
+    } else {
+        deals = await Deal.find({ $or: [
+                                    { title: new RegExp(search_key, 'i') },
+                                    { code: new RegExp(search_key, 'i') }
+                                ],
+                                deleted_at: null })
+                        .sort('-created_at')
+                        .skip(skip)
+                        .limit(limit)
+                        .populate({
+                            path: 'user_specifically_for',
+                            select: 'first_name last_name username'
+                        })
+                        .populate({
+                            path: 'user',
+                            select: 'first_name last_name username'
+                        })
+                        .lean(); 
+    }
+
     if (!deals?.length) return res.status(404).json({ message: "No deals found!" }); 
 
     const total = await Deal.countDocuments({ deleted_at: null });

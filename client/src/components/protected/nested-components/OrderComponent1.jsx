@@ -56,7 +56,9 @@ export default function OrderComponent1({ order,
                                                         { (orderItem?.product?.images?.map((image, index) => {
                                                             return (
                                                                 <div key={ index } className={`carousel-item ${ (index == 0) && `active`}`}>
-                                                                    <img src={ image } className="object-fit-cover border-radius-15" style={{ width: '75px', height: '75px' }} alt="..." />
+                                                                    { (image) && (
+                                                                            <img src={ image } className="object-fit-cover border-radius-15" style={{ width: '75px', height: '75px' }} alt="..." />
+                                                                        ) }
                                                                 </div>
                                                             )
                                                         })) }
@@ -170,7 +172,9 @@ export default function OrderComponent1({ order,
                                                                     { (orderItem?.product?.images?.map((image, index) => {
                                                                         return (
                                                                             <div key={ index } className={`carousel-item ${ (index == 0) && `active`}`}>
-                                                                                <img src={ image } className="object-fit-cover border-radius-15" style={{ width: '75px', height: '75px' }} alt="..." />
+                                                                                { (image) && (
+                                                                                    <img src={ image } className="object-fit-cover border-radius-15" style={{ width: '75px', height: '75px' }} alt="..." />
+                                                                                ) }
                                                                             </div>
                                                                         )
                                                                     })) } 

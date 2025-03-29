@@ -15,14 +15,16 @@ export function usePayments(paymentQuery) {
     }, [paymentQuery]); 
 
     async function getPayments(paymentQuery, { signal } = {}) { 
-        console.log(paymentQuery); 
-        setPayments([]); 
+        // console.log(paymentQuery); 
+        // setPayments([]); 
         return axiosInstance.get(`payments?page=${paymentQuery?.page}&limit=${paymentQuery?.limit}`, { signal }) 
             .then(response => { 
-                console.log(response?.data)
-                setPayments(response?.data)
+                // console.log(response?.data);
+                setPayments(response?.data);
             })
-            .catch(error => console.log(error)); 
+            .catch(error => {
+                // console.log(error);
+            }); 
     } 
 
     return { payments, getPayments }; 

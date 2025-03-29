@@ -15,16 +15,16 @@ export function useNotifications(notificationQuery) {
     }, [notificationQuery]); 
 
     async function getNotifications(notificationQuery, { signal } = {}) { 
-        console.log(notificationQuery); 
-        setNotifications([]); 
+        // console.log(notificationQuery); 
+        // setNotifications([]); 
         return axiosInstance.get(`notifications?page=${notificationQuery?.page}&limit=${notificationQuery?.limit}`, { signal }) 
             .then(response => { 
-                console.log(response?.data)
-                setNotifications(response?.data)
+                // console.log(response?.data);
+                setNotifications(response?.data);
             })
             .catch(error => console.log(error)); 
     } 
 
-    return { notifications, getNotifications }; 
+    return { notifications, getNotifications, setNotifications }; 
 } 
  

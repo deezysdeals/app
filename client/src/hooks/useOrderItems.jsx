@@ -20,7 +20,9 @@ export function useOrderItems(page = 1, limit = 10) {
                 // console.log(response?.data); 
                 setOrderItems(response?.data); 
             })
-            .catch(error => console.log(error)); 
+            .catch(error => {
+                // console.log(error);
+            }); 
     } 
 
     return { orderItems, getOrderItems }; 

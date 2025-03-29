@@ -13,12 +13,26 @@ const getBrands = asyncHandler(async (req, res) => {
     const current_page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 10; 
     const skip = (current_page - 1) * limit; 
+    const search = req?.query?.search;
 
-	const brands = await Brand.find({ deleted_at: null })
-                                .sort('-created_at')
-                                .skip(skip)
-                                .limit(limit)
-                                .lean(); 
+    // console.log(search);
+
+    let brands;
+
+    if (!search) {
+        brands = await Brand.find({ deleted_at: null })
+                            .sort('-created_at')
+                            .skip(skip)
+                            .limit(limit)
+                            .lean(); 
+    } else {
+        brands = await Brand.find({ name: new RegExp(search, 'i'), deleted_at: null })
+                            .sort('-created_at')
+                            .skip(skip)
+                            .limit(limit)
+                            .lean(); 
+    }
+	
     if (!brands?.length) return res.status(404).json({ message: "No brands found!" }); 
 
     const total = await Brand.countDocuments({ deleted_at: null }); 

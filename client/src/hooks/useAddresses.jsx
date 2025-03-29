@@ -15,10 +15,13 @@ export function useAddresses(page = 1, limit = 10) {
     }, [page, limit]); 
 
     async function getAddresses(page, { signal } = {}) {
+        // setAddresses([]);
         return axiosInstance.get(`addresses?page=${page}&limit=${limit}`, { signal }) 
             .then(response => setAddresses(response?.data))
-            .catch(error => console.log(error));
+            .catch(error => {
+                // console.log(error);
+            });
     } 
 
-    return { addresses, getAddresses }; 
+    return { addresses, getAddresses, setAddresses }; 
 } 
