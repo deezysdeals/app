@@ -2,6 +2,7 @@ const env = import.meta.env.VITE_ENV;
 const client = (env == 'development') ? import.meta.env.VITE_CLIENT_DEVELOPMENT_URL : import.meta.env.VITE_CLIENT_PRODUCTION_URL; 
 const server = (env == 'development') ? import.meta.env.VITE_SERVER_DEVELOPMENT_URL : import.meta.env.VITE_SERVER_PRODUCTION_URL; 
 const paypalClientID = import.meta.env.VITE_PAYPAL_CLIENT_ID; 
+const rapidAPIKey = import.meta.env.VITE_X_RAPID_API_KEY;
 
 
 const Constants = {
@@ -11,6 +12,9 @@ const Constants = {
     // amazon1URL: 'https://parazun-amazon-data.p.rapidapi.com/product/', 
     amazonSecondURL: 'https://real-time-amazon-data.p.rapidapi.com', 
     // amazon2URL: 'https://real-time-amazon-data.p.rapidapi.com/product/', 
+    amazonParazunURL: 'https://parazun-amazon-data.p.rapidapi.com/',
+    amazonParazunHost: 'parazun-amazon-data.p.rapidapi.com',
+    rapidAPIKey: rapidAPIKey,
     fakeStoreURL: 'https://fakestoreapi.com', 
     paypalClientID
 }; 

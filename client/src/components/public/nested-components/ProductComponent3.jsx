@@ -3,6 +3,11 @@ import AuthContext from '@/context/AuthContext.jsx';
 import { CartContext } from '@/context/CartContext.jsx'; 
 import { Link, useParams } from 'react-router-dom'; 
 import { route } from '@/routes'; 
+import dayjs from 'dayjs';
+import relativeTime from "dayjs/plugin/relativeTime"; 
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(relativeTime);
+dayjs.extend(utc); 
 import formatNumber from '@/utils/FormatNumber.jsx';
 import { useFavorites } from '@/hooks/useFavorites.jsx'; 
 import { useFavorite } from '@/hooks/useFavorite.jsx'; 
@@ -16,6 +21,11 @@ export default function ProductComponent3({ productArticle }) {
     const { cartItems, addToCart, removeFromCart } = useContext(CartContext); 
     const { favorites, getFavorites } = useFavorites(); 
     const { createFavorite, deleteFavorite } = useFavorite(); 
+
+    console.log(productArticle?.data)
+    console.log(productArticle?.data?.images?.[0])
+    console.log(productArticle?.data?.images?.[0]?.image_path?.[0]?.hi_res)
+    // console.log(productArticle?.data?.info?.[0]?.dynamic_data)
 
     return (
         <>
@@ -42,12 +52,13 @@ export default function ProductComponent3({ productArticle }) {
                                                         }))} 
                                                     </div> 
                                                 }
-                                                { params?.source == 'shop' && 
+                                                { ((params?.source == 'shop') || (params?.source == '')) && 
                                                     <div className="images">
                                                         { (productArticle?.data?.images?.length > 0) && (productArticle?.data?.images?.map((image, index) => {
+                                                            console.log(image?.image_path[0])
                                                             return (
-                                                                <div key={ image?.image_path?.url } className={`carousel-item ${(index==0) && `active`}`}>
-                                                                    <img src={ image?.image_path?.url } className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
+                                                                <div key={ image?._id } className={`carousel-item ${(index==0) && `active`}`}>
+                                                                    <img src={ image?.image_path[0]?.hi_res?.url ?? image?.image_path[0]?.large?.url ?? image?.image_path?.url } className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
                                                                 </div>
                                                             )
                                                         }))} 
@@ -160,7 +171,8 @@ export default function ProductComponent3({ productArticle }) {
                                                             type="button" 
                                                             onClick={ () => {addToCart(productArticle?.data?._id, 
                                                                                         productArticle?.data?.asin, 
-                                                                                        productArticle?.data?.images?.[0]?.image_path?.url, 
+                                                                                        // productArticle?.data?.images?.[0]?.image_path, 
+                                                                                        productArticle?.data?.images?.[0]?.image_path?.[0]?.hi_res?.url ?? productArticle?.data?.images?.[0]?.image_path?.[0]?.large?.url,
                                                                                         productArticle?.data?.title, 
                                                                                         productArticle?.data?.descriptions[0]?.content, 
                                                                                         productArticle?.data?.initial_retail_price, 
@@ -183,10 +195,9 @@ export default function ProductComponent3({ productArticle }) {
                         <h4 className="fw-semibold fs-5 border-bottom pb-2">About this item</h4> 
 
                         <div>
-                            <ul>
-                                {
-                                    (productArticle?.data?.descriptions?.length > 0) && 
-                                    productArticle?.data?.descriptions.map((description, index) => {
+                            { (productArticle?.data?.descriptions?.length > 0) ? 
+                                <ul>
+                                    { productArticle?.data?.descriptions.map((description, index) => {
                                         return (
                                         <li 
                                             key={ description?._id } 
@@ -195,10 +206,14 @@ export default function ProductComponent3({ productArticle }) {
                                             style={{ marginLeft: 'unset' }}>
                                             { description?.content } 
                                         </li>
-                                        );
-                                    })
-                                }
-                            </ul>
+                                        )
+                                    }) }
+                                </ul>
+                             : (
+                                <div className="ms-0">
+                                    <p>There is no desciption yet for this item.</p>
+                                </div>
+                            ) }
                         </div> 
 
                         <div className="pt-4">
@@ -238,20 +253,25 @@ export default function ProductComponent3({ productArticle }) {
                         <table className="table table-hover align-middle">
                             <tbody>
                                 {
-                                    (productArticle?.data?.info?.length > 0) && 
-                                    productArticle?.data?.info.map((infoItem, index) => {
-                                        return (
-                                            <tr key={ infoItem?._id }>
-                                                <th scope="row">{ infoItem?.dynamic_data[0] }</th>
-                                                <td colSpan="2">{ infoItem?.dynamic_data[1] }</td>
+                                    // Check if dynamic_data exists and is a Map
+                                    (productArticle?.data?.info?.[0]?.dynamic_data && productArticle?.data?.info?.[0]?.dynamic_data.size > 0) ? (
+                                        Array.from(productArticle?.data?.info?.[0]?.dynamic_data.entries()).map(([key, value], index) => (
+                                            <tr key={index}>
+                                                <th scope="row">{ (key)?.replace(/_/g, ' ')?.toUpperCase() }</th>
+                                                <td colSpan="2">{ value }</td>
                                             </tr>
-                                        );
-                                    })
+                                        ))
+                                    ) : (
+                                        // If it's not a Map, assume it's an object and use Object.entries
+                                        productArticle?.data?.info?.[0]?.dynamic_data && 
+                                        Object.entries(productArticle?.data?.info?.[0]?.dynamic_data).map(([key, value], index) => (
+                                            <tr key={index}>
+                                                <th scope="row">{ (key)?.replace(/_/g, ' ')?.toUpperCase() }</th>
+                                                <td colSpan="2">{ (key=='date_first_available') ? dayjs(value)?.format('D MMM YYYY') : value }</td>
+                                            </tr>
+                                        ))
+                                    )
                                 }
-                                {/* <tr>
-                                    <th scope="row">Standing screen display size</th>
-                                    <td colSpan="2">15.6 Inches</td>
-                                </tr> */}
                             </tbody>
                         </table>
                     </div>

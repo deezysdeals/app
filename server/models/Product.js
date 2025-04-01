@@ -13,7 +13,7 @@ const productSchema = new Schema({
         asin: { type: String, minLength: 1, unique: true }, 
         title: { type: String, required: true }, 
         slug: { type: String, required: true }, 
-        // description: { type: String }, 
+        // description: { type: String },
         // features: { type: String, default: '' }, 
         featured: { type: Boolean, default: false }, 
         purchased_from_amazon_market: { type: Boolean, default: false }, 
@@ -36,7 +36,13 @@ const productSchema = new Schema({
         one_star_rating_count: { type: Number, default: 0 }, 
         /** End of Rating Count */
         currency: { type: String, default: 'usd' }, 
-        images: [ String ], 
+        images: [
+            {
+              hi_res: { type: String },
+              large: { type: String },
+              thumb: { type: String },
+            },
+        ],
         dimensions: {
             height: { type: String },
             width: { type: String },

@@ -8,10 +8,26 @@ const productImageSchema = new Schema({
         image_index: { type: Number }, 
         // slug: { type: String, required: true }, 
         // description: { type: String, required: true }, 
-        image_path: { 
-            public_id: { type: String, default: '' },
-            url: { type: String, default: '' }
-        }, 
+        image_path: [
+            {
+            hi_res: { 
+                    public_id: { type: String, default: '' },
+                    url: { type: String, default: '' }
+                },
+            large: { 
+                    public_id: { type: String, default: '' },
+                    url: { type: String, default: '' }
+                },
+            thumb: { 
+                    public_id: { type: String, default: '' },
+                    url: { type: String, default: '' }
+                }
+            }
+        ],
+        // image_path: { 
+        //     public_id: { type: String, default: '' },
+        //     url: { type: String, default: '' }
+        // }, 
         is_product_default_image: { type: Boolean, default: false }, 
         deleted_at: { type: String, default: null }, 
         deleted_by: { type: Schema.Types.ObjectId, ref: 'User' }, 

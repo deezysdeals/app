@@ -43,7 +43,7 @@ export default function Index() {
         search_key: ''
     }); 
     const { products, getProducts } = useProducts(productQuery); 
-    // console.log(products); 
+    console.log(products); 
 
     return (
         <Layout>

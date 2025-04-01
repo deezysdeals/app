@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'; 
-import { Link } from 'react-router-dom'; 
-import { route } from '@/routes'; 
+// import { Link } from 'react-router-dom'; 
+// import { route } from '@/routes'; 
 import { useVoiceToText } from '@/utils/useVoiceToText.jsx'; 
-import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx'; 
+// import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx'; 
+import { useProducts } from '@/hooks/external/useProducts.jsx';
+import { useSearchProducts } from '@/hooks/external/useSearchProducts.jsx';
 import scrollToTop from '@/utils/ScrollToTop.jsx'; 
 import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
 import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
@@ -14,25 +16,46 @@ import Layout from '@/components/protected/Layout.jsx';
 
 
 export default function Index() {
-    const { productsExt, getProductsExt } = useProductsExt(); 
-    console.log(productsExt); 
-
-    // Voice-to-Text Search funtionality
+    const [productsResult, setProductsResult] = useState([]);
     const [searchKey, setSearchKey] = useState(''); 
 
+    const [productQuery, setProductQuery] = useState({
+        page: 1, 
+        limit: 10, 
+        keywords: ''
+    }); 
+
+    const { products, getProducts } = useProducts();
+    console.log(products);
+
+    const { searchProducts, getSearchProducts } = useSearchProducts(productQuery);
+    console.log(searchProducts);
+
+    // useEffect to update productsResult when products or searchProducts change
     useEffect(() => {
-        if (searchKey) {
-            console.log('search for:', searchKey);
+        if (!searchKey?.length) {
+            setProductsResult(products);
+        } else {
+            setProductsResult(searchProducts);
         }
+    }, [products, searchProducts]); 
+
+    /** Voice-to-Text Search funtionality */ 
+
+    useEffect(() => {
+        setProductQuery(prev => ({
+            ...prev,
+            search_key: searchKey,
+        }));
     }, [searchKey]);
 
     const { handleStartListening, 
-            handleStopListening, 
+            // handleStopListening, 
             voiceText, 
             setVoiceText,
             isListening, 
             setIsListening } = useVoiceToText();
-    // End of Voice-to-Text search functionality
+    /** End of Voice-to-Text search functionality */ 
 
     return (
         <Layout>
@@ -69,7 +92,9 @@ export default function Index() {
                                         setSearchKey(voiceText); 
                                         
                                         scrollToTop(); 
-                                        await getProductsExt(1); 
+                                        searchKey?.length>0
+                                            ? await getSearchProducts(1)
+                                            : await getProducts(1);
                                     } }
                                     className="search-icon">
                                         <svg width="16"
@@ -82,34 +107,34 @@ export default function Index() {
                             </div>
                         </div>
                         <span>
-                            {/* { (productsExt?.data?.length > 0) 
+                            { (productsResult?.data?.length > 0) 
                                 && <PaginationMeter 
-                                        current_page={ productsExt?.meta?.current_page } 
-                                        limit={ productsExt?.meta?.limit } 
-                                        total_pages={ productsExt?.meta?.total_pages } 
-                                        total_results={ productsExt?.meta?.total_results } /> }  */}
+                                        current_page={ productsResult?.data?.current_page } 
+                                        limit={ 50 } 
+                                        total_pages={ productsResult?.data?.num_pages } 
+                                        total_results={ productsResult?.data?.num_pages * 50 } /> } 
                         </span>
                     </div>
 
                     <section className="py-4">
                         <ul className="list-unstyled d-flex flex-column gap-5">
-                            { (productsExt?.data?.length > 0) && (productsExt?.data?.map((product, index) => {
+                            { (productsResult?.data?.results?.length > 0) && (productsResult?.data?.results?.map((product, index) => {
                                 return (
                                     <li 
-                                        key={ product?._id } 
+                                        key={ product?.link } 
                                         className="box-shadow-1 border-radius-25 py-3 px-2 cursor-pointer">
                                             <ProductComponent1 
                                                 index={ index + 1 } 
-                                                itemId={ product?._id } 
-                                                productId={ product?._id } 
-                                                asin={ product?.id }
+                                                itemId={ product?.link } 
+                                                productId={ product?.link } 
+                                                asin={ product?.asin }
                                                 imgsSrc={ [product?.image] }
                                                 title={ product?.title } 
                                                 description='' 
                                                 oldPrice='' 
-                                                currentPrice={ product?.price } 
-                                                rating={ product?.rating?.rate } 
-                                                category={ product?.category } />
+                                                currentPrice='' 
+                                                rating='' 
+                                                category='' />
                                     </li>
                                 )
                             })) }
@@ -117,13 +142,15 @@ export default function Index() {
                     </section>
                 </div> 
 
-                { (productsExt?.data?.length > 0) &&
+                { (productsResult?.data?.length > 0) &&
                     <section className="pagination-links py-5 d-flex justify-content-end gap-2 pe-2"> 
                         <span 
                             type="button" 
                             onClick={ async () => { 
                                 scrollToTop(); 
-                                await getProductsExt(1); 
+                                searchKey?.length>0
+                                    ? await getSearchProducts(1)
+                                    : await getProducts(1);
                             } }>
                                 <First /> 
                         </span> 
@@ -131,7 +158,9 @@ export default function Index() {
                             type="button" 
                             onClick={ async () => { 
                                 scrollToTop(); 
-                                await getProductsExt((productsExt?.meta?.current_page >= 1) ? (productsExt?.meta?.current_page - 1) : 1); 
+                                searchKey?.length>0
+                                    ? await getSearchProducts((productsResult?.data?.current_page >= 1) ? (productsResult?.data?.current_page - 1) : 1) 
+                                    : await getProducts((productsResult?.data?.current_page >= 1) ? (productsResult?.data?.current_page - 1) : 1) 
                             } }>
                                 <Previous /> 
                         </span> 
@@ -139,7 +168,9 @@ export default function Index() {
                             type="button" 
                             onClick={ async () => { 
                                 scrollToTop(); 
-                                await getProductsExt((productsExt?.meta?.current_page < productsExt?.meta?.total_pages) ? (productsExt?.meta?.current_page + 1) : productsExt?.meta?.total_pages); 
+                                searchKey?.length>0
+                                    ? await getSearchProducts((productsResult?.data?.current_page < productsResult?.data?.num_pages) ? (productsResult?.data?.current_page + 1) : productsResult?.data?.num_pages)
+                                    : await getProducts((productsResult?.data?.current_page < productsResult?.data?.num_pages) ? (productsResult?.data?.current_page + 1) : productsResult?.data?.num_pages);
                             } }>
                             <Next /> 
                         </span> 
@@ -147,7 +178,9 @@ export default function Index() {
                             type="button" 
                             onClick={ async () => { 
                                 scrollToTop(); 
-                                await getProductsExt(productsExt?.meta?.total_pages); 
+                                searchKey?.length>0
+                                    ? await getSearchProducts(productsResult?.data?.num_pages) 
+                                    : await getProducts(productsResult?.data?.num_pages) 
                             } }>
                                 <Last />
                         </span>

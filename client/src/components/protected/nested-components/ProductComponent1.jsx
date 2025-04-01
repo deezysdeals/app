@@ -116,12 +116,18 @@ export default function ProductComponent1({ itemId,
                         <div className="d-flex justify-content-between align-items-center flex-wrap pb-2 px-3">
                             <span className="fw-semibold">#{ index }</span>
                             <div className="d-flex align-items-center gap-3 flex-wrap"> 
-                                { !((location?.pathname)?.startsWith('/home/brands') || (location?.pathname)?.startsWith('/home/deals')) && 
+                                { (!(location?.pathname)?.startsWith('/home/brands') && !(location?.pathname)?.startsWith('/home/market')) && 
                                     <span 
                                         type="button" 
                                         data-bs-toggle="modal" data-bs-target={ `#productModal${itemId}` }
                                         className="btn btn-sm btn-dark border-radius-35 py-0 fw-semibold"> 
-                                            View { (location?.pathname)?.startsWith('/home/ordered-items') && `Item` } Details
+                                            View { (location?.pathname)?.startsWith('/home/ordered-items') && `Item` }
+                                    </span> }
+                                { (location?.pathname)?.startsWith('/home/market') && 
+                                    <span 
+                                        type="button" 
+                                        className="btn btn-sm btn-dark border-radius-35 py-0 fw-semibold">
+                                            <a href={ `https://www.amazon.com/dp/${asin}` } target="_blank" className="text-white text-decoration-none">View</a>
                                     </span> }
                                 { ((location?.pathname)?.startsWith('/home/products') &&
                                     ((user?.user?.role == 'superadmin') || (user?.user?.role == 'admin'))) &&
@@ -184,7 +190,7 @@ export default function ProductComponent1({ itemId,
                                             { (imgsSrc?.length > 0) && imgsSrc?.map((imgSrc, imgSrcIndex) => {
                                                     return (
                                                         <div key={ imgSrcIndex } className={`carousel-item ${ (imgSrcIndex == 0) && `active` }`}>
-                                                            <img src={ imgSrc } className="d-block object-fit-cover border-radius-35" style={{ width: '215px', height: '215px' }} alt="..." />
+                                                            <img src={ imgSrc?.large ?? imgSrc?.hi_res ?? imgSrc?.thumb ?? imgSrc } className="d-block object-fit-cover border-radius-35" style={{ width: '215px', height: '215px' }} alt="..." />
                                                         </div>
                                                     )
                                                 }) 
@@ -247,17 +253,19 @@ export default function ProductComponent1({ itemId,
                                             bought
                                         </span> 
                                     }
-                                    <span className="card-text">
-                                        <small><s>{ oldPrice && '$'+Number(oldPrice)?.toFixed(2) }</s>{ oldPrice && <span>&nbsp;</span>}</small>
-                                        { (!location.pathname.startsWith('/home/sales')) 
-                                            ?   <span className="fw-semibold">
-                                                    { currentPrice ? '$'+Number(currentPrice)?.toFixed(2) : '$'+0 }
-                                                </span>
-                                                :   <span className="fw-semibold">
-                                                        { sellingPrice ? '$'+Number(sellingPrice)?.toFixed(2) : '$'+0 }
-                                                    </span> 
-                                                }
-                                    </span> 
+                                    { !location.pathname.startsWith('/home/market') && (
+                                        <span className="card-text">
+                                            <small><s>{ oldPrice && '$'+Number(oldPrice)?.toFixed(2) }</s>{ oldPrice && <span>&nbsp;</span>}</small>
+                                            { (!location.pathname.startsWith('/home/sales')) 
+                                                ?   <span className="fw-semibold">
+                                                        { currentPrice ? '$'+Number(currentPrice)?.toFixed(2) : '$'+0 }
+                                                    </span>
+                                                    :   <span className="fw-semibold">
+                                                            { sellingPrice ? '$'+Number(sellingPrice)?.toFixed(2) : '$'+0 }
+                                                        </span> 
+                                                    }
+                                        </span>
+                                    ) }
                                     <div className="d-flex pt-1">
                                         { ((location.pathname.startsWith('/home/ordered-items')) &&
                                             ((user?.user?.role == 'individual') || (user?.user?.role == 'vendor'))) 
@@ -489,7 +497,7 @@ export default function ProductComponent1({ itemId,
                                                         { (imgsSrc?.length > 0) && imgsSrc?.map((imgSrc, imgSrcIndex) => {
                                                                 return (
                                                                     <div key={ imgSrcIndex } className={`carousel-item ${ (imgSrcIndex == 0) && `active` }`}>
-                                                                        <img src={ imgSrc } className="d-block object-fit-cover border-radius-35" style={{ minWidth: '175px', maxWidth: '215px', ninHeight: '175px', maxHeight: '215px' }} alt="..." />
+                                                                        <img src={ imgSrc?.large ?? imgSrc?.hi_res ?? imgSrc?.thumb ?? imgSrc } className="d-block object-fit-cover border-radius-35" style={{ minWidth: '175px', maxWidth: '215px', ninHeight: '175px', maxHeight: '215px' }} alt="..." />
                                                                     </div> 
                                                                 )
                                                             }) 
@@ -534,17 +542,20 @@ export default function ProductComponent1({ itemId,
                                                         bought in the last month
                                                     </span> 
                                                 }
-                                                <span className="card-text">
-                                                    <small><s>{ oldPrice && '$'+Number(oldPrice)?.toFixed(2) }</s>{ oldPrice && <span>&nbsp;</span>}</small>
-                                                    { (!location.pathname.startsWith('/home/sales')) 
-                                                        ?   <span className="fw-semibold">
-                                                                { currentPrice ? '$'+Number(currentPrice)?.toFixed(2) : '$'+0 }
-                                                            </span> 
-                                                            :   <span className="fw-semibold">
-                                                                    { sellingPrice ? '$'+Number(sellingPrice)?.toFixed(2) : '$'+0 }
+                                                { !location.pathname.startsWith('/home/market') && (
+                                                    <span className="card-text">
+                                                        <small><s>{ oldPrice && '$'+Number(oldPrice)?.toFixed(2) }</s>{ oldPrice && <span>&nbsp;</span>}</small>
+                                                        { (!location.pathname.startsWith('/home/sales')) 
+                                                            ?   <span className="fw-semibold">
+                                                                    { currentPrice ? '$'+Number(currentPrice)?.toFixed(2) : '$'+0 }
                                                                 </span> 
-                                                            }
-                                                </span> 
+                                                                :   <span className="fw-semibold">
+                                                                        { sellingPrice ? '$'+Number(sellingPrice)?.toFixed(2) : '$'+0 }
+                                                                    </span> 
+                                                                }
+                                                    </span> 
+                                                ) }
+                                                    
                                                 { (dealValue && dealValueUnit) && 
                                                     <span className="card-text">
                                                         <small>

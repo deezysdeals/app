@@ -62,13 +62,21 @@ export function useProduct(id = null) {
 
     async function addToShop(asin) {
         setLoading(true); 
+        swal.fire({
+            text: 'Please wait a few seconds while we process and add the product to your store.',  
+            color: '#823c03', 
+            width: 325, 
+            position: 'top', 
+            showConfirmButton: false
+        })
 
         return axiosInstance.post(`products/add-to-shop/${asin}`)
             .then(response => {
                 setData(response?.data); 
                 // console.log(response?.data?.success); 
                 swal.fire({
-                    text: `${response?.data?.success}`, 
+                    // text: `${response?.data?.success}`, 
+                    text: `Product add successful`, 
                     color: '#823c03', 
                     width: 325, 
                     position: 'top', 
@@ -78,13 +86,24 @@ export function useProduct(id = null) {
             .catch(error => {
                 setErrors(error?.response); 
                 // console.log(error?.response); 
-                swal.fire({
-                    text: `${error?.response?.status}: An error occured!`, 
-                    color: '#900000', 
-                    width: 325, 
-                    position: 'top', 
-                    showConfirmButton: false
-                });
+                if (error?.response?.status == '409') {
+                    swal.fire({
+                        text: `${error?.response?.status}: Product already in shop`, 
+                        color: '#900000', 
+                        width: 325, 
+                        position: 'top', 
+                        showConfirmButton: false
+                    })
+                } else {
+                    console.log(error?.response);
+                        swal.fire({
+                        text: `${error?.response?.status}: An error occured!`, 
+                        color: '#900000', 
+                        width: 325, 
+                        position: 'top', 
+                        showConfirmButton: false
+                    });
+                }
             })
             .finally(() => setLoading(false)); 
     }

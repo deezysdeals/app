@@ -17,6 +17,7 @@ import {
     PayPalCVVField,
 } from "@paypal/react-paypal-js";
 import Constants from '@/utils/Constants.jsx'; 
+import scrollToTop from '@/utils/ScrollToTop.jsx'; 
 import { useOrder } from '@/hooks/useOrder.jsx'; 
 import Aside from '@/components/public/Aside.jsx'; 
 import Layout from '@/components/public/Layout.jsx'; 
@@ -213,6 +214,7 @@ export default function Pay() {
 
     return ( 
         <Layout> 
+            { scrollToTop() }
             <section className="grid grid-order-reverse pt-3 px-3"> 
 
                 <Aside />
@@ -352,9 +354,10 @@ export default function Pay() {
                                                 <div className="carousel-inner position-relative" style={{ width: '75px', height: '75px' }}>
                                                     <div className="images"> 
                                                         { (item?.img?.length > 0) && ([item?.img]?.map((image, index) => {
+                                                            console.log(item)
                                                             return (
                                                                 <div className={`carousel-item ${(index==0) && `active`}`}>
-                                                                    <img src={ image || item?.img } className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
+                                                                    <img src={  image ?? item?.img ?? item?.img?.[0]?.hi_res ?? item?.img?.[0]?.large } className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
                                                                 </div>
                                                             )
                                                         })) }

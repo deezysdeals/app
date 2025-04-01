@@ -1,8 +1,9 @@
 import { useParams } from 'react-router-dom'; 
+import scrollToTop from '@/utils/ScrollToTop.jsx';
 import { useProductExt } from '@/hooks/external/useFakeStoreProduct.jsx'; 
 import { useProduct } from '@/hooks/useProduct.jsx'; 
 import Layout from '@/components/public/Layout.jsx'; 
-import ProductComponent3 from '../../components/public/nested-components/ProductComponent3';
+import ProductComponent3 from '@/components/public/nested-components/ProductComponent3.jsx';
 
 
 export default function Product() { 
@@ -10,9 +11,9 @@ export default function Product() {
     const source = params?.source || 'shop'; 
 
     const { productExt, getProductExt } = useProductExt(params?.id); 
-    console.log(productExt); 
+    // console.log(productExt); 
     const { product, getProduct } = useProduct(params?.id); 
-    console.log(product); 
+    // console.log(product); 
 
     let productArticle;
     if (source == 'market') {
@@ -25,6 +26,7 @@ export default function Product() {
 
     return (
         <Layout>
+            { scrollToTop() }
 
             <ProductComponent3 productArticle={ productArticle } />
 

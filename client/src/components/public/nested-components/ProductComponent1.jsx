@@ -30,6 +30,7 @@ export default function ProductComponent1({ itemId,
     const source = params?.source ? params?.source : 'shop';
 
     // console.log('cart', cartItems);
+    console.log(imgSrc[0]?.hi_res ?? imgSrc)
 
     return (
         <article className="nav-item" style={{ width: '225px', height: '285px' }}> 
@@ -37,7 +38,10 @@ export default function ProductComponent1({ itemId,
                 className="text-decoration-none">
                     <div className="card border-radius-35 w-100" style={{ height: '100%' }}> 
                         <Link to={ route('products.show', { id: itemId, source: source }) } >
-                            <img src={ imgSrc }
+                            <img src={ imgSrc?.[0]?.hi_res ? imgSrc?.[0]?.hi_res
+                                        : imgSrc?.[0]?.large ? imgSrc?.[0]?.large
+                                        : imgSrc?.[0]?.thumb ? imgSrc?.[0]?.thumb
+                                        : imgSrc }
                                 className="d-block card-img-top object-fit-cover" style={{ borderRadius: '35px 35px 0 0', width: '225px', height: '142.5px' }} alt="..." />
                         </Link>
                         
@@ -295,7 +299,10 @@ export default function ProductComponent1({ itemId,
                                                 type="button" 
                                                 onClick={ () => addToCart(itemId, 
                                                                             asin, 
-                                                                            imgSrc, 
+                                                                            imgSrc?.[0]?.hi_res ? imgSrc?.[0]?.hi_res
+                                                                                : imgSrc?.[0]?.large ? imgSrc?.[0]?.large
+                                                                                : imgSrc?.[0]?.thumb ? imgSrc?.[0]?.thumb
+                                                                                : imgSrc, 
                                                                             title, 
                                                                             description, 
                                                                             oldPrice, 

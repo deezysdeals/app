@@ -166,6 +166,7 @@ export default function Index() {
                                 { (topRatedProductsList?.data?.length > 0) && (topRatedProductsList?.data?.map(product => {
                                     const ratingCalculated = (Number(product?.total_rating_value) / Number(product?.total_rating_count)) || 5; 
                                     // console.log('rating calculated', ratingCalculated);
+                                    console.log(product)
                                     return (
                                         <ProductComponent1 
                                             itemId = { product?.id || product?._id } 

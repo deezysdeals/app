@@ -47,6 +47,7 @@ export default function Products() {
 
     return ( 
         <Layout> 
+            { scrollToTop() }
             { (productsList?.data?.length > 0) && 
                 <div className="px-3 fs-6 d-flex justify-content-end align-items-center">
                     <span>{ productsList?.data?.length } item{ productsList?.data?.length > 0 && 's'}</span>
@@ -67,7 +68,7 @@ export default function Products() {
                                         // key = { product?.id } 
                                         itemId = { product?.id || product?._id } 
                                         asin = { product?.asin || product?.id } 
-                                        imgSrc =  { product?.image || product?.images }
+                                        imgSrc =  { product?.images ?? product?.image }
                                         title = { product?.title } 
                                         description = '' 
                                         oldPrice = { product?.initial_retail_price && product?.initial_retail_price } 

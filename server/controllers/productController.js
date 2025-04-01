@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import axios from 'axios'; 
 import asyncHandler from 'express-async-handler'; 
 import cloudinaryImageUpload from '../config/imageUpload/cloudinary.js';
@@ -747,59 +749,231 @@ const getPurchasedProducts = asyncHandler(async (req, res) => {
 }); 
 
 /**
- * GET ADD PRODUCT TO SHOP FROM EXTERNAL API
+ * GET FROM EXTERNAL API AND ADD PRODUCT TO SHOP
  */
 const addToShop = asyncHandler(async (req, res) => {
+    const { id } = req?.params;
+
+    const foundProduct = await Product.findOne({ asin: id });
+
+    if (!foundProduct) {
+        try {
+            const options = {
+                method: 'GET',
+                url: 'https://parazun-amazon-data.p.rapidapi.com/product/',
+                params: {
+                    asin: id,
+                    region: 'US'
+                },
+                headers: {
+                    'Accept': 'application/json', 
+                    'Content-Type': 'application/json', 
+                    'x-rapidapi-ua': 'RapidAPI-Playground', 
+                    'x-rapidapi-key': process.env.VITE_X_RAPID_API_KEY,
+                    'x-rapidapi-host': 'parazun-amazon-data.p.rapidapi.com'
+                }
+            };
+
+            async function fetchData() {
+                try {
+                    const response = await axios.request(options);
+                    console.log(response?.data);
+
+                    /** Create new brand, if it does not exist */
+                    const foundBrand = await Brand.findOne({ name: response?.data?.brand });
+
+                    let newBrand;
+
+                    if (!foundBrand) {
+                        newBrand = await Brand.create({
+                            user: req?.user_id,
+                            name: response?.data?.brand,
+                            slug: slugIt(response?.data?.brand + '-' + new Date().toISOString() ),
+                        });
+                    };
+                    // console.log(newBrand);
+
+                    /** Create new product, since it does not exist */ 
+                    const newProduct = await Product.create({
+                        asin: id,
+                        user: req?.user_id,
+                        brand: foundBrand?._id ?? newBrand?._id,
+                        link: response?.data?.link,
+                        title: response?.data?.title,
+                        slug: slugIt(response?.data?.title + '-' + new Date().toISOString() ),
+                        initial_retail_price: response?.data?.price?.list_price,
+                        retail_price: response?.data?.price?.amount ?? response?.data?.price?.list_price, 
+                        images: response?.data?.images
+                    });
+
+                    /** Create new product Image (order item image) */
+                    if (response?.data?.images?.length > 0) {
+                        const createImagePromises = response.data.images.map(async (image) => {
+                            return await ProductImage.create({
+                                user: req?.user_id,
+                                product: newProduct._id,
+                                image_path: {
+                                    hi_res: {
+                                        url: image?.hi_res
+                                    },
+                                    large: {
+                                        url: image?.large
+                                    },
+                                    thumb: {
+                                        url: image?.thumb
+                                    }
+                                }
+                            });
+                        });
+                        
+                        // Wait for all the image creations to complete
+                        await Promise.all(createImagePromises);
+                    }
+
+                    /** Create new product description */
+                    if (response?.data?.description?.length > 0) {
+                        const createDescriptionPromises = response.data.description.map(async (descriptionUnit, index) => {
+                            return await ProductDescription.create({
+                                user: req?.user_id,
+                                product: newProduct._id,
+                                content: descriptionUnit,
+                                description_index: index
+                            });
+                        });
+                        
+                        // Wait for all the description creations to complete
+                        await Promise.all(createDescriptionPromises);
+                    }
+
+                    /** Create new product features */
+                    if (response?.data?.features?.length > 0) {
+                        const createFeaturePromises = response.data.features.map(async (feature, index) => {
+                            return await ProductFeature.create({
+                                user: req?.user_id,
+                                product: newProduct._id,
+                                content: feature,
+                                feature_index: index
+                            });
+                        });
+                        
+                        // Wait for all the features creations to complete
+                        await Promise.all(createFeaturePromises);
+                    }
+
+                    /** Create new product info */
+                    if (response?.data?.info?.length > 0) {
+                        const createFeaturePromises = response.data.info.map(async (infoUnit, index) => {
+                            return await ProductFeature.create({
+                                user: req?.user_id,
+                                product: newProduct._id,
+                                content: infoUnit,
+                                info_index: index
+                            });
+                        });
+                        
+                        // Wait for all the info creations to complete
+                        await Promise.all(createFeaturePromises);
+                    }
+
+                    const newProductInfo = await ProductInfo.create({
+                        user: req?.user_id,
+                        product: newProduct?._id, 
+                        dynamic_data: new Map(Object.entries(response?.data?.info))
+                    });
+
+                    /** Create new product category since it does not exist */
+                    if (response?.data?.categories?.length > 0) {
+                        const categoryPromises = response.data.categories.map(async (category) => {
+                            const foundCategory = await Category.findOne({ name: category?.name });
+
+                            if (!foundCategory) {
+                                let newCategory = await Category.create({
+                                    user: req?.user_id,
+                                    name: category?.name,
+                                    link: category?.link,
+                                    node: category?.node
+                                });
+
+                                await CategoryProduct.create({
+                                    user: req?.user_id,
+                                    product: newProduct?._id, 
+                                    category: newCategory?._id
+                                });
+                            }
+                        });
+
+                        // Wait for all the category-related promises to complete
+                        await Promise.all(categoryPromises);
+                    }
+
+                    res.status(200).json({ success: `Product ${newProduct?._id} add successful.` });
+
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({ message: 'Failed to add product to shop', error: `${error}` });
+                }
+            }
+
+            fetchData();
+        } catch (error) {
+            res.status(500).json({ message: 'Failed to add product to shop', error: `${error}` });
+        }
+    } else {
+        res.status(409).json({ message: 'Product already in shop' });
+    }
+});
+
+const addToShop2 = asyncHandler(async (req, res) => {
     const { id } = req?.params; 
 
     async function fetchAndAddProduct() {
         try {
-            const response = await axios.get(`https://fakestoreapi.com/products/${id}`); 
+            // const response = await axios.get(`https://fakestoreapi.com/products/${id}`); 
 
-            /** Create new product, if does not exist */ 
-            const productFilter = { title: response?.data?.title }; 
-            const productUpdate = { user: req?.user_id, 
-                                    title: response?.data?.title, 
-                                    retail_price: response?.data?.price, 
-                                    images: [response?.data?.image] }; 
+            // /** Create new product, if does not exist */ 
+            // const productFilter = { title: response?.data?.title }; 
+            // const productUpdate = { user: req?.user_id, 
+            //                         title: response?.data?.title, 
+            //                         retail_price: response?.data?.price, 
+            //                         images: [response?.data?.image] }; 
 
-            const upsertProduct = await Product.findOneAndUpdate(productFilter, productUpdate, {
-                new: true,
-                upsert: true 
-            }); 
-            console.log(upsertProduct); 
+            // const upsertProduct = await Product.findOneAndUpdate(productFilter, productUpdate, {
+            //     new: true,
+            //     upsert: true 
+            // }); 
+            // console.log(upsertProduct); 
 
-            /** Create new product Image (order item image), if does not exist */ 
-            const productImageFilter = { 'image_path.url': response?.data?.image }; 
-            const productImageUpdate = { $set: { product: upsertProduct?._id,
-                                                'image_path.$.url': response?.data?.image } }; 
+            // /** Create new product Image (order item image), if does not exist */ 
+            // const productImageFilter = { 'image_path.url': response?.data?.image }; 
+            // const productImageUpdate = { $set: { product: upsertProduct?._id,
+            //                                     'image_path.$.url': response?.data?.image } }; 
 
-            const upsertProductImage = await ProductImage.findOneAndUpdate(productImageFilter, productImageUpdate, {
-                new: true,
-                upsert: true 
-            }); 
-            console.log(upsertProductImage); 
+            // const upsertProductImage = await ProductImage.findOneAndUpdate(productImageFilter, productImageUpdate, {
+            //     new: true,
+            //     upsert: true 
+            // }); 
+            // console.log(upsertProductImage); 
 
-            /** Create new category, if does not exist */ 
-            const categoryFilter = { name: response?.data?.category }; 
-            const categoryUpdate = { user: req?.user_id }; 
+            // /** Create new category, if does not exist */ 
+            // const categoryFilter = { name: response?.data?.category }; 
+            // const categoryUpdate = { user: req?.user_id }; 
 
-            const upsertCategory = await Category.findOneAndUpdate(categoryFilter, categoryUpdate, {
-                new: true, 
-                upsert: true 
-            }); 
-            console.log(upsertCategory); 
+            // const upsertCategory = await Category.findOneAndUpdate(categoryFilter, categoryUpdate, {
+            //     new: true, 
+            //     upsert: true 
+            // }); 
+            // console.log(upsertCategory); 
 
-            /** Add the category product relationship if it does not exist */
-            const categoryProductFilter = { category: upsertCategory?._id, 
-                                            product: upsertProduct?._id }; 
-            const categoryProductUpdate = { user: req?.user_id }; 
+            // /** Add the category product relationship if it does not exist */
+            // const categoryProductFilter = { category: upsertCategory?._id, 
+            //                                 product: upsertProduct?._id }; 
+            // const categoryProductUpdate = { user: req?.user_id }; 
 
-            const upsertCategoryProduct = await CategoryProduct.findOneAndUpdate(categoryProductFilter, categoryProductUpdate, {
-                new: true, upsert: true
-            }); 
+            // const upsertCategoryProduct = await CategoryProduct.findOneAndUpdate(categoryProductFilter, categoryProductUpdate, {
+            //     new: true, upsert: true
+            // }); 
 
-            res.status(200).json({ success: `Product ${id} add successful.` });
+            // res.status(200).json({ success: `Product ${id} add successful.` });
 
         } catch (error)  {
             res.status(500).json({ message: 'Failed to add product to shop' });
