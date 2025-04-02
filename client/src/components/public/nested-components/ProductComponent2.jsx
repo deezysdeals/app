@@ -60,7 +60,9 @@ export default function ProductComponent2({ source,
                                             console.log(image)
                                             return (
                                                 <div className={`carousel-item ${(index==0) && `active`}`}>
-                                                    <img src={ image?.hi_res ?? image?.large ?? image } className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
+                                                    <img src={ image?.hi_res ? image?.hi_res
+                                                                : image?.large ? image?.large
+                                                                : image } className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
                                                 </div>
                                             )
                                         }))} 
@@ -188,7 +190,9 @@ export default function ProductComponent2({ source,
                                         onClick={ () => {addToCart(itemId, 
                                                                     asin, 
                                                                     // imgSrc, 
-                                                                    imgSrc?.[0]?.hi_res ?? imgSrc?.[0]?.large ?? imgSrc?.[0]?.thumb,
+                                                                    imgSrc?.[0]?.hi_res ? imgSrc?.[0]?.hi_res
+                                                                        : imgSrc?.[0]?.large ? imgSrc?.[0]?.large
+                                                                        : imgSrc?.[0]?.thumb,
                                                                     title, 
                                                                     description, 
                                                                     oldPrice, 

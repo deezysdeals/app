@@ -25,7 +25,7 @@ const getProducts = asyncHandler(async (req, res) => {
     const limit = parseInt(req?.query?.limit) || 10; 
     const skip = (current_page - 1) * limit; 
     const search_key = req?.query?.search_key; 
-    console.log('search_key', search_key);
+    // console.log('search_key', search_key);
 
     let products, total;
 

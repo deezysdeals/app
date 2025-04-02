@@ -6,36 +6,93 @@ import Product from '../../../models/Product.js';
 /**
  * GET ALL PRODUCTS
  */
-const getProductsPublicVersion = asyncHandler(async (req, res) => { 
+const getProductsPublicVersion = asyncHandler(async (req, res) => {
     const current_page = parseInt(req?.query?.page) || 1;
-    const limit = parseInt(req?.query?.limit) || 10; 
-    const skip = (current_page - 1) * limit; 
+    const limit = parseInt(req?.query?.limit) || 10;
+    const skip = (current_page - 1) * limit;
+    const { search_key, price_range_start, price_range_end } = req?.query;
 
-	const products = await Product.find({ deleted_at: null })
-                                // .sort('-created_at')
+    let products, total;
+
+    if (!search_key) {
+        let pipeline = [
+            { $match: { deleted_at: null } }
+        ];
+
+        if (search_key) {
+            pipeline.push({
+                $match: { title: { $regex: search_key, $options: 'i' } }
+            });
+        }
+
+        if ((price_range_start != 0) || (price_range_end != 0)) {
+            const priceFilter = {};
+            if (price_range_start || price_range_start == 0) {
+                priceFilter.$gte = parseFloat(price_range_start);
+            }
+            if (price_range_end || price_range_end == 0) {
+                priceFilter.$lte = parseFloat(price_range_end);
+            }
+            pipeline.push({ $match: { retail_price: priceFilter } });
+        }
+
+        pipeline.push({
+            $lookup: {
+                from: 'brands',
+                localField: 'brand',
+                foreignField: '_id',
+                as: 'brand'
+            }
+        });
+
+        if (search_key) {
+            pipeline.push({
+                $unwind: '$brand'
+            });
+            pipeline.push({
+                $match: { 'brand.name': { $regex: search_key, $options: 'i' } }
+            });
+        }
+
+        pipeline.push({
+            $addFields: {
+                retail_price: { $toDouble: "$retail_price" }
+            }
+        });
+        pipeline.push({ $sort: { updated_at: -1 } });
+        pipeline.push({ $skip: skip });
+        pipeline.push({ $limit: limit });
+
+        try {
+            products = await Product.aggregate(pipeline);
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Server error' });
+        }
+    } else {
+        products = await Product.find({ deleted_at: null })
                                 .sort('-updated_at')
                                 .skip(skip)
                                 .limit(limit)
                                 .populate({
-                                    path: 'deal', 
-                                })
-                                .populate({
                                     path: 'brand', 
                                 })
                                 .lean(); 
-    if (!products?.length) return res.status(404).json({ message: "No products found!" }); 
+    }
 
-    const total = await Product.countDocuments({ deleted_at: null });
+    if (!products?.length) return res.status(404).json({ message: 'No products found!' });
 
-	// res.json({ data: products }); 
-    res.json({ 
+    total = await Product.countDocuments({ deleted_at: null });
+
+    res.json({
                 meta: {
-                    current_page, 
-                    limit, 
-                    total_pages: Math.ceil(total / limit), 
+                    current_page,
+                    limit,
+                    total_pages: Math.ceil(total / limit),
                     total_results: total
-                }, 
-                data: products 
+                },
+                data: products
             });
 });
 

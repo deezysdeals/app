@@ -1,11 +1,37 @@
-import { Link } from 'react-router-dom'; 
-import { route } from '@/routes'; 
+import { useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom'; 
+import { route } from '@/routes';
+import { useVoiceToText } from '@/utils/useVoiceToText.jsx'; 
 import { useMiniTrendings } from '@/hooks/public/useMiniTrendings.jsx'; 
 
 
-export default function Aside() { 
-    const { miniTrendings, getMiniTrendings } = useMiniTrendings(); 
-    console.log(miniTrendings); 
+export default function Aside() {
+    const navigate = useNavigate();
+    const params = useParams();
+    const [searchKey, setSearchKey] = useState(params?.search_key ?? ''); 
+    const [priceRangeStart, setPriceRangeStart] = useState(0); 
+    const [priceRangeEnd, setPriceRangeEnd] = useState(0); 
+
+    const handleSearchProducts = e => {
+        e.preventDefault();
+
+        navigate(route('products.search.index', { source: 'shop', 
+                                                search_key: voiceText?.trim() ??searchKey?.trim(), 
+                                                price_range_start: priceRangeStart, 
+                                                price_range_end: priceRangeEnd
+        }));
+        window.location.reload();
+    };
+
+    const { handleStartListening, 
+            // handleStopListening, 
+            voiceText, 
+            setVoiceText,
+            isListening, 
+            setIsListening } = useVoiceToText();
+
+    const { miniTrendings, getMiniTrendings } = useMiniTrendings();
+    console.log(miniTrendings);
 
     return (
         <aside className="aside card border-radius-35 mt-4 mb-4"> 
@@ -14,38 +40,74 @@ export default function Aside() {
                         <h3 className="fw-bold border-bottom pb-2 fs-5">Advanced Search</h3>
                     </div>
                     <div className="d-flex flex-column row-gap-2 pt-2">
-                        <form>
+                        <form onSubmit={ handleSearchProducts }>
+                        {/* <form> */}
                             <div className="search d-flex flex-column gap-3">
                                 <div className="search-container border border-dark" style={{ maxWidth: '375px' }}>
-                                    <span className="voice-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-mic-fill"
-                                            viewBox="0 0 16 16">
-                                            <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"></path>
-                                            <path
-                                                d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5">
-                                            </path>
-                                        </svg>
-                                    </span>
-                                    <input type="text" placeholder="Keywords ..." />
+                                    { !isListening && (
+                                        <span
+                                            type="button" 
+                                            onClick={ handleStartListening }
+                                            className="voice-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-mic-fill"
+                                                    viewBox="0 0 16 16">
+                                                    <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"></path>
+                                                    <path
+                                                        d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5">
+                                                    </path>
+                                                </svg>
+                                        </span>
+                                    ) }
+                                    <input 
+                                        type="text" 
+                                        value={ voiceText }
+                                        id="search_key"
+                                        name="search_key"
+                                        onChange={ (e) => {
+                                            setVoiceText(e.target.value);
+                                            setSearchKey(e.target.value);
+                                        } }
+                                        placeholder="Keywords ..." 
+                                        className="" />
                                 </div>
                                 <div className="form border border-dark" style={{ maxWidth: '300px' }}>
                                     <label htmlFor="" className="label" id="price-range">Price range:</label>
                                     <div className="d-flex w-100 justify-content-around">
-                                        <input type="number" data-target="price-range" placeholder="e.g. 0" className="" /> <span className="fw-bold">|</span>
-                                        <input type="number" data-target="price-range" placeholder="e.g. 100" />
+                                        <input 
+                                            type="number" 
+                                            id="price_range_start"
+                                            name="price_range_start"
+                                            data-target="price_range_start"
+                                            onChange={ e => setPriceRangeStart(e.target.value) }
+                                            className=""
+                                            placeholder="e.g. 0" />
+                                        <span className="fw-bold">|</span>
+                                        <input 
+                                            type="number"
+                                            id="price_range_end"
+                                            name="price_range_end"
+                                            data-target="price_range_end"
+                                            onChange={ e => setPriceRangeEnd(e.target.value) }
+                                            className=""
+                                            placeholder="e.g. 100" />
                                     </div> 
                                 </div>
                             </div>
 
                             <div className="pt-3 d-flex justify-content-end">
-                                <button type="submit" className="btn btn-dark px-4 border-radius-35">
-                                    <span>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M21 21L17.5001 17.5M20 11.5C20 16.1944 16.1944 20 11.5 20C6.80558 20 3 16.1944 3 11.5C3 6.80558 6.80558 3 11.5 3C16.1944 3 20 6.80558 20 11.5Z"
-                                                stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
-                                        </svg>
-                                    </span>
+                                <button 
+                                    type="submit"
+                                    // onClick={ () => {
+                                    //     handleSearchProducts();
+                                    // } }
+                                    className="btn btn-dark px-4 border-radius-35">
+                                        <span>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M21 21L17.5001 17.5M20 11.5C20 16.1944 16.1944 20 11.5 20C6.80558 20 3 16.1944 3 11.5C3 6.80558 6.80558 3 11.5 3C16.1944 3 20 6.80558 20 11.5Z"
+                                                    stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                                            </svg>
+                                        </span>
                                 </button>
                             </div>
                         </form>

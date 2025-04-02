@@ -24,13 +24,13 @@ export default function ProductComponent1({ itemId,
     const { favorites, getFavorites } = useFavorites(favoriteQuery); 
     const { createFavorite, getFavorite, deleteFavorite } = useFavorite(); 
 
-    console.log(favorites); 
+    // console.log(favorites); 
 
     const params = useParams(); 
     const source = params?.source ? params?.source : 'shop';
 
     // console.log('cart', cartItems);
-    console.log(imgSrc[0]?.hi_res ?? imgSrc)
+    // console.log(imgSrc?.[0]?.hi_res ?? imgSrc)
 
     return (
         <article className="nav-item" style={{ width: '225px', height: '285px' }}> 

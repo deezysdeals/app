@@ -140,6 +140,7 @@ function App() {
               <Route path={ route('pay') } element={ <Pay /> } /> 
               <Route path={ route('paid') } element={ <Paid /> } /> 
               <Route path={ route('products.show') } element={ <Product /> } /> 
+              <Route path={ route('products.search.index') } element={ <Products /> } /> 
               <Route path={ route('products.index') } element={ <Products /> } /> 
               <Route path={ route('trending') } element={ <Trending /> } /> 
 

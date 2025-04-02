@@ -18,7 +18,9 @@ export function useProducts(productQuery) {
 
     async function getProducts(productQuery, { signal } = {}) {
         // return axiosInstance.get(`products?page=${page}&limit=${limit}`, { signal }) 
-        return axios.get(`${ Constants?.serverURL }/api/v1/products/quick-version?page=${productQuery?.page}&limit=${productQuery?.limit}&search=${productQuery?.search}`, { signal })
+        setProducts([]);
+        
+        return axios.get(`${ Constants?.serverURL }/api/v1/products/quick-version?page=${productQuery?.page}&limit=${productQuery?.limit}&search_key=${productQuery?.search_key}&price_range_start=${productQuery?.price_range_start}&price_range_end=${productQuery?.price_range_end}`, { signal })
             .then(response => setProducts(response?.data))
             .catch(error => console.log(error));
     } 

@@ -79,36 +79,36 @@ export default function Index() {
                                             </path>
                                         </svg>
                                     </span> }
-                                <input 
-                                    type="text" 
-                                    value={ voiceText } 
-                                    onChange={ (e) => setVoiceText(e.target.value) }
-                                    placeholder="Search product ..." 
-                                    className="" />
+                                    <input 
+                                        type="text" 
+                                        value={ voiceText } 
+                                        onChange={ (e) => setVoiceText(e.target.value) }
+                                        placeholder="Search product ..." 
+                                        className="" />
 
-                                <span 
-                                    type="button" 
-                                    onClick={ async () => {
-                                        setSearchKey(voiceText); 
-                                        scrollToTop(); 
-                                        // await getProducts(1); 
-                                        let firstPage = 1
-                                        setProductQuery(prevState => ({
-                                            ...prevState, 
-                                            page: firstPage, 
-                                            search_key: searchKey
-                                        })); 
-                                        await getProducts(productQuery); 
-                                        setIsListening(false); 
-                                    } }
-                                    className="search-icon">
-                                        <svg width="16"
-                                            height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M21 21L17.5001 17.5M20 11.5C20 16.1944 16.1944 20 11.5 20C6.80558 20 3 16.1944 3 11.5C3 6.80558 6.80558 3 11.5 3C16.1944 3 20 6.80558 20 11.5Z"
-                                                stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
-                                        </svg>
-                                </span>
+                                    <span 
+                                        type="button" 
+                                        onClick={ async () => {
+                                            setSearchKey(voiceText); 
+                                            scrollToTop(); 
+                                            // await getProducts(1); 
+                                            let firstPage = 1
+                                            setProductQuery(prevState => ({
+                                                ...prevState, 
+                                                page: firstPage, 
+                                                search_key: searchKey
+                                            })); 
+                                            await getProducts(productQuery); 
+                                            setIsListening(false); 
+                                        } }
+                                        className="search-icon">
+                                            <svg width="16"
+                                                height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M21 21L17.5001 17.5M20 11.5C20 16.1944 16.1944 20 11.5 20C6.80558 20 3 16.1944 3 11.5C3 6.80558 6.80558 3 11.5 3C16.1944 3 20 6.80558 20 11.5Z"
+                                                    stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                                            </svg>
+                                    </span>
                             </div>
                         </div>
                         <div>

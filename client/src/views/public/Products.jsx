@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx'; 
 import { useProducts } from '@/hooks/public/useProducts.jsx'; 
+// import { useProducts } from '@/hooks/useProducts.jsx'; 
 import scrollToTop from '@/utils/ScrollToTop.jsx'; 
 import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
 import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
@@ -18,15 +19,39 @@ export default function Products() {
     const params = useParams(); 
     const source = params?.source || 'shop'; 
 
+    const [pageToVisit, setPageToVisit] = useState();
+    console.log(params?.search_key);
+    console.log(params?.price_range_start);
+    console.log(params?.price_range_end);
+
     const [productQuery, setProductQuery] = useState({
         page: 1, 
         limit: 100, 
+        search_key: params?.search_key,
+        price_range_start: params?.price_range_start,
+        price_range_end: params?.price_range_end
     }); 
 
-    const { productsExt, getProductsExt } = useProductsExt(); 
-    console.log(productsExt); 
+    // const { productsExt, getProductsExt } = useProductsExt(); 
+    // console.log(productsExt); 
     const { products, getProducts } = useProducts(productQuery); 
     console.log(products); 
+
+    // window.onload = () => {
+    //     setTimeout(async () => {
+    //         const getProductsOnPageLoad = async () => {
+    //             await getProducts(productQuery);
+    //         };
+    //         getProductsOnPageLoad();
+    //     }, 2000); // 2000ms = 2 seconds
+    // };
+
+    useEffect(() => {
+        setProductQuery(prev => ({
+            ...prev,
+            page: pageToVisit
+        }));
+    }, [pageToVisit]);
 
     let productsList;
 
@@ -48,11 +73,11 @@ export default function Products() {
     return ( 
         <Layout> 
             { scrollToTop() }
-            { (productsList?.data?.length > 0) && 
+            {/* { (productsList?.data?.length > 0) && 
                 <div className="px-3 fs-6 d-flex justify-content-end align-items-center">
                     <span>{ productsList?.data?.length } item{ productsList?.data?.length > 0 && 's'}</span>
                 </div> 
-            }
+            } */}
 
             <section className="grid grid-order-reverse pt-3 px-3"> 
 
@@ -89,12 +114,12 @@ export default function Products() {
                                 type="button" 
                                 onClick={ async () => { 
                                     scrollToTop(); 
-                                    // await getProducts((products?.meta?.current_page >= 1) ? (products?.meta?.current_page - 1) : 1); 
-                                    let previousPage = ((products?.meta?.current_page >= 1) ? (products?.meta?.current_page - 1) : 1)
+                                    // let previousPage = ((products?.meta?.current_page >= 1) ? (products?.meta?.current_page - 1) : 1)
+                                    setPageToVisit((products?.meta?.current_page >= 1) ? (products?.meta?.current_page - 1) : 1)
                                     setProductQuery(prevState => ({
                                         ...prevState, 
-                                        // role: productQuery?.role, 
-                                        page: previousPage
+                                        // page: previousPage
+                                        page: pageToVisit
                                     })); 
                                     await getProducts(productQuery); 
                                 } }>
@@ -104,12 +129,12 @@ export default function Products() {
                                 type="button" 
                                 onClick={ async () => { 
                                     scrollToTop(); 
-                                    // await getProducts((products?.meta?.current_page < products?.meta?.total_pages) ? (products?.meta?.current_page + 1) : products?.meta?.total_pages); 
-                                    let nextPage = ((products?.meta?.current_page < products?.meta?.total_pages) ? (products?.meta?.current_page + 1) : products?.meta?.total_pages)
+                                    // let nextPage = ((products?.meta?.current_page < products?.meta?.total_pages) ? (products?.meta?.current_page + 1) : products?.meta?.total_pages);
+                                    setPageToVisit((products?.meta?.current_page < products?.meta?.total_pages) ? (products?.meta?.current_page + 1) : products?.meta?.total_pages);
                                     setProductQuery(prevState => ({
-                                        ...prevState, 
-                                        // role: productQuery?.role, 
-                                        page: nextPage
+                                        ...prevState,
+                                        // page: nextPage,
+                                        page: pageToVisit,
                                     })); 
                                     await getProducts(productQuery); 
                                 } }>

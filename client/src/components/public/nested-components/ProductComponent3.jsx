@@ -258,7 +258,7 @@ export default function ProductComponent3({ productArticle }) {
                                         Array.from(productArticle?.data?.info?.[0]?.dynamic_data.entries()).map(([key, value], index) => (
                                             <tr key={index}>
                                                 <th scope="row">{ (key)?.replace(/_/g, ' ')?.toUpperCase() }</th>
-                                                <td colSpan="2">{ value }</td>
+                                                <td colSpan="2">{ (key=='date_first_available') ? dayjs(value)?.format('D MMM YYYY') : value }</td>
                                             </tr>
                                         ))
                                     ) : (

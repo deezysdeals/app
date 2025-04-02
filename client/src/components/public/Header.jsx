@@ -1,14 +1,38 @@
 import { useContext, useState } from 'react'; 
 import AuthContext from '@/context/AuthContext.jsx'; 
-import { Link, useLocation } from 'react-router-dom'; 
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'; 
 import { route } from '@/routes'; 
+import { useVoiceToText } from '@/utils/useVoiceToText.jsx'; 
 import NavBarUserOptions from './nested-components/NavBarUserOptions'; 
 
 
 export default function Header() { 
     const location = useLocation(); 
+    const navigate = useNavigate();
+    const params = useParams();
+    const [searchKey, setSearchKey] = useState(params?.search_key ?? ''); 
+    const [priceRangeStart, setPriceRangeStart] = useState(0); 
+    const [priceRangeEnd, setPriceRangeEnd] = useState(0); 
     const { user, signOut } = useContext(AuthContext); 
     const [navToggle, setNavToggle] = useState(true); 
+
+    const handleSearchProducts = e => {
+        e.preventDefault();
+
+        navigate(route('products.search.index', { source: 'shop', 
+                                                search_key: voiceText?.trim() ??searchKey?.trim(),
+                                                price_range_start: priceRangeStart, 
+                                                price_range_end: priceRangeEnd
+        }));
+        window.location.reload();
+    };
+
+    const { handleStartListening, 
+            // handleStopListening, 
+            voiceText, 
+            setVoiceText,
+            isListening, 
+            setIsListening } = useVoiceToText();
     
     return (
         <header className="d-flex flex-column container-fluid z-3">
@@ -150,28 +174,47 @@ export default function Header() {
             </section> 
 
             <section className="end-header pt-3">
-                <div className="search">
-                    <div className="search-container border border-dark" style={{ maxWidth: '375px' }}>
-                        <span className="voice-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-mic-fill"
-                                viewBox="0 0 16 16">
-                                <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"></path>
-                                <path
-                                    d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5">
-                                </path>
-                            </svg>
-                        </span>
-                        <input type="text" placeholder="Search ..." className="" />
-                        <span className="search-icon">
-                            <svg width="16"
-                                height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M21 21L17.5001 17.5M20 11.5C20 16.1944 16.1944 20 11.5 20C6.80558 20 3 16.1944 3 11.5C3 6.80558 6.80558 3 11.5 3C16.1944 3 20 6.80558 20 11.5Z"
-                                    stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
-                            </svg>
-                        </span>
+                <form onSubmit={ handleSearchProducts }>
+                    <div className="search">
+                        <div className="search-container border border-dark" style={{ maxWidth: '375px' }}>
+                            { !isListening && (
+                                <span
+                                    type="button" 
+                                    onClick={ handleStartListening }
+                                    className="voice-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-mic-fill"
+                                            viewBox="0 0 16 16">
+                                            <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"></path>
+                                            <path
+                                                d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5">
+                                            </path>
+                                        </svg>
+                                </span>
+                            ) }
+                            <input 
+                                type="text" 
+                                value={ voiceText }
+                                id="search_key"
+                                name="search_key"
+                                onChange={ (e) => {
+                                    setVoiceText(e.target.value);
+                                    setSearchKey(e.target.value);
+                                } }
+                                placeholder="Search ..." 
+                                className="" />
+                            <button 
+                                type="submit"
+                                className="search-icon border-0 bg-transparent">
+                                <svg width="16"
+                                    height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M21 21L17.5001 17.5M20 11.5C20 16.1944 16.1944 20 11.5 20C6.80558 20 3 16.1944 3 11.5C3 6.80558 6.80558 3 11.5 3C16.1944 3 20 6.80558 20 11.5Z"
+                                        stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </form>
             </section>
         </header> 
     )

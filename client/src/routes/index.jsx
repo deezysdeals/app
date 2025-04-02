@@ -112,6 +112,8 @@ const routeNames = {
     'order-placed': '/order-placed', 
 
     'products.show': '/products/:source/:id/show', 
+    'products.index': '/products/:source/:search_key/:price_range_start/:price_range_end', 
+    'products.search.index': '/products/:source/:search_key/:price_range_start/:price_range_end', 
     'products.index': '/products/:source', 
 
     'trending': '/trending', 
