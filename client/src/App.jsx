@@ -54,6 +54,7 @@ import ProtectedFavoriteShow from '@/views/protected/favorites/Show.jsx';
 import ProtectedFavoritesIndex from '@/views/protected/favorites/Index.jsx'; 
 
 import ProtectedMarketShow from '@/views/protected/market/Show.jsx'; 
+import ProtectedMarketSearch from '@/views/protected/market/Search.jsx'; 
 import ProtectedMarketIndex from '@/views/protected/market/Index.jsx'; 
 
 import ProtectedNotificationsIndex from '@/views/protected/notifications/Index.jsx'; 
@@ -176,6 +177,7 @@ function App() {
                 <Route path={ route('home.invoices.index') } element={ <ProtectedPaymentsIndex /> } /> 
 
                 <Route path={ route('home.market.show') } element={ <ProtectedMarketShow /> } />
+                <Route path={ route('home.market.search.index') } element={ <ProtectedMarketSearch /> } /> 
                 <Route path={ route('home.market.index') } element={ <ProtectedMarketIndex /> } /> 
 
                 <Route path={ route('home.notifications.index') } element={ <ProtectedNotificationsIndex /> } /> 

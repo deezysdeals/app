@@ -19,11 +19,16 @@ export default function Header() {
     const handleSearchProducts = e => {
         e.preventDefault();
 
-        navigate(route('products.search.index', { source: 'shop', 
-                                                search_key: voiceText?.trim() ??searchKey?.trim(),
-                                                price_range_start: priceRangeStart, 
-                                                price_range_end: priceRangeEnd
-        }));
+        if (!searchKey || searchKey == '') {
+            navigate(route('products.index', { source: 'shop' }))
+        } else {
+            navigate(route('products.search.index', { source: 'shop', 
+                                                    search_key: voiceText?.trim() ?? searchKey?.trim(), 
+                                                    price_range_start: priceRangeStart, 
+                                                    price_range_end: priceRangeEnd
+            }));
+        };
+
         window.location.reload();
     };
 
@@ -100,9 +105,9 @@ export default function Header() {
                             </Link>
                         </li>
                         <li className="fw-bold">
-                            <Link to={ route('products.index', { source: 'shop' }) } className="text-decoration-none">
+                            <a href={ route('products.index', { source: 'shop' }) } className="text-decoration-none">
                                 Products
-                            </Link>
+                            </a>
                         </li>
                         <li className="fw-bold">
                             <Link to={ route('categories.index', { source: 'shop' }) } className="text-decoration-none">

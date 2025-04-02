@@ -57,7 +57,7 @@ export default function ProductComponent2({ source,
                                 <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>
                                     <div className="images">
                                         { (imgSrc?.length > 0) && (imgSrc?.map((image, index) => {
-                                            console.log(image)
+                                            // console.log(image)
                                             return (
                                                 <div className={`carousel-item ${(index==0) && `active`}`}>
                                                     <img src={ image?.hi_res ? image?.hi_res

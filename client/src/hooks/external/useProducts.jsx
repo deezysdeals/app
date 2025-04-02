@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import useAxiosAmazonParazun from '@/utils/useAxiosAmazonParazun.jsx'; 
 
 
-export function useProducts() {
+export function useProducts(productQuery) {
     const [errors, setErrors] = useState({}); 
     const [loading, setLoading] = useState(false); 
     const axiosInstanceAmazonParazun = useAxiosAmazonParazun();
@@ -10,15 +10,17 @@ export function useProducts() {
 
     useEffect(() => {
         const controller = new AbortController(); 
-        getProducts({ signal: controller.signal }); 
+        getProducts(productQuery, { signal: controller.signal }); 
         return () => { controller.abort() }; 
-    }, []); 
+    }, [productQuery]); 
 
     async function getProducts({ signal } = {}) {
         setLoading(true);
+        // setProducts([]);
+        console.log(productQuery?.page);
 
         // return axiosInstanceAmazonParazun.get(`product-details/?asin=B00FLYWNYQ&country=${ country }`, { signal })
-        return axiosInstanceAmazonParazun.get(`deals/`, { signal })
+        return axiosInstanceAmazonParazun.get(`deals/?page=${productQuery?.page}`, { signal })
             .then(response => {
                 console.log(response);
                 setProducts(response);

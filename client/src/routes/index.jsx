@@ -41,6 +41,8 @@ const routeNames = {
     'home.invoices.index': '/home/invoices', 
 
     'home.market.show': '/home/market/:id/show', 
+    'home.market.search.index': '/home/market/:search_key', 
+    // 'home.market.search.index': '/home/market/?search=:search_key', 
     'home.market.index': '/home/market', 
 
     'home.notifications.index': '/home/notifications', 
@@ -112,8 +114,9 @@ const routeNames = {
     'order-placed': '/order-placed', 
 
     'products.show': '/products/:source/:id/show', 
-    'products.index': '/products/:source/:search_key/:price_range_start/:price_range_end', 
+    // 'products.search.index': '/products/?source=:source&?search_key=:search_key&?price_range_start=:price_range_start&?price_range_end=:price_range_end', 
     'products.search.index': '/products/:source/:search_key/:price_range_start/:price_range_end', 
+    // 'products.search.index': `/products/${':source' ?? '?'}/${':search_key' ?? '?'}/${':price_range_start' ?? '?'}/${':price_range_end' ?? '?'}`, 
     'products.index': '/products/:source', 
 
     'trending': '/trending', 

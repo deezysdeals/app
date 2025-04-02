@@ -190,12 +190,16 @@ export default function ProductComponent1({ itemId,
                                             { (imgsSrc?.length > 0) && imgsSrc?.map((imgSrc, imgSrcIndex) => {
                                                     return (
                                                         <div key={ imgSrcIndex } className={`carousel-item ${ (imgSrcIndex == 0) && `active` }`}>
-                                                            <img src={ imgSrc?.large ?? imgSrc?.hi_res ?? imgSrc?.thumb ?? imgSrc } className="d-block object-fit-cover border-radius-35" style={{ width: '215px', height: '215px' }} alt="..." />
+                                                            <img src={ imgSrc?.[imgSrcIndex]?.image ? imgSrc?.[imgSrcIndex]?.image 
+                                                                                                : imgSrc?.large ? imgSrc?.large
+                                                                                                : imgSrc?.hi_res ? imgSrc?.hi_res
+                                                                                                : imgSrc?.thumb ? imgSrc?.thumb
+                                                                                                : imgSrc } className="d-block object-fit-cover border-radius-35" style={{ width: '215px', height: '215px' }} alt="..." />
                                                         </div>
                                                     )
                                                 }) 
                                             }
-                                        </div> 
+                                        </div>
 
                                         <div>
                                             <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target={ `#carouselImage${itemId}` } data-bs-slide="prev">
@@ -494,11 +498,19 @@ export default function ProductComponent1({ itemId,
                                             <div id={ `carouselModalImage${itemId}` } className="carousel slide">
                                                 <div className="carousel-inner position-relative" style={{ width: '215px', height: '215px' }}>
                                                     <div className="images">
+                                                        {console.log(imgsSrc)}
+                                                        {console.log(imgsSrc[0])}
                                                         { (imgsSrc?.length > 0) && imgsSrc?.map((imgSrc, imgSrcIndex) => {
+                                                            console.log(imgSrc);
+                                                            console.log(imgSrc?.[0]?.image);
                                                                 return (
                                                                     <div key={ imgSrcIndex } className={`carousel-item ${ (imgSrcIndex == 0) && `active` }`}>
-                                                                        <img src={ imgSrc?.large ?? imgSrc?.hi_res ?? imgSrc?.thumb ?? imgSrc } className="d-block object-fit-cover border-radius-35" style={{ minWidth: '175px', maxWidth: '215px', ninHeight: '175px', maxHeight: '215px' }} alt="..." />
-                                                                    </div> 
+                                                                        <img src={ imgSrc?.[imgSrcIndex]?.image ? imgSrc?.[imgSrcIndex]?.image 
+                                                                                                    : imgSrc?.large ? imgSrc?.large
+                                                                                                    : imgSrc?.hi_res ? imgSrc?.hi_res
+                                                                                                    : imgSrc?.thumb ? imgSrc?.thumb
+                                                                                                    : imgSrc } className="d-block object-fit-cover border-radius-35" style={{ minWidth: '175px', maxWidth: '215px', ninHeight: '175px', maxHeight: '215px' }} alt="..." />
+                                                                    </div>
                                                                 )
                                                             }) 
                                                         }

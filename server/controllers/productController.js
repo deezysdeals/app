@@ -803,7 +803,8 @@ const addToShop = asyncHandler(async (req, res) => {
                         slug: slugIt(response?.data?.title + '-' + new Date().toISOString() ),
                         initial_retail_price: response?.data?.price?.list_price,
                         retail_price: response?.data?.price?.amount ?? response?.data?.price?.list_price, 
-                        images: response?.data?.images
+                        images: response?.data?.images,
+                        purchased_from_amazon_market: true,
                     });
 
                     /** Create new product Image (order item image) */
@@ -862,7 +863,7 @@ const addToShop = asyncHandler(async (req, res) => {
 
                     /** Create new product info */
                     if (response?.data?.info?.length > 0) {
-                        const createFeaturePromises = response.data.info.map(async (infoUnit, index) => {
+                        const createInfoPromises = response.data.info.map(async (infoUnit, index) => {
                             return await ProductFeature.create({
                                 user: req?.user_id,
                                 product: newProduct._id,
@@ -872,7 +873,7 @@ const addToShop = asyncHandler(async (req, res) => {
                         });
                         
                         // Wait for all the info creations to complete
-                        await Promise.all(createFeaturePromises);
+                        await Promise.all(createInfoPromises);
                     }
 
                     const newProductInfo = await ProductInfo.create({
@@ -881,29 +882,78 @@ const addToShop = asyncHandler(async (req, res) => {
                         dynamic_data: new Map(Object.entries(response?.data?.info))
                     });
 
-                    /** Create new product category since it does not exist */
+                    console.log('categories:', response?.data?.categories);
                     if (response?.data?.categories?.length > 0) {
-                        const categoryPromises = response.data.categories.map(async (category) => {
+                        const createCategoryPromises = response.data.categories.map(async (category, index) => {
                             const foundCategory = await Category.findOne({ name: category?.name });
+                            
+                            let newCategory;
 
+                            console.log('category name:', category?.name);
+                            /** Create new product category if it does not exist */
                             if (!foundCategory) {
-                                let newCategory = await Category.create({
+                                return await Category.create({
                                     user: req?.user_id,
                                     name: category?.name,
                                     link: category?.link,
                                     node: category?.node
                                 });
+                            }
 
-                                await CategoryProduct.create({
+                            // if (newCategory?.length) {
+                            //     return await CategoryProduct.create({
+                            //         user: req?.user_id,
+                            //         product: newProduct?._id, 
+                            //         category: newCategory?._id
+                            //     });
+                            // }
+                        });
+
+                        // Wait for all the category-related promises to complete
+                        await Promise.all(createCategoryPromises);
+                    } else if (response?.data?.best_seller_rank?.length > 0) {
+                        // best_seller_rank: [
+                        //     {
+                        //     category: 'Building Sets',
+                        //     link: 'https://www.amazon.com/gp/bestsellers/toys-and-games/166099011/ref=pd_zg_hrsr_toys-and-games',
+                        //     node_id: 166099011,
+                        //     rank: 30
+                        //     }
+                        // ],
+
+                        const createBestSellerCategoryPromises = response.data.best_seller_rank.map(async (rank, index) => {
+                            const foundCategory = await Category.findOne({ name: rank?.category });
+                            
+                            let newCategory;
+
+                            console.log('category name:', rank?.category);
+                            /** Create new product category if it does not exist */
+                            if (!foundCategory) {
+                                newCategory = await Category.create({
+                                    user: req?.user_id,
+                                    name: rank?.category,
+                                    link: rank?.link,
+                                    node: rank?.node_id
+                                });
+
+                                return await CategoryProduct.create({
                                     user: req?.user_id,
                                     product: newProduct?._id, 
                                     category: newCategory?._id
                                 });
                             }
+
+                            // if (newCategory?.length) {
+                            //     return await CategoryProduct.create({
+                            //         user: req?.user_id,
+                            //         product: newProduct?._id, 
+                            //         category: newCategory?._id
+                            //     });
+                            // }
                         });
 
                         // Wait for all the category-related promises to complete
-                        await Promise.all(categoryPromises);
+                        await Promise.all(createBestSellerCategoryPromises);
                     }
 
                     res.status(200).json({ success: `Product ${newProduct?._id} add successful.` });

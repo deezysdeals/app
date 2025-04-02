@@ -15,11 +15,16 @@ export default function Aside() {
     const handleSearchProducts = e => {
         e.preventDefault();
 
-        navigate(route('products.search.index', { source: 'shop', 
-                                                search_key: voiceText?.trim() ??searchKey?.trim(), 
-                                                price_range_start: priceRangeStart, 
-                                                price_range_end: priceRangeEnd
-        }));
+        if (!searchKey || searchKey == '') {
+            navigate(route('products.index', { source: 'shop' }))
+        } else {
+            navigate(route('products.search.index', { source: 'shop', 
+                                                    search_key: voiceText?.trim() ?? searchKey?.trim(), 
+                                                    price_range_start: priceRangeStart, 
+                                                    price_range_end: priceRangeEnd
+            }));
+        };
+
         window.location.reload();
     };
 

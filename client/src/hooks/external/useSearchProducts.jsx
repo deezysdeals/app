@@ -6,22 +6,24 @@ export function useSearchProducts(productQuery) {
     const [errors, setErrors] = useState({}); 
     const [loading, setLoading] = useState(false); 
     const axiosInstanceAmazonParazun = useAxiosAmazonParazun();
-    const [searchProducts, setSearchProducts] = useState([]); 
+    const [products, setProducts] = useState([]); 
 
     useEffect(() => {
         const controller = new AbortController(); 
-        getSearchProducts(productQuery, { signal: controller.signal }); 
+        getProducts(productQuery, { signal: controller.signal }); 
         return () => { controller.abort() }; 
     }, [productQuery]); 
 
-    async function getSearchProducts({ signal } = {}) {
+    async function getProducts({ signal } = {}) {
         setLoading(true);
+        // setProducts([]);
+        console.log(productQuery?.page);
 
         // return axiosInstanceAmazonParazun.get(`product-details/?asin=B00FLYWNYQ&country=${ country }`, { signal })
-        return axiosInstanceAmazonParazun.get(`search/?keywords=${productQuery?.keywords}&page=${productQuery?.page}`, { signal })
+        return axiosInstanceAmazonParazun.get(`search/?keywords=${productQuery?.search_key}&page=${productQuery?.page}`, { signal })
             .then(response => {
                 console.log(response);
-                setSearchProducts(response);
+                setProducts(response);
             })
             .catch(error => { 
                 console.log(error);
@@ -30,5 +32,5 @@ export function useSearchProducts(productQuery) {
             .finally(() => setLoading(false));
     }
 
-    return { searchProducts, getSearchProducts }; 
+    return { products, getProducts }; 
 }

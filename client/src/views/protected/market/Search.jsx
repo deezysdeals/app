@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'; 
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom'; 
 import { route } from '@/routes';
 import { useVoiceToText } from '@/utils/useVoiceToText.jsx'; 
 // import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx'; 
+// import { useProducts } from '@/hooks/external/useProducts.jsx';
 // import { useProducts } from '@/hooks/useProducts.jsx';
-import { useProducts } from '@/hooks/external/useProducts.jsx';
+import { useSearchProducts } from '@/hooks/external/useSearchProducts.jsx';
 import scrollToTop from '@/utils/ScrollToTop.jsx'; 
 import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
 import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
@@ -15,41 +16,39 @@ import ProductComponent1 from '@/components/protected/nested-components/ProductC
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
-export default function Index() {
+export default function Search() {
     const navigate = useNavigate();
     const params = useParams();
-    const [productsResult, setProductsResult] = useState([]);
+    // const [productsResult, setProductsResult] = useState([]);
     const [searchKey, setSearchKey] = useState(params?.search_key ?? '');
     console.log(searchKey);
     const [pageToVisit, setPageToVisit] = useState(1);
-    console.log(pageToVisit)
+    console.log(pageToVisit);
 
     const [productQuery, setProductQuery] = useState({
         page: pageToVisit, 
+        search_key: params?.search_key ?? '',
     }); 
 
-    const { products, getProducts } = useProducts(productQuery);
-    console.log(products);
+    // const { products, getProducts } = useProducts(productQuery);
+    // console.log(products);
 
-    // useEffect to update productsResult when products or searchProducts change
-    useEffect(() => {
-        setProductsResult(products);
-    }, [products]); 
+    const { products, getProducts } = useSearchProducts(productQuery);
+    console.log(products);
 
     useEffect(() => {
         setProductQuery(prev => ({
             ...prev,
             page: pageToVisit,
+            search_key: searchKey,
         }));
-    }, [pageToVisit]);
+    }, [pageToVisit, searchKey]);
 
-    /** Voice-to-Text Search funtionality */ 
     const handleSearchProducts = e => {
         e.preventDefault();
 
         if (searchKey || searchKey != '') {
-            navigate(route('home.market.search.index', { search_key: voiceText?.trim() ?? searchKey?.trim()
-            }));
+            navigate(route('home.market.search.index', { search_key: voiceText?.trim() ?? searchKey?.trim()}));
         };
 
         window.location.reload();
@@ -61,13 +60,16 @@ export default function Index() {
             setVoiceText,
             isListening, 
             setIsListening } = useVoiceToText();
-    /** End of Voice-to-Text search functionality */ 
 
     return (
         <Layout>
             <div className="main">
                 <div className="dashboard-content pt-3"> 
-                    <h2 className="border-bottom pb-1 fs-4">Market</h2>
+                    <h2 className="border-bottom pb-1 fs-4">
+                        <Link to={ route('home.market.index') } className="text-dark" style={{ textTransform: 'capitalize' }}>
+                            Market
+                        </Link>&nbsp;
+                        | Search results for: "<span className="fw-bold">{ params?.search_key }"</span></h2> 
 
                     <div className="d-flex justify-content-between flex-wrap gap-2 pt-4"> 
                         <form className="search" onSubmit={ handleSearchProducts }>
@@ -110,30 +112,30 @@ export default function Index() {
                             </div>
                         </form>
                         <span>
-                            { (productsResult?.data?.results?.length > 0) 
+                            { (products?.data?.results?.length > 0) 
                                 && <PaginationMeter 
-                                        current_page={ productsResult?.data?.current_page } 
-                                        limit={ productsResult?.data?.results?.length } 
-                                        total_pages={ productsResult?.data?.num_pages } 
-                                        total_results={ productsResult?.data?.num_pages * productsResult?.data?.results?.length } /> } 
+                                        current_page={ products?.data?.current_page } 
+                                        limit={ products?.data?.results?.length } 
+                                        total_pages={ products?.data?.num_pages } 
+                                        total_results={ products?.data?.num_pages * products?.data?.results?.length } /> } 
                         </span>
                     </div>
 
                     <section className="py-4">
                         <ul className="list-unstyled d-flex flex-column gap-5">
-                            { (productsResult?.data?.results?.length > 0) && (productsResult?.data?.results?.map((product, index) => {
+                            { (products?.data?.results?.length > 0) && (products?.data?.results?.map((product, index) => {
                                 return (
                                     <li 
                                         key={ product?.link } 
                                         className="box-shadow-1 border-radius-25 py-3 px-2 cursor-pointer">
                                             <ProductComponent1 
-                                                index={ (((productsResult?.data?.current_page) > 1) 
-                                                            ? (((productsResult?.data?.current_page - 1) * productsResult?.data?.results?.length) + 1) 
-                                                                : productsResult?.data?.current_page) + index } 
+                                                index={ (((products?.data?.current_page) > 1) 
+                                                            ? (((products?.data?.current_page - 1) * products?.data?.results?.length) + 1) 
+                                                                : products?.data?.current_page) + index } 
                                                 itemId={ product?.link } 
                                                 productId={ product?.link } 
                                                 asin={ product?.asin }
-                                                imgsSrc={ [product?.image] }
+                                                imgsSrc={ [product?.images] }
                                                 title={ product?.title } 
                                                 description='' 
                                                 oldPrice='' 
@@ -147,18 +149,18 @@ export default function Index() {
                     </section>
                 </div> 
 
-                { (productsResult?.data?.results?.length > 0) &&
+                { (products?.data?.results?.length > 0) &&
                     <section className="pagination-links py-5 d-flex justify-content-end gap-2 pe-2"> 
                         <span 
                             type="button" 
                             onClick={ async () => { 
-                                scrollToTop();
+                                scrollToTop(); 
                                 setPageToVisit(1);
                                 setProductQuery(prevState => ({
                                     ...prevState,
                                     page: pageToVisit,
                                 })); 
-                                await getProducts(productQuery);
+                                await getProducts(productQuery); 
                             } }>
                                 <First /> 
                         </span> 
@@ -166,7 +168,7 @@ export default function Index() {
                             type="button" 
                             onClick={ async () => { 
                                 scrollToTop(); 
-                                setPageToVisit((productsResult?.data?.current_page >= 1) ? (productsResult?.data?.current_page - 1) : 1);
+                                setPageToVisit((products?.data?.current_page >= 1) ? (products?.data?.current_page - 1) : 1);
                                 setProductQuery(prevState => ({
                                     ...prevState,
                                     page: pageToVisit,
@@ -179,7 +181,7 @@ export default function Index() {
                             type="button" 
                             onClick={ async () => { 
                                 scrollToTop(); 
-                                setPageToVisit((productsResult?.data?.current_page < productsResult?.data?.num_pages) ? (productsResult?.data?.current_page + 1) : productsResult?.data?.num_pages);
+                                setPageToVisit((products?.data?.current_page < products?.data?.num_pages) ? (products?.data?.current_page + 1) : products?.data?.num_pages);
                                 setProductQuery(prevState => ({
                                     ...prevState,
                                     page: pageToVisit,
@@ -190,14 +192,14 @@ export default function Index() {
                         </span> 
                         <span 
                             type="button" 
-                            onClick={ async () => { 
+                            onClick={ async () => {
                                 scrollToTop(); 
-                                setPageToVisit(productsResult?.data?.num_pages)
+                                setPageToVisit(products?.data?.num_pages)
                                 setProductQuery(prevState => ({
                                     ...prevState,
                                     page: pageToVisit,
                                 })); 
-                                await getProducts(productQuery);  
+                                await getProducts(productQuery); 
                             } }>
                                 <Last />
                         </span>

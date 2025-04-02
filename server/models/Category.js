@@ -4,11 +4,7 @@ const Schema = mongoose.Schema;
 
 const categorySchema = new Schema({ 
         user: { type: Schema.Types.ObjectId, ref: 'User' }, 
-        name: { 
-            type: String, 
-            minLength: 1, 
-            unique: true 
-        }, 
+        name: { type: String, unique: true }, 
         link: { type: String }, 
         node: { type: String }, 
         order_count: { type: Number, default: 0 }, 

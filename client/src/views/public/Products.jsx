@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom'; 
-import { route } from '@/routes'; 
-import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx'; 
+// import { route } from '@/routes'; 
+// import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx'; 
 import { useProducts } from '@/hooks/public/useProducts.jsx'; 
 // import { useProducts } from '@/hooks/useProducts.jsx'; 
 import scrollToTop from '@/utils/ScrollToTop.jsx'; 
-import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
+// import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
 import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
 import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
-import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
-import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
+// import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
+// import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
 import ProductComponent2 from '@/components/public/nested-components/ProductComponent2.jsx'; 
 import Aside from '@/components/public/Aside.jsx'; 
 import Layout from '@/components/public/Layout.jsx'; 
@@ -27,24 +27,18 @@ export default function Products() {
     const [productQuery, setProductQuery] = useState({
         page: 1, 
         limit: 100, 
-        search_key: params?.search_key,
-        price_range_start: params?.price_range_start,
-        price_range_end: params?.price_range_end
+        search_key: params?.search_key ?? '',
+        // search_key: params?.search_key,
+        price_range_start: params?.price_range_start ?? 0,
+        // price_range_start: params?.price_range_start,
+        price_range_end: params?.price_range_end ?? 0
+        // price_range_end: params?.price_range_end
     }); 
 
     // const { productsExt, getProductsExt } = useProductsExt(); 
     // console.log(productsExt); 
     const { products, getProducts } = useProducts(productQuery); 
     console.log(products); 
-
-    // window.onload = () => {
-    //     setTimeout(async () => {
-    //         const getProductsOnPageLoad = async () => {
-    //             await getProducts(productQuery);
-    //         };
-    //         getProductsOnPageLoad();
-    //     }, 2000); // 2000ms = 2 seconds
-    // };
 
     useEffect(() => {
         setProductQuery(prev => ({
@@ -86,7 +80,7 @@ export default function Products() {
                 <div className="main"> 
 
                     <section className="products pt-3">
-                        {(productsList?.data?.length > 0) && (productsList?.data?.map((product, index) => {
+                        {(productsList?.data?.length > 0) ? (productsList?.data?.map((product, index) => {
                             return (
                                 <article key={ product?._id } className="card border-0 mb-5">
                                     <ProductComponent2 
@@ -104,7 +98,11 @@ export default function Products() {
                                         category = { product?.category } />
                                 </article>
                             )
-                        }))}
+                        })) : (
+                            <div>
+                                <p className="text-center py-5">No products match the search criteria</p>
+                            </div>
+                        )}
                     </section> 
 
                     {/* <PaginationLinks />  */}
