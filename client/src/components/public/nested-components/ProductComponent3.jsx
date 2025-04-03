@@ -58,7 +58,10 @@ export default function ProductComponent3({ productArticle }) {
                                                             console.log(image?.image_path[0])
                                                             return (
                                                                 <div key={ image?._id } className={`carousel-item ${(index==0) && `active`}`}>
-                                                                    <img src={ image?.image_path[0]?.hi_res?.url ?? image?.image_path[0]?.large?.url ?? image?.image_path?.url } className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
+                                                                    <img src={ image?.image_path[0]?.hi_res?.url ? image?.image_path[0]?.hi_res?.url 
+                                                                                : image?.image_path[0]?.large?.url ? image?.image_path[0]?.large?.url
+                                                                                : image?.image_path[0]?.thumb?.url ? image?.image_path[0]?.thumb?.url
+                                                                                : image?.image_path?.url } className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
                                                                 </div>
                                                             )
                                                         }))} 
@@ -172,7 +175,11 @@ export default function ProductComponent3({ productArticle }) {
                                                             onClick={ () => {addToCart(productArticle?.data?._id, 
                                                                                         productArticle?.data?.asin, 
                                                                                         // productArticle?.data?.images?.[0]?.image_path, 
-                                                                                        productArticle?.data?.images?.[0]?.image_path?.[0]?.hi_res?.url ?? productArticle?.data?.images?.[0]?.image_path?.[0]?.large?.url,
+                                                                                        (productArticle?.data?.images?.[0]?.image_path?.[0]?.hi_res?.url 
+                                                                                            ? productArticle?.data?.images?.[0]?.image_path?.[0]?.hi_res?.url 
+                                                                                        : productArticle?.data?.images?.[0]?.image_path?.[0]?.large?.url
+                                                                                            ? productArticle?.data?.images?.[0]?.image_path?.[0]?.large?.url
+                                                                                                :  productArticle?.data?.images?.[0]?.image_path?.[0]?.thumb?.url),
                                                                                         productArticle?.data?.title, 
                                                                                         productArticle?.data?.descriptions[0]?.content, 
                                                                                         productArticle?.data?.initial_retail_price, 

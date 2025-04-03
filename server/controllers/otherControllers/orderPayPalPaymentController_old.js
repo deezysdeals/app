@@ -4,6 +4,7 @@ import { createOrder,
         captureAuthorize 
 } from '../../utils/paypal-api.js'; 
 import orderPlacedNoticationMailTemplate from '../../mails/templates/orderNotificationMail.js'; 
+import mongoose from 'mongoose';
 import Product from '../../models/Product.js'; 
 import Order from '../../models/Order.js'; 
 import OrderItem from '../../models/OrderItem.js'; 
@@ -17,6 +18,9 @@ import Brand from '../../models/Brand.js';
  * CREATE ORDER (AND PAY)
  */
 const createOrderPayment = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     try {
         const { cart } = req.body; 
         // console.log('cart', cart); 
@@ -26,9 +30,9 @@ const createOrderPayment = async (req, res) => {
 
         if (!addressOfUser) return res.status(409).json({ message: 'You must have an address before you can pay' }); 
 
-        const newOrder = await Order.create({
-            // user: req?.user_id, 
-            user: userPlacingOrder?._id, 
+        const newOrder = await Order.create(
+            [{
+            user: req?.user_id, 
             payment_mode: 'unpaid', 
             billing_status: 'unpaid', 
             full_name: addressOfUser?.full_name, 
@@ -41,7 +45,9 @@ const createOrderPayment = async (req, res) => {
             state_region: addressOfUser?.state_region, 
             country: addressOfUser?.country, 
             delivery_instructions: addressOfUser?.delivery_instructions 
-        }); 
+            }],
+            { session }
+        );
 
         let totalToBePaid = 0; 
 
@@ -62,21 +68,26 @@ const createOrderPayment = async (req, res) => {
                         const upsertProduct = await Product.findOneAndUpdate(
                             productFilter,
                             productUpdate,
-                            { new: true }
+                            {
+                                new: true, session
+                            }
                         );
                         console.log('upsertProduct:', upsertProduct);
 
                         console.log('Retail Price', Number(upsertProduct?.retail_price)); 
                         console.log('Selling Price', Number(upsertProduct?.retail_price + (10/100))); 
 
-                        const newOrderItem = await OrderItem.create({
-                            user: userPlacingOrder?._id, 
+                        const newOrderItem = await OrderItem.create(
+                            [{
+                            user: req?.user_id, 
                             product: upsertProduct?._id, 
                             order: newOrder?._id, 
                             quantity: item?.quantity, 
                             cost_price: upsertProduct?.retail_price, 
                             selling_price: Number(upsertProduct?.retail_price + (10/100))
-                        }); 
+                            }],
+                            { session }
+                        ); 
                         // console.log('Selling Price', newOrderItem?.selling_price); 
                         // console.log({'Test': newOrderItem?.selling_price * newOrderItem?.quantity}); 
 
@@ -99,7 +110,7 @@ const createOrderPayment = async (req, res) => {
                                     const updateBrandWithOrderCount = await Brand.findOneAndUpdate(
                                         { _id: upsertProduct?.brand }, 
                                         { $inc: { order_count: 1 } }, 
-                                        { new: true }
+                                        { new: true, session }
                                     );
 
                                     const orderFilter = { _id: newOrder?._id }; 
@@ -107,35 +118,40 @@ const createOrderPayment = async (req, res) => {
                                                         total_to_be_paid: totalToBePaid }; 
 
                                     const updatedOrder = await Order.findOneAndUpdate(orderFilter, orderUpdate, {
-                                        new: true,  
+                                        new: true, session 
                                     }) 
                                     if (!updatedOrder) return res.status(404).json({ message: 'Order not found' });
                                     console.log('updated order', updatedOrder); 
 
                                     const updateUserWithOrdersPlaced = await User.findOneAndUpdate(
-                                        { _id: userPlacingOrder?._id }, 
+                                        { _id: req?.user_id }, 
                                         { $inc: { total_amount_spent_on_orders: totalToBePaid, total_orders: 1 } }, 
-                                        { new: true }
+                                        { new: true, session }
                                     );
                                     if (!updateUserWithOrdersPlaced) return res.status(404).json({ message: 'User not found' });
 
-                                    const newNotification = await Notification.create({
-                                        user: userPlacingOrder?._id, 
+                                    const newNotification = await Notification.create(
+                                        [{
+                                        user: req?.user_id, 
                                         type: 'order', 
                                         order: newOrder?._id
-                                    }); 
+                                        }],
+                                        { session }
+                                    ); 
 
                                     // console.log('updated user', updateUserWithOrdersPlaced)
 
                                     /** Send mail notification for placed order if user wants */ 
                                     // if (userPlacingOrder?.receive_notifications == true) {
-                                    // if (updateUserWithOrdersPlaced?.receive_notifications == true) {
-                                    //     // (async function () {
-                                    //         await orderPlacedNoticationMailTemplate(updateUserWithOrdersPlaced, updatedOrder)
-                                    //     // })();
-                                    // }
+                                    if (updateUserWithOrdersPlaced?.receive_notifications == true) {
+                                        // (async function () {
+                                            await orderPlacedNoticationMailTemplate(updateUserWithOrdersPlaced, updatedOrder)
+                                        // })();
+                                    }
 
                                 } catch (error) {
+                                    await session.abortTransaction();
+                                    session.endSession();
                                     console.error('Error updating order and user:', error);
                                     return res.status(500).json({ message: 'Internal server error' });
                                 }
@@ -144,12 +160,14 @@ const createOrderPayment = async (req, res) => {
                             await updateBrandAndOrderWithOrderIDUserAndNotification(jsonResponse);
 
                             // console.log('total within function', totalToBePaid); 
-
                             res.status(httpStatusCode).json(jsonResponse);
                         }
 
                     } catch (error) {
+                        // await session.abortTransaction();
+                        // session.endSession();
                         console.error('Error:', error);
+                        // return res.status(500).json({ message: 'Internal server error' });
                     } 
                 }
                 fetchProductAndProcessOrder(); 
@@ -158,9 +176,13 @@ const createOrderPayment = async (req, res) => {
 
             await Promise.all(cartResolve); 
         } 
+        await session.commitTransaction();
+        session.endSession();
 
         // res.status(httpStatusCode).json(jsonResponse);
     } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
         console.error("Failed to create order:", error);
         res.status(500).json({ error: "Failed to create order." });
     }
@@ -216,12 +238,6 @@ const captureOrderPayment = async (req, res) => {
                                 new: true
                             }
                         ); 
-
-                        const findUserIfTheyApproveOfNotifications = await User.findOne({ _id: req?.user_id })
-                        if (findUserIfTheyApproveOfNotifications?.receive_notifications == true) {
-                            await orderPlacedNoticationMailTemplate(findUserIfTheyApproveOfNotifications, order);
-                        };
-                        
                         res.status(httpStatusCode).json(jsonResponse);
                     } catch (error) {
                         res.status(500).json({ message: 'Failed to update OrderItems', details: `${error.message}` });

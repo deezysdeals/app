@@ -27,7 +27,7 @@ export default function OrderComponent1({ order,
                         type="button" 
                         data-bs-toggle="modal" data-bs-target={ `#order${order?._id}Modal` }
                         className="btn btn-sm btn-dark border-radius-35 py-0 fw-semibold">
-                            View Details
+                            View
                     </span>
                 </div> 
                 <div className="amount-and-client">
@@ -57,7 +57,10 @@ export default function OrderComponent1({ order,
                                                             return (
                                                                 <div key={ index } className={`carousel-item ${ (index == 0) && `active`}`}>
                                                                     { (image) && (
-                                                                            <img src={ image } className="object-fit-cover border-radius-15" style={{ width: '75px', height: '75px' }} alt="..." />
+                                                                            <img src={ image?.hi_res ? image?.hi_res
+                                                                                        : image?.large ? image?.large 
+                                                                                        : image?.thumb ? image?.thumb
+                                                                                        : image } className="object-fit-cover border-radius-15" style={{ width: '75px', height: '75px' }} alt="..." />
                                                                         ) }
                                                                 </div>
                                                             )
@@ -173,7 +176,11 @@ export default function OrderComponent1({ order,
                                                                         return (
                                                                             <div key={ index } className={`carousel-item ${ (index == 0) && `active`}`}>
                                                                                 { (image) && (
-                                                                                    <img src={ image } className="object-fit-cover border-radius-15" style={{ width: '75px', height: '75px' }} alt="..." />
+                                                                                    <img src={ image?.hi_res ? image?.hi_res
+                                                                                                : image?.large ? image?.large 
+                                                                                                : image?.thumb ? image?.thumb
+                                                                                                : image } 
+                                                                                        className="object-fit-cover border-radius-15" style={{ width: '75px', height: '75px' }} alt="..." />
                                                                                 ) }
                                                                             </div>
                                                                         )
@@ -189,7 +196,7 @@ export default function OrderComponent1({ order,
                                                                         </span>
                                                                         <span className="visually-hidden">Previous</span>
                                                                     </button>
-                                                                    <button className="carousel-control-next position-absolute right-0 pe-2" type="button" data-bs-target={`carousel${orderItem?._id}ModalDetailImages`} data-bs-slide="next">
+                                                                    <button className="carousel-control-next position-absolute right-0 pe-2" type="button" data-bs-target={`#carousel${orderItem?._id}ModalDetailImages`} data-bs-slide="next">
                                                                         <span>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
                                                                                 <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>

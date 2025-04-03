@@ -20,7 +20,7 @@ export default function Index() {
     }); 
     const { deliveries, getDeliveries } = useDeliveries(deliveryQuery); 
     // const { deleteDelivery } = useDelivery(); 
-    // console.log(deliveries); 
+    console.log(deliveries); 
 
     return (
         <Layout>

@@ -21,7 +21,7 @@ export default function Index() {
     }); 
     const { orders, getOrders } = useOrders(orderQuery); 
     const { deleteOrder } = useOrder(); 
-    // console.log(orders); 
+    console.log(orders); 
 
     return (
         <Layout>
@@ -97,11 +97,12 @@ export default function Index() {
                         </div> 
                     </div>
 
-                        
                     { (orders?.data?.length > 0) 
                         ?   <section className="py-3">
                                 <ul className="list-unstyled d-flex flex-column gap-5">
-                                    { (orders?.data?.length > 0) && (orders?.data?.map((order, index) => {
+                                    { (orders?.data?.length > 0) && (orders?.data
+                                                                            ?.sort((a,b) => b?.updated_at - a?.updated_at)
+                                                                            ?.map((order, index) => {
                                         return (
                                             <li key={order?._id} className="box-shadow-1 border-radius-25 py-4 px-2">
                                                 <OrderComponent1 

@@ -121,7 +121,8 @@ export default function ProductComponent1({ itemId,
                                         type="button" 
                                         data-bs-toggle="modal" data-bs-target={ `#productModal${itemId}` }
                                         className="btn btn-sm btn-dark border-radius-35 py-0 fw-semibold"> 
-                                            View { (location?.pathname)?.startsWith('/home/ordered-items') && `Item` }
+                                            {/* View { (location?.pathname)?.startsWith('/home/ordered-items') && `Item` } */}
+                                            View
                                     </span> }
                                 { (location?.pathname)?.startsWith('/home/market') && 
                                     <span 

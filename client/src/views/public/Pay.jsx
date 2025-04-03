@@ -357,7 +357,13 @@ export default function Pay() {
                                                             console.log(item)
                                                             return (
                                                                 <div className={`carousel-item ${(index==0) && `active`}`}>
-                                                                    <img src={  image ?? item?.img ?? item?.img?.[0]?.hi_res ?? item?.img?.[0]?.large } className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
+                                                                    <img src={image?.hi_res
+                                                                                ? image?.hi_res
+                                                                                : image?.large
+                                                                                ? image?.large
+                                                                                : image?.thumb
+                                                                                ? image?.thumb
+                                                                                : image} className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt="..." />
                                                                 </div>
                                                             )
                                                         })) }

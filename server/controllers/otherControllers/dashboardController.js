@@ -219,25 +219,25 @@ const getOrders = asyncHandler(async (req, res) => {
                 // const latestTenOrders = await Order.find({ total_to_be_paid: { $gt: 0 } })
                 // const latestTenOrders = await Order.find({ total_to_be_paid: { $exists: true } })
                 latestTenOrders = await Order.find()
-                                                    .sort({ created_at: -1 })
-                                                    .limit(10)
-                                                    .populate({
-                                                        path: 'user', 
-                                                        select: 'first_name last_name username user_image_path' 
-                                                    })
-                                                    .lean(); 
+                                            .sort({ created_at: -1 })
+                                            .limit(10)
+                                            .populate({
+                                                path: 'user', 
+                                                select: 'first_name last_name username user_image_path' 
+                                            })
+                                            .lean(); 
                 return latestTenOrders;
             } else {
                 // const latestTenOrders = await Order.find({ total_to_be_paid: { $gt: 0 } })
                 // const latestTenOrders = await Order.find({ total_to_be_paid: { $exists: true } })
                 latestTenOrders = await Order.find({ user: req?.user_id })
-                                                    .sort({ created_at: -1 })
-                                                    .limit(10)
-                                                    .populate({
-                                                        path: 'user', 
-                                                        select: 'first_name last_name username user_image_path' 
-                                                    })
-                                                    .lean(); 
+                                            .sort({ created_at: -1 })
+                                            .limit(10)
+                                            .populate({
+                                                path: 'user', 
+                                                select: 'first_name last_name username user_image_path' 
+                                            })
+                                            .lean(); 
                 return latestTenOrders;
             }
 

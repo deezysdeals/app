@@ -16,7 +16,10 @@ export default function CartItem({ itemId,
     return (
         <article className="item row align-items-center m-2 py-2 bg-body-tertiary rounded">
             <div className="col-4">
-                <img src={ imgSrc?.[0]?.large ?? imgSrc?.[0]?.hi_res ?? imgSrc }
+                <img src={ imgSrc?.[0]?.hi_res ? imgSrc?.[0]?.hi_res 
+                            : imgSrc?.[0]?.large ? imgSrc?.[0]?.large 
+                            : imgSrc?.[0]?.thumb ? imgSrc?.[0]?.thumb 
+                            : imgSrc }
                     alt="" style={{ width: '75px', height: '100px' }} className="rounded d-block object-fit-contain" />
             </div>
             <div className="col-8 d-flex flex-column">

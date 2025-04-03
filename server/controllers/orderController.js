@@ -1,6 +1,7 @@
 import axios from 'axios'; 
 import asyncHandler from 'express-async-handler'; 
 // import { paypalCreateOrder, paypalCaptureOrder } from '../utils/paypal-standard-payment-api.js'; 
+import mongoose from 'mongoose';
 import Category from '../models/Category.js'; 
 import Product from '../models/Product.js'; 
 import ProductImage from '../models/ProductImage.js'; 
@@ -31,64 +32,178 @@ const getOrders = asyncHandler(async (req, res) => {
 
     if (paymentStatus == 'all') {
         if ((req?.role == 'superadmin') || (req?.role == 'admin') || (req?.role == 'dispatcher')) {
-            orders = await Order.find({ deleted_at: null })
-                                .sort('-created_at')
-                                .skip(skip)
-                                .limit(limit)
-                                .populate({
-                                    path: 'user', 
-                                    select: 'first_name last_name username' 
-                                })
-                                .lean(); 
-            if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
+            orders = await Order.aggregate([
+                {
+                    $match: { billing_status: { $ne: 'unpaid' }, deleted_at: null }
+                },
+                { $sort: { created_at: -1 } },
+                { $skip: skip },
+                { $limit: limit },
+                {
+                    $lookup: { from: 'users', localField: 'user', foreignField: '_id', as: 'user' }
+                },
+                {
+                    $unwind: { path: '$user', preserveNullAndEmptyArrays: true }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        total_to_be_paid: 1,
+                        created_at: 1,
+                        paypal_order_id: 1,
+                        delivery_status: 1,
+                        delivery_cost: 1,
+                        payment_mode: 1,
+                        billing_status: 1,
+                        currency: 1,
+                        paid: 1,
+                        paid_at: 1,
+                        total_paid: 1,
+                        total_balance: 1, 
+                        cancelled: 1,
+                        proposed_delivery_start_date: 1,
+                        proposed_delivery_destination_reach_date: 1,
+                        delivery_arrival_date: 1,
+                        delivery_confirmed_by_recipient_at: 1,
+                        delivered_by: 1,
+                        user: { first_name: 1, last_name: 1, username: 1 }
+                    }
+                }
+            ]);
 
-            ordersCount = await Order.countDocuments({ deleted_at: null });
+            ordersCount = await Order.countDocuments({ billing_status: { $ne: 'unpaid' }, deleted_at: null });
         } else {
-            orders = await Order.find({ user: req?.user_id, deleted_at: null })
-                                .sort('-created_at')
-                                .skip(skip)
-                                .limit(limit)
-                                .populate({
-                                    path: 'user', 
-                                    select: 'first_name last_name username' 
-                                })
-                                .lean(); 
-            if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
+            orders = await Order.aggregate([
+                {
+                    $match: { billing_status: { $ne: 'unpaid' }, user: req?.user_id, deleted_at: null, }
+                },
+                { $sort: { created_at: -1 } },
+                { $skip: skip },
+                { $limit: limit },
+                {
+                    $lookup: { from: 'users', localField: 'user', foreignField: '_id', as: 'user' }
+                },
+                {
+                    $unwind: { path: '$user', preserveNullAndEmptyArrays: true }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        total_to_be_paid: 1,
+                        created_at: 1,
+                        paypal_order_id: 1,
+                        delivery_status: 1,
+                        delivery_cost: 1,
+                        payment_mode: 1,
+                        billing_status: 1,
+                        currency: 1,
+                        paid: 1,
+                        paid_at: 1,
+                        total_paid: 1,
+                        total_balance: 1, 
+                        cancelled: 1,
+                        proposed_delivery_start_date: 1,
+                        proposed_delivery_destination_reach_date: 1,
+                        delivery_arrival_date: 1,
+                        delivery_confirmed_by_recipient_at: 1,
+                        delivered_by: 1,
+                        user: { first_name: 1, last_name: 1, username: 1 }
+                    }
+                }
+            ]);
 
-            ordersCount = await Order.countDocuments({ user: req?.user_id, deleted_at: null });
+            ordersCount = await Order.countDocuments({ user: req?.user_id, billing_status: { $ne: 'unpaid' }, deleted_at: null });
         }
 
     } else {
 
         if ((req?.role == 'superadmin') || (req?.role == 'admin') || (req?.role == 'dispatcher')) {
-            orders = await Order.find({ deleted_at: null, paid: paymentStatus }) 
-                                .sort('-created_at')
-                                .skip(skip)
-                                .limit(limit)
-                                .populate({
-                                    path: 'user', 
-                                    select: 'first_name last_name username' 
-                                })
-                                .lean(); 
-            if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
+            orders = await Order.aggregate([
+                {
+                    $match: { paid: paymentStatus, billing_status: { $ne: 'unpaid' }, deleted_at: null }
+                },
+                { $sort: { created_at: -1 } },
+                { $skip: skip },
+                { $limit: limit },
+                {
+                    $lookup: { from: 'users', localField: 'user', foreignField: '_id', as: 'user' }
+                },
+                {
+                    $unwind: { path: '$user', preserveNullAndEmptyArrays: true }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        total_to_be_paid: 1,
+                        created_at: 1,
+                        paypal_order_id: 1,
+                        delivery_status: 1,
+                        delivery_cost: 1,
+                        payment_mode: 1,
+                        billing_status: 1,
+                        currency: 1,
+                        paid: 1,
+                        paid_at: 1,
+                        total_paid: 1,
+                        total_balance: 1, 
+                        cancelled: 1,
+                        proposed_delivery_start_date: 1,
+                        proposed_delivery_destination_reach_date: 1,
+                        delivery_arrival_date: 1,
+                        delivery_confirmed_by_recipient_at: 1,
+                        delivered_by: 1,
+                        user: { first_name: 1, last_name: 1, username: 1 }
+                    }
+                }
+            ]);
 
-            ordersCount = await Order.countDocuments({ deleted_at: null, paid: paymentStatus });
+            ordersCount = await Order.countDocuments({ paid: paymentStatus, billing_status: { $ne: 'unpaid' }, deleted_at: null });
         } else {
-            orders = await Order.find({ user: req?.user_id, deleted_at: null, paid: paymentStatus }) 
-                                .sort('-created_at')
-                                .skip(skip)
-                                .limit(limit)
-                                .populate({
-                                    path: 'user', 
-                                    select: 'first_name last_name username' 
-                                })
-                                .lean(); 
-            if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
+            orders = await Order.aggregate([
+                {
+                    $match: { billing_status: { $ne: 'unpaid' }, user: req?.user_id, paid: paymentStatus, deleted_at: null }
+                },
+                { $sort: { created_at: -1 } },
+                { $skip: skip },
+                { $limit: limit },
+                {
+                    $lookup: { from: 'users', localField: 'user', foreignField: '_id', as: 'user' }
+                },
+                {
+                    $unwind: { path: '$user', preserveNullAndEmptyArrays: true }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        total_to_be_paid: 1,
+                        created_at: 1,
+                        paypal_order_id: 1,
+                        delivery_status: 1,
+                        delivery_cost: 1,
+                        payment_mode: 1,
+                        billing_status: 1,
+                        currency: 1,
+                        paid: 1,
+                        paid_at: 1,
+                        total_paid: 1,
+                        total_balance: 1, 
+                        cancelled: 1,
+                        proposed_delivery_start_date: 1,
+                        proposed_delivery_destination_reach_date: 1,
+                        delivery_arrival_date: 1,
+                        delivery_confirmed_by_recipient_at: 1,
+                        delivered_by: 1,
+                        user: { first_name: 1, last_name: 1, username: 1 }
+                    }
+                }
+            ]);
 
-            ordersCount = await Order.countDocuments({ user: req?.user_id, deleted_at: null, paid: paymentStatus });
+            ordersCount = await Order.countDocuments({ user: req?.user_id, paid: paymentStatus, billing_status: { $ne: 'unpaid' }, deleted_at: null });
         }
 
     }
+
+    if (!orders?.length) return res.status(404).json({ message: "No orders found!" }); 
 
     /** Order Items within Orders */ 
     if (orders?.length) {
@@ -132,7 +247,7 @@ const createOrder = async (req, res) => {
         if (!addressOfUser) return res.status(409).json({ message: 'You must have an address before you can place an order.' }); 
 
         const newOrder = await Order.create({
-            user: req?.user_id, 
+            user: userPlacingOrder?._id, 
             payment_mode: 'unpaid', 
             billing_status: 'unpaid', 
             full_name: addressOfUser?.full_name, 
@@ -157,55 +272,19 @@ const createOrder = async (req, res) => {
             const cartResolve = cart?.map(async (item, index) => { 
                 async function fetchProductAndProcessOrder() {
                     try {
-                        const response = await axios.get(`https://fakestoreapi.com/products/${item?.id}`);
-                        // console.log('Response:', response?.data); 
-
-                        /** Create new category, if does not exist */  
-                        const categoryFilter = { name: response?.data?.category }; 
-                        const categoryUpdate = { added_by: req?.user_id }; 
-
-                        const upsertCategory = await Category.findOneAndUpdate(categoryFilter, categoryUpdate, {
-                            new: true, 
-                            upsert: true 
-                        }); 
-                        // console.log(upsertCategory); 
-
-                        /** Create new product (order item), if does not exist */
-                        const productFilter = { title: response?.data?.title };
-                        const productUpdate = {
-                            $setOnInsert: { // This ensures these fields are set only when the document is inserted
-                                user: req?.user_id,
-                                title: response?.data?.title,
-                                retail_price: response?.data?.price,
-                                images: [response?.data?.image]
-                            },
-                            $inc: { order_count: 1 } // Increment the order_count atomically
-                        };
+                        /** Update product */
+                        const productFilter = { asin: item?.id };
+                        const productUpdate = { $inc: { order_count: 1 } };
 
                         /** Find and update or insert a new product, incrementing `order_count` if the product exists */ 
                         const upsertProduct = await Product.findOneAndUpdate(
                             productFilter,
                             productUpdate,
-                            {
-                                new: true,   // Return the updated document
-                                upsert: true // Create a new document if one doesn't exist
-                            }
+                            {new: true }
                         );
-                        // console.log(upsertProduct);
-
-                        /** Create new product image (order item image), if does not exist */ 
-                        const productImageFilter = { 'image_path.url': response?.data?.image }; 
-                        const productImageUpdate = { $set: { product: upsertProduct?._id,
-                                                            'image_path.$.url': response?.data?.image } }; 
-
-                        const upsertProductImage = await ProductImage.findOneAndUpdate(productImageFilter, productImageUpdate, {
-                            new: true,
-                            upsert: true 
-                        }); 
-                        // console.log(upsertProductImage); 
 
                         const newOrderItem = await OrderItem.create({
-                            user: req?.user_id, 
+                            user: userPlacingOrder?._id, 
                             product: upsertProduct?._id, 
                             order: newOrder?._id, 
                             quantity: item?.quantity, 
@@ -224,24 +303,33 @@ const createOrder = async (req, res) => {
                             async function updateUserWithOrderCountAndNotification() {
                                 try { 
                                     const updateUserWithOrdersPlaced = await User.findOneAndUpdate(
-                                        { _id: req?.user_id }, 
+                                        { _id: userPlacingOrder?._id }, 
                                         { $inc: { total_amount_spent_on_orders: totalToBePaid, total_orders: 1 } }, 
                                         { new: true }
                                     );
                                     if (!updateUserWithOrdersPlaced) return res.status(404).json({ message: 'User not found' });
 
                                     const newNotification = await Notification.create({
-                                        user: req?.user_id, 
+                                        user: userPlacingOrder?._id, 
                                         type: 'order', 
                                         order: newOrder?._id
                                     }); 
 
                                     // console.log('updated user', updateUserWithOrdersPlaced)
 
+                                    const orderFilter = { _id: newOrder?._id }; 
+                                    const orderUpdate = { billing_status: 'pay-on-delivery' }; 
+
+                                    const updatedOrder = await Order.findOneAndUpdate(orderFilter, orderUpdate, {
+                                        new: true,  
+                                    }) 
+                                    if (!updatedOrder) return res.status(404).json({ message: 'Order not found' });
+                                    console.log('updated order', updatedOrder); 
+
                                     /** Send mail notification for placed order if user wants */ 
                                     if (updateUserWithOrdersPlaced?.receive_notifications == true) {
                                         await orderPlacedNoticationMailTemplate(updateUserWithOrdersPlaced, newOrder)
-                                    }
+                                    };
 
                                 } catch (error) {
                                     console.error('Error updating order and user:', error);

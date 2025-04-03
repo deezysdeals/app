@@ -185,7 +185,7 @@ export default function Index() {
                                                                         type="button" 
                                                                         data-bs-toggle="modal" data-bs-target={ `#productModal${productReview?._id}` }
                                                                         className="btn btn-sm btn-dark border-radius-35 py-0 fw-semibold">
-                                                                            View Details
+                                                                            View
                                                                     </span>
                                                                 </div>
                                                                 <div className="modal fade" id={ `productModal${productReview?._id}` } tabIndex="-1" aria-labelledby={ `productModal${productReview?._id}Label` } aria-hidden="true">
@@ -248,7 +248,7 @@ export default function Index() {
                                                                                         </span> 
                                                                                         <h3 className='fs-6'>{ productReview?.title }</h3> 
                                                                                         <p>{ productReview?.content }</p> 
-                                                                                        <p className="text-end">-&nbsp;
+                                                                                        <p className="text-end">by&nbsp;
                                                                                             { productReview?.user?.first_name + ' ' + productReview?.user?.last_name },&nbsp;
                                                                                             <small className=""><small>{ dayjs.utc(productReview?.created_at).fromNow() }</small></small>
                                                                                         </p>
@@ -282,7 +282,12 @@ export default function Index() {
                                                                                                             { (productReview?.order_item?.product?.images?.length > 0) && productReview?.order_item?.product?.images?.map((imgSrc, imgSrcIndex) => {
                                                                                                                     return (
                                                                                                                         <div key={ imgSrcIndex } className={`carousel-item ${ (imgSrcIndex == 0) && `active` }`}>
-                                                                                                                            <img src={ imgSrc } className="d-block object-fit-cover border-radius-35" style={{ width: '215px', height: '215px' }} alt="..." />
+                                                                                                                            <img src={ imgSrc?.[imgSrcIndex]?.image ? imgSrc?.[imgSrcIndex]?.image 
+                                                                                                                                        : imgSrc?.large ? imgSrc?.large
+                                                                                                                                        : imgSrc?.hi_res ? imgSrc?.hi_res
+                                                                                                                                        : imgSrc?.thumb ? imgSrc?.thumb
+                                                                                                                                        : imgSrc } 
+                                                                                                                                className="d-block object-fit-cover border-radius-35" style={{ width: '215px', height: '215px' }} alt="..." />
                                                                                                                         </div> 
                                                                                                                     )
                                                                                                                 }) 
@@ -322,11 +327,11 @@ export default function Index() {
                                                                                                     <span className="card-text"> 
                                                                                                         { productReview?.order_item?.product?.initial_retail_price && 
                                                                                                             <small>
-                                                                                                                <s>${ Number(productReview?.order_item?.product?.initial_retail_price / 100)?.toFixed(2) }</s>&nbsp;
+                                                                                                                <s>${ Number(productReview?.order_item?.product?.initial_retail_price)?.toFixed(2) }</s>&nbsp;
                                                                                                             </small> 
                                                                                                         }
                                                                                                         <span className="fw-semibold">
-                                                                                                            ${ Number(productReview?.order_item?.product?.retail_price / 100)?.toFixed(2) }
+                                                                                                            ${ Number(productReview?.order_item?.product?.retail_price)?.toFixed(2) }
                                                                                                         </span>
                                                                                                     </span> 
                                                                                                     { productReview?.deal && 
@@ -475,7 +480,7 @@ export default function Index() {
                                                         </span>
                                                         <h3 className='fs-6'>{ productReview?.title }</h3> 
                                                         <p>{ productReview?.content }</p> 
-                                                        <p className="text-end">-&nbsp;
+                                                        <p className="text-end">by&nbsp;
                                                             { productReview?.user?.first_name + ' ' + productReview?.user?.last_name },&nbsp;
                                                             <small className=""><small>{ dayjs.utc(productReview?.created_at).fromNow() }</small></small>
                                                         </p>

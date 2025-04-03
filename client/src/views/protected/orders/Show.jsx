@@ -93,20 +93,23 @@ export default function Show() {
                                             key={ index+1 }
                                             className="ordered-item row align-items-center g-3 py-1">
                                             <div className="col-md-2">
-                                                <div id={`carouselModalItem${orderItem?.Id}`} className="carousel slide">
+                                                <div id={`carouselModalItem${orderItem?._id}`} className="carousel slide">
                                                     <div className="carousel-inner position-relative" style={{ width: '75px', height: '75px' }}>
                                                         <div className="images"> 
                                                             { (orderItem?.product?.images?.length > 0) && (orderItem?.product?.images?.map((image, index) => {
                                                                 return (
                                                                     <div key={ image } className={`carousel-item ${(index==0) && `active`}`}>
-                                                                        <img src={ image } className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt={ image } />
+                                                                        <img src={ image?.hi_res ? image?.hi_res
+                                                                                    : image?.large ? image?.large 
+                                                                                    : image?.thumb ? image?.thumb
+                                                                                    : image } className="d-block object-fit-cover rounded" style={{ width: '75px', height: '75px' }} alt={ image } />
                                                                     </div>
                                                                 )
                                                             })) }
                                                         </div> 
 
                                                         <div>
-                                                            <button className="carousel-control-prev position-absolute left-0 ps-2" type="button" data-bs-target={`#carouselModalItem${orderItem?.Id}`} data-bs-slide="prev">
+                                                            <button className="carousel-control-prev position-absolute left-0 ps-2" type="button" data-bs-target={`#carouselModalItem${orderItem?._id}`} data-bs-slide="prev">
                                                                 <span>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" className="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
                                                                         <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
@@ -114,7 +117,7 @@ export default function Show() {
                                                                 </span>
                                                                 <span className="visually-hidden">Previous</span>
                                                             </button>
-                                                            <button className="carousel-control-next position-absolute right-0 pe-2" type="button" data-bs-target={`#carouselModalItem${orderItem?.Id}`} data-bs-slide="next">
+                                                            <button className="carousel-control-next position-absolute right-0 pe-2" type="button" data-bs-target={`#carouselModalItem${orderItem?._id}`} data-bs-slide="next">
                                                                 <span>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
                                                                         <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
@@ -139,7 +142,7 @@ export default function Show() {
 
 
                                 <div className="text-end border-top border-bottom py-1">
-                                    <span className="fw-semibold fs-5">${ (order?.data?.total_to_be_paid)?.toFixed(2) }</span>
+                                    <span className="fw-semibold fs-5">${ (order?.data?.total_to_be_paid)?.toFixed(2) ?? '0.00' }</span>
                                 </div>
                             </section> 
                         ) : ( 

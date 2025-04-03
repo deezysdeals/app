@@ -29,7 +29,14 @@ export function useProductReview(id = null) {
         return axiosInstance.post('product-reviews', productReview)
             .then(response => {
                 setData(response?.data)
-                console.log(response);
+                // console.log(response);
+                swal.fire({
+                    text: 'Product Review added.',  
+                    color: '#823c03', 
+                    width: 325, 
+                    position: 'top', 
+                    showConfirmButton: false
+                });
             })
             .catch(error => {
                 setErrors(error?.response); 
