@@ -59,8 +59,8 @@ router.use('/trendings', trendingRouter);
 router.use('/dashboard', dashboardRouter); 
 router.use('/site-configurations', siteConfigurationRouter); 
 router.use('/site-payment-configurations', sitePaymentConfigurationRouter); 
-router.use('/tiktok', tiktokRouter); 
-router.use('/twitter-x', twitterXRouter); 
+router.use('/social-media/tiktok', tiktokRouter); 
+router.use('/social-media/twitter-x', twitterXRouter); 
 
 
 export default router;

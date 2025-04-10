@@ -7,8 +7,10 @@ import checkRoles from '../../middleware/checkRoles.js';
 //         getOAuthCallback, 
 //         getVideos, 
 //         createVideo } from '../../controllers/socialControllers/tiktokController.js'; 
-import { tweet } from '../../controllers/socialControllers/twitterXController.js';
+import { tweet, postTweet } from '../../controllers/socialControllers/twitterXController.js';
 
+
+twitterXRouter.use(authenticated, checkRoles(roles.admin, roles.superAdmin)); 
 
 // twitterRouter.get('/', getOAuth); 
 // twitterRouter.get('/callback', getOAuthCallback); 
@@ -18,6 +20,7 @@ import { tweet } from '../../controllers/socialControllers/twitterXController.js
 //             .post(createVideo); 
 
 twitterXRouter.post('/tweet', tweet); 
+twitterXRouter.post('/post-tweet', postTweet); 
 
 
 export default twitterXRouter; 

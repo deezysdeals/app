@@ -180,4 +180,66 @@ const tweet = asyncHandler(async (req, res) => {
 }); 
 
 
-export { tweet };
+const postTweet = asyncHandler(async (req, res) => {
+    try {
+        const { message } = req?.body; 
+        const tweet = await twitterClient.v2.tweet(message); 
+        res.status(201).json({ data: tweet }); 
+        // const files = req.files;
+
+        // let mediaIds = [];
+
+        // if (files && files.length > 0) {
+        //     for (const file of files) {
+        //         let mediaId;
+
+        //         // Determine if the file is an image or a video
+        //         const isVideo = file.mimetype.startsWith('video/');
+        //         const isImage = file.mimetype.startsWith('image/');
+
+        //         if (isImage) {
+        //             // Simple upload for images
+        //             mediaId = await twitterClient.v1.uploadMedia(file.path, {
+        //                 mimeType: file.mimetype,
+        //             });
+        //         } else if (isVideo) {
+        //             // Chunked upload for videos
+        //             mediaId = await twitterClient.v1.uploadMedia(file.path, {
+        //                 mimeType: file.mimetype,
+        //                 target: 'tweet_video',
+        //             });
+        //         } else {
+        //             throw new Error(`Unsupported media type: ${file.mimetype}`);
+        //         }
+
+        //         mediaIds.push(mediaId);
+
+        //         // Clean up uploaded file
+        //         fs.unlinkSync(file.path);
+        //     }
+        // }
+
+        // const tweet = await twitterClient.v2.tweet({
+        //     text: message,
+        //     media: mediaIds.length ? { media_ids: mediaIds } : undefined,
+        // });
+
+        // res.status(201).json({ data: tweet });
+    } catch (error) {
+        res.status(400).json({ message: "An error occured!", details: `${error}` }); 
+    }
+});
+// async function postTweet(text) {
+//     try {
+//         const { data } = await twitterClient.v2.tweet(text);
+//         console.log('Tweet posted successfully:', data);
+//     } catch (error) {
+//         console.error('Error posting tweet:', error);
+//     }
+// }
+
+// Example usage
+// postTweet('Hello Twitter from my web app!');
+
+
+export { tweet, postTweet };

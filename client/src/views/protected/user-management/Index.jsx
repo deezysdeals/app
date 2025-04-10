@@ -187,7 +187,7 @@ export default function Index() {
                                                 <span className="btn btn-sm btn-dark border-radius-35 py-0">
                                                     <Link to={ route('home.users.show', { username: user?.username })} 
                                                         className="text-decoration-none text-white fw-semibold">
-                                                            View User
+                                                            View
                                                     </Link>
                                                 </span> 
                                                 <div className="dropdown">

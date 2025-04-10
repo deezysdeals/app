@@ -1,10 +1,36 @@
 import { useState } from 'react'; 
+import { useTwitterX } from '../../../hooks/social-media/useTwitterX.jsx';
 import Layout from '@/components/protected/Layout.jsx'; 
 import PaginationLinks from '@/components/protected/nested-components/PaginationLinks.jsx';
 
 
 export default function Index() {
     const [activeLink, setActiveLink] = useState('tik-tok');
+
+    const { createTwitterX } = useTwitterX();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const message = formData.get('message');
+
+        // console.log(message);
+
+        if (!message) {
+            alert('Please enter a message');
+            return;
+        }
+
+        if (activeLink == 'twitter-x') {
+            await createTwitterX({ message });
+        } else if (activeLink == 'tik-tok') {
+
+        } else if (activeLink == 'instagram') {
+
+        } else if (activeLink == 'facebook') {
+
+        }
+    }
 
     return (
         <Layout>
@@ -95,8 +121,8 @@ export default function Index() {
                                 <li className="nav-item">
                                     <span 
                                         type="button" 
-                                        className={`nav-link fw-semibold d-flex align-items-center text-dark ${(activeLink == 'twitter') && 'active'}`}
-                                        onClick={ () => setActiveLink('twitter') }>
+                                        className={`nav-link fw-semibold d-flex align-items-center text-dark ${(activeLink == 'twitter-x') && 'active'}`}
+                                        onClick={ () => setActiveLink('twitter-x') }>
                                             <span>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                                     className="bi bi-twitter-x text-dark" viewBox="0 0 16 16">
@@ -104,7 +130,7 @@ export default function Index() {
                                                         d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z" />
                                                 </svg>
                                             </span>&nbsp;
-                                            <span>Twitter</span>
+                                            <span>Twitter-X</span>
                                         </span>
                                 </li>
                             </ul>
@@ -119,15 +145,15 @@ export default function Index() {
                                                     ? 'Instagram' 
                                                         : (activeLink == 'facebook') 
                                                         ? 'Facebook' 
-                                                            : (activeLink == 'twitter') 
-                                                            ? 'Twitter' 
+                                                            : (activeLink == 'twitter-x') 
+                                                            ? 'Twitter-X' 
                                                                 : ''
                                             }
                                 </button>
 
                                 <div className="modal fade" id="exactModal" tabIndex="-1" aria-labelledby="exactModalLabel" aria-hidden="true">
                                     <div className="modal-dialog">
-                                        <div className="modal-content">
+                                        <form onSubmit={ handleSubmit } className="modal-content">
                                             <div className="modal-header d-flex align-items-center justify-content-between">
                                                 <h4 className="modal-title fs-5" id="exactModalLabel">Post on&nbsp;
                                                     { (activeLink == 'tik-tok') 
@@ -136,8 +162,8 @@ export default function Index() {
                                                             ? 'Instagram' 
                                                                 : (activeLink == 'facebook') 
                                                                 ? 'Facebook' 
-                                                                    : (activeLink == 'twitter') 
-                                                                    ? 'Twitter' 
+                                                                    : (activeLink == 'twitter-x') 
+                                                                    ? 'Twitter-X' 
                                                                         : ''
                                                     }
                                                 </h4>
@@ -148,7 +174,13 @@ export default function Index() {
                                                 </button>
                                             </div>
                                             <div className="modal-body">
-                                                <textarea className="form-control" placeholder="Write something ..." id="message" style={{ height: '50px' }}></textarea>
+                                                <textarea 
+                                                    id="message" 
+                                                    name="message" 
+                                                    className="form-control" 
+                                                    placeholder="Write something ..." 
+                                                    style={{ height: '50px' }}>
+                                                </textarea>
                                             </div>
                                             <div className="modal-footer">
                                                 <button type="submit" className="border-0">
@@ -157,7 +189,7 @@ export default function Index() {
                                                     </svg>
                                                 </button>
                                             </div>
-                                        </div>
+                                        </form>
                                     </div>
                                 </div>
                             </section>

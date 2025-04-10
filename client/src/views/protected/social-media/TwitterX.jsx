@@ -19,8 +19,9 @@ export default function TwitterX() {
 
         try {
             setStatus('Posting tweet...'); 
-            const response = await axios.post(`${ Constants?.serverURL }/api/v1/twitter-x/tweet`, {
-            message,
+            // const response = await axios.post(`${ Constants?.serverURL }/api/v1/twitter-x/tweet`, {
+            const response = await axios.post(`${ Constants?.serverURL }/api/v1/twitter-x/post-tweet`, {
+                message,
             });
             if (response.data.success) {
                 setStatus('Tweet posted successfully!'); 
