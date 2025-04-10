@@ -74,13 +74,15 @@ const createOrderPayment = async (req, res) => {
                             product: upsertProduct?._id, 
                             order: newOrder?._id, 
                             quantity: item?.quantity, 
-                            cost_price: upsertProduct?.retail_price, 
-                            selling_price: Number(upsertProduct?.retail_price + (10/100))
+                            // cost_price: upsertProduct?.retail_price, 
+                            cost_price: Number(upsertProduct?.purchase_price), 
+                            // selling_price: Number(upsertProduct?.retail_price + (10/100))
+                            selling_price: Number(upsertProduct?.retail_price)
                         }); 
                         // console.log('Selling Price', newOrderItem?.selling_price); 
                         // console.log({'Test': newOrderItem?.selling_price * newOrderItem?.quantity}); 
 
-                        let orderItemPrice = (newOrderItem?.selling_price || upsertProduct?.retail_price) * newOrderItem?.quantity; 
+                        let orderItemPrice = (newOrderItem?.selling_price ?? upsertProduct?.retail_price) * newOrderItem?.quantity; 
                         totalToBePaid += orderItemPrice; 
                         // console.log({ 'totaltobe': totalToBePaid }); 
                         // console.log({'Cart length:': cart?.length}); 

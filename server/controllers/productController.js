@@ -15,6 +15,7 @@ import ProductDescription from '../models/ProductDescription.js';
 import ProductFeature from '../models/ProductFeature.js';
 import ProductImage from '../models/ProductImage.js'; 
 import ProductInfo from '../models/ProductInfo.js'; 
+import SitePaymentConfiguration from '../models/SitePaymentConfiguration.js';
 
 
 /**
@@ -793,6 +794,25 @@ const addToShop = asyncHandler(async (req, res) => {
                     };
                     // console.log(newBrand);
 
+                    /** Get Site Payment Charge Configuration */
+                    const foundPaymentChargeConfiguration = await SitePaymentConfiguration.findOne({ initial_setup: true }); 
+
+                    let computedInitialRetailPrice, computedRetailPrice;
+
+                    if (foundPaymentChargeConfiguration) {
+                        if (foundPaymentChargeConfiguration?.type == 'amount') {
+                            computedInitialRetailPrice = response?.data?.price?.list_price
+                                                        + foundPaymentChargeConfiguration?.unit; 
+                            computedRetailPrice = (response?.data?.price?.amount ?? response?.data?.price?.list_price)
+                                                    + foundPaymentChargeConfiguration?.unit;
+                        } else if (foundPaymentChargeConfiguration?.type == 'percentage') {
+                            computedInitialRetailPrice = response?.data?.price?.list_price
+                                                        + ((foundPaymentChargeConfiguration?.unit/100) * response?.data?.price?.list_price); 
+                            computedRetailPrice = (response?.data?.price?.amount ?? response?.data?.price?.list_price)
+                                                + ((foundPaymentChargeConfiguration?.unit/100) * (response?.data?.price?.amount ?? response?.data?.price?.list_price)); 
+                        }
+                    }
+
                     /** Create new product, since it does not exist */ 
                     const newProduct = await Product.create({
                         asin: id,
@@ -801,8 +821,11 @@ const addToShop = asyncHandler(async (req, res) => {
                         link: response?.data?.link,
                         title: response?.data?.title,
                         slug: slugIt(response?.data?.title + '-' + new Date().toISOString() ),
-                        initial_retail_price: response?.data?.price?.list_price,
-                        retail_price: response?.data?.price?.amount ?? response?.data?.price?.list_price, 
+                        purchase_price: response?.data?.price?.amount ?? response?.data?.price?.list_price, 
+                        // initial_retail_price: response?.data?.price?.list_price,
+                        initial_retail_price: computedInitialRetailPrice ?? (response?.data?.price?.list_price + 20),
+                        // retail_price: response?.data?.price?.amount ?? response?.data?.price?.list_price, 
+                        retail_price: computedRetailPrice ?? ((response?.data?.price?.amount ?? response?.data?.price?.list_price) + 20), 
                         images: response?.data?.images,
                         purchased_from_amazon_market: true,
                     });

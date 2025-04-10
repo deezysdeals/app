@@ -1,5 +1,4 @@
 import asyncHandler from 'express-async-handler'; 
-import Order from '../../models/Order.js'; 
 import OrderItem from '../../models/OrderItem.js'; 
 
 
@@ -12,20 +11,20 @@ const getProfits = asyncHandler(async (req, res) => {
     const skip = (current_page - 1) * limit; 
 
     const profits = await OrderItem.find({ deleted_at: null, order_paid: true })
-                            .sort('-created_at')
-                            .skip(skip)
-                            .limit(limit)
-                            .populate({
-                                path: 'product',
-                            })
-                            .populate({
-                                path: 'order',
-                            })
-                            .populate({
-                                path: 'user',
-                                select: 'first_name last_name username'
-                            })
-                            .lean(); 
+                                    .sort('-created_at')
+                                    .skip(skip)
+                                    .limit(limit)
+                                    .populate({
+                                        path: 'product',
+                                    })
+                                    .populate({
+                                        path: 'order',
+                                    })
+                                    .populate({
+                                        path: 'user',
+                                        select: 'first_name last_name username'
+                                    })
+                                    .lean(); 
     if (!profits?.length) return res.status(404).json({ message: "No profits found!" }); 
 
     const total = await OrderItem.countDocuments({ deleted_at: null, order_paid: true }); 

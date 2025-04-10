@@ -20,14 +20,14 @@ dealRouter.get('/:deal/products', getDealProducts);
 
 /** Main Routes */
 dealRouter.route('/')
-                .get(getDeals)
-                .post(authenticated, checkRoles(roles.admin, roles.superAdmin), createDeal); 
+        .get(getDeals)
+        .post(authenticated, checkRoles(roles.admin, roles.superAdmin), createDeal); 
 
 dealRouter.route('/:id')
-                .get(getDeal)
-                .put(authenticated, checkRoles(roles.admin, roles.superAdmin), updateDeal)
-                .patch(authenticated, checkRoles(roles.admin, roles.superAdmin), deleteDeal)
-                .delete(authenticated, checkRoles(roles.admin, roles.superAdmin), destroyDeal); 
+        .get(getDeal)
+        .put(authenticated, checkRoles(roles.admin, roles.superAdmin), updateDeal)
+        .patch(authenticated, checkRoles(roles.admin, roles.superAdmin), deleteDeal)
+        .delete(authenticated, checkRoles(roles.admin, roles.superAdmin), destroyDeal); 
 
 dealRouter.route('/:id/restore', authenticated, checkRoles(roles.admin, roles.superAdmin), restoreDeal)
 

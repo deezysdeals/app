@@ -34,11 +34,12 @@ const getDeals = asyncHandler(async (req, res) => {
                         })
                         .lean(); 
     } else {
-        deals = await Deal.find({ $or: [
-                                    { title: new RegExp(search_key, 'i') },
-                                    { code: new RegExp(search_key, 'i') }
-                                ],
-                                deleted_at: null })
+        // deals = await Deal.find({ $or: [
+        //                             { title: new RegExp(search_key, 'i') },
+        //                             { code: new RegExp(search_key, 'i') }
+        //                         ],
+        //                         deleted_at: null })
+        deals = await Deal.find({ deleted_at: null })
                         .sort('-created_at')
                         .skip(skip)
                         .limit(limit)

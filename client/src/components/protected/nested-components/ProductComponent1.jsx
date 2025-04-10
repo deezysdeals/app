@@ -499,11 +499,11 @@ export default function ProductComponent1({ itemId,
                                             <div id={ `carouselModalImage${itemId}` } className="carousel slide">
                                                 <div className="carousel-inner position-relative" style={{ width: '215px', height: '215px' }}>
                                                     <div className="images">
-                                                        {console.log(imgsSrc)}
-                                                        {console.log(imgsSrc[0])}
+                                                        {/* {console.log(imgsSrc)}
+                                                        {console.log(imgsSrc[0])} */}
                                                         { (imgsSrc?.length > 0) && imgsSrc?.map((imgSrc, imgSrcIndex) => {
-                                                            console.log(imgSrc);
-                                                            console.log(imgSrc?.[0]?.image);
+                                                            // console.log(imgSrc);
+                                                            // console.log(imgSrc?.[0]?.image);
                                                                 return (
                                                                     <div key={ imgSrcIndex } className={`carousel-item ${ (imgSrcIndex == 0) && `active` }`}>
                                                                         <img src={ imgSrc?.[imgSrcIndex]?.image ? imgSrc?.[imgSrcIndex]?.image 
@@ -558,10 +558,10 @@ export default function ProductComponent1({ itemId,
                                                 { !location.pathname.startsWith('/home/market') && (
                                                     <span className="card-text">
                                                         <small><s>{ oldPrice && '$'+Number(oldPrice)?.toFixed(2) }</s>{ oldPrice && <span>&nbsp;</span>}</small>
-                                                        { (!location.pathname.startsWith('/home/sales')) 
+                                                        { (!location.pathname.startsWith('/home/sales'))
                                                             ?   <span className="fw-semibold">
                                                                     { currentPrice ? '$'+Number(currentPrice)?.toFixed(2) : '$'+0 }
-                                                                </span> 
+                                                                </span>
                                                                 :   <span className="fw-semibold">
                                                                         { sellingPrice ? '$'+Number(sellingPrice)?.toFixed(2) : '$'+0 }
                                                                     </span> 

@@ -44,6 +44,7 @@ export default function ProductComponent2({ source,
     const { user } = useContext(AuthContext);
     const { cartItems, addToCart, removeFromCart } = useContext(CartContext); 
     const { favorites, getFavorites } = useFavorites(); 
+    
     const { createFavorite, deleteFavorite } = useFavorite(); 
 
     return (
@@ -62,11 +63,12 @@ export default function ProductComponent2({ source,
                                                 <div className={`carousel-item ${(index==0) && `active`}`}>
                                                     <img src={ image?.hi_res ? image?.hi_res
                                                                 : image?.large ? image?.large
+                                                                : image?.thumb ? image?.thumb
                                                                 : image } className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
                                                 </div>
                                             )
                                         }))} 
-                                    </div> 
+                                    </div>
 
                                     <div>
                                         <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target={`#carouselExample${itemId}`} data-bs-slide="prev">

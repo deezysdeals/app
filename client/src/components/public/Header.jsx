@@ -19,7 +19,7 @@ export default function Header() {
     const handleSearchProducts = e => {
         e.preventDefault();
 
-        if (!searchKey || searchKey == '') {
+        if (!searchKey || searchKey == '' || !voiceText || voiceText == '') {
             navigate(route('products.index', { source: 'shop' }))
         } else {
             navigate(route('products.search.index', { source: 'shop', 

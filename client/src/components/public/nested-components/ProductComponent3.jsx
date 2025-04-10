@@ -225,7 +225,7 @@ export default function ProductComponent3({ productArticle }) {
 
                         <div className="pt-4">
                             <span>
-                                <a href="#features" className="text-dark fw-semibold fs-6">View More Features</a>
+                                <a href="#features" className="text-dark fw-semibold fs-6">View Features</a>
                             </span>
                         </div>
                     </section>

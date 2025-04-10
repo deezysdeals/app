@@ -1,4 +1,6 @@
-import { useState } from 'react'; 
+// import { useState } from 'react'; 
+// import { Link } from 'react-router-dom'; 
+import { route } from '@/routes'; 
 import { useSiteConfiguration } from '@/hooks/useSiteConfiguration.jsx'; 
 import Cart from '@/components/Cart.jsx'; 
 import Help from '@/components/Help.jsx'; 
@@ -34,7 +36,7 @@ export default function Footer() {
             
                         <div className="m-auto">
                             <span className="shop-now btn btn-sm border-radius-35">
-                                <a href="#" className="text-decoration-none ps-1 fw-semibold">
+                                <a href={ route('products.index', { source: 'shop' }) } className="text-decoration-none ps-1 fw-semibold">
                                     <span>Shop Now</span>&nbsp;
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">

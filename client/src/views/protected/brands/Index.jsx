@@ -122,7 +122,7 @@ export default function Index() {
                                                 <span className="btn btn-sm btn-dark border-radius-35 py-0">
                                                     <Link to={ route('home.brands.show', { id: brandItem?._id })} 
                                                         className="text-decoration-none text-white fw-semibold">
-                                                            View Details
+                                                            View
                                                     </Link>
                                                 </span> 
                                                 <div className="dropdown">

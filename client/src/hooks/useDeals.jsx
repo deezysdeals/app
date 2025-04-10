@@ -25,10 +25,8 @@ export function useDeals(dealQuery) {
         // return axiosInstance.get(`deals?page=${dealQuery?.page}&limit=${dealQuery?.limit}`, { signal }) 
         return axios.get(`${ Constants?.serverURL }/api/v1/deals?page=${dealQuery?.page}&limit=${dealQuery?.limit}&search_key=${dealQuery?.search_key}`, { signal }) 
             .then(response => setDeals(response?.data))
-            .catch(error => {
-                // console.log(error);
-            });
-    } 
+            .catch(error => { /** console.log(error); */ });
+    };
 
     return { deals, getDeals, setDeals }; 
 } 

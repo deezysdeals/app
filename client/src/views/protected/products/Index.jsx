@@ -9,6 +9,7 @@ dayjs.extend(relativeTime);
 dayjs.extend(utc); 
 import { useVoiceToText } from '@/utils/useVoiceToText.jsx'; 
 import { useProducts } from '@/hooks/useProducts.jsx'; 
+import { useFavorites } from '@/hooks/useFavorites.jsx'; 
 import scrollToTop from '@/utils/ScrollToTop.jsx'; 
 import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
 import PaginationLinks from '@/components/PaginationLinks.jsx'; 
@@ -44,6 +45,12 @@ export default function Index() {
     }); 
     const { products, getProducts } = useProducts(productQuery); 
     console.log(products); 
+
+    const [favoriteQuery, setFavoriteQuery] = useState({ 
+        page: 1, 
+        limit: 'all', 
+    }); 
+    const { favorites, getFavorites } = useFavorites(favoriteQuery); 
 
     return (
         <Layout>
@@ -142,7 +149,8 @@ export default function Index() {
                                                     oldPrice='' 
                                                     currentPrice={ product?.retail_price } 
                                                     rating={ product?.rating?.rate } 
-                                                    category={ product?.category } />
+                                                    category={ product?.category }
+                                                    favorites={ favorites } />
                                         </li>
                                     )
                                 })) }

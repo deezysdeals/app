@@ -37,8 +37,9 @@ export default function Products() {
 
     // const { productsExt, getProductsExt } = useProductsExt(); 
     // console.log(productsExt); 
-    const { products, getProducts } = useProducts(productQuery); 
+    const { products, getProducts, loading } = useProducts(productQuery); 
     console.log(products); 
+    console.log(loading); 
 
     useEffect(() => {
         setProductQuery(prev => ({
@@ -80,7 +81,16 @@ export default function Products() {
                 <div className="main"> 
 
                     <section className="products pt-3">
-                        {(productsList?.data?.length > 0) ? (productsList?.data?.map((product, index) => {
+                        {
+                         (loading == true) ? (
+                            <div class="text-center">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        ) :
+                        ((productsList?.data?.length > 0) && loading == false) ? (productsList?.data?.map((product, index) => {
+                            console.log(product)
                             return (
                                 <article key={ product?._id } className="card border-0 mb-5">
                                     <ProductComponent2 

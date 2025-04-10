@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import { useSiteConfiguration } from '@/hooks/useSiteConfiguration.jsx'; 
+import { useSitePaymentConfiguration } from '@/hooks/useSitePaymentConfiguration.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
 export default function Index() { 
     const { siteConfiguration, updateSiteConfiguration, getSiteConfiguration } = useSiteConfiguration(); 
+    const { sitePaymentConfiguration, updateSitePaymentConfiguration, getSitePaymentConfiguration } = useSitePaymentConfiguration(); 
     // console.log(siteConfiguration); 
 
     /** Handle image file input*/ 
@@ -70,7 +72,17 @@ export default function Index() {
 
         await updateSiteConfiguration(formData); 
         // await getSiteConfiguration();
-    }
+    };
+
+    async function submitSitePaymentConfiguration(e) {
+        e.preventDefault();
+
+        const formData = new FormData();
+        sitePaymentConfiguration?.data?.type && formData.append('type', sitePaymentConfiguration?.data?.type);
+        sitePaymentConfiguration?.data?.unit && formData.append('unit', sitePaymentConfiguration?.data?.unit);
+
+        await updateSitePaymentConfiguration(formData);
+    };
 
     return (
         <Layout>
@@ -326,6 +338,86 @@ export default function Index() {
                                                         </div> 
                                                     </div> 
                                                 </div> 
+                                            </section>
+
+                                            <div className="pt-3 d-flex justify-content-end">
+                                                <button type="submit" className="btn btn-dark px-3 border-radius-35">
+                                                    <span>Update</span>&nbsp;
+                                                    <span>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-arrow-right-circle"
+                                                            viewBox="0 0 16 16">
+                                                            <path fillRule="evenodd"
+                                                                d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+                                                        </svg>
+                                                    </span>
+                                                </button>
+                                            </div> 
+                                    </form>
+
+
+                                </section> 
+                            </div>
+                        </section>
+
+                        <section className="pb-3">
+                            <h3 className="border-bottom pb-1 fs-5">2. Payment Settings</h3> 
+
+                            <div className='py-3'>
+                                <section className="main-home-hero pt-3">
+                                    <h4 className="border-bottom pb-1 fs-6">a. Profit Settings</h4> 
+                                    
+                                    <form 
+                                        onSubmit={ submitSitePaymentConfiguration } 
+                                        className="create-edit-form">
+                                            <section className="group-fields mt-3">
+                                                <div className="d-flex flex-column gap-1 border-bottom pb-2 my-3">
+                                                    <label htmlFor="features" className="form-label fw-semibold fs-6">Order Profit Charge Settings</label> 
+                                                    <div className="row g-2">
+                                                        <div className="col-sm-12 col-md-6">
+                                                            <div className="mb-3">
+                                                                <div className="input-group">
+                                                                    <span className="input-group-text border-radius-35 fw-semibold">Type</span>
+                                                                    <select 
+                                                                        id="type" 
+                                                                        className="form-select border-radius-35" 
+                                                                        value={ sitePaymentConfiguration?.data?.type ?? '' } 
+                                                                        onChange={ e => sitePaymentConfiguration.setData({
+                                                                            ...sitePaymentConfiguration?.data,
+                                                                            type: e.target.value,
+                                                                        }) }
+                                                                        placeholder="e.g. USD"
+                                                                        aria-label="Payment configuration charge type" 
+                                                                        aria-describedby="payment configuration charge type">
+                                                                            <option>Choose one ...</option>
+                                                                            <option value="percentage">Percentage</option>
+                                                                            <option value="amount">Amount (in USD)</option> 
+                                                                    </select>
+                                                                </div>
+                                                                <div className="form-text px-3"><small>Select the type of charge (% or USD).</small></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-sm-12 col-md-6">
+                                                            <div className="mb-3">
+                                                                <div className="input-group">
+                                                                    <span className="input-group-text border-radius-35 fw-semibold">Unit</span>
+                                                                    <input 
+                                                                        type="number" 
+                                                                        value={ sitePaymentConfiguration?.data?.unit ?? '' } 
+                                                                        onChange={ e => sitePaymentConfiguration.setData({
+                                                                            ...sitePaymentConfiguration?.data,
+                                                                            unit: e.target.value,
+                                                                        }) }
+                                                                        placeholder="e.g. 123" 
+                                                                        id="unit" 
+                                                                        className="form-control border-radius-35" 
+                                                                        aria-label="Payment configuration charge unit" 
+                                                                        aria-describedby="payment configuration charge unit" />
+                                                                </div>
+                                                                <div className="form-text px-3"><small>Enter the unit of charge.</small></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </section>
 
                                             <div className="pt-3 d-flex justify-content-end">

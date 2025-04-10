@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
                     width: 325, 
                     position: 'top', 
                     showConfirmButton: false
-                })
+                });
             })
             .catch(error => { 
                 // console.log(error); 
