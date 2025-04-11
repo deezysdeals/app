@@ -26,7 +26,7 @@ export function useTwitterX(id = null) {
         setErrors({}); 
 
         console.log(); 
-        return axiosInstance.post('social-media/twitter-x/post-tweet', tweet)
+        return axiosInstance.postForm('social-media/twitter-x/post-tweet', tweet)
             .then(response => {
                 setData(response?.data); 
                 swal.fire({

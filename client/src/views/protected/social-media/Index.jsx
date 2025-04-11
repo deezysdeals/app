@@ -5,7 +5,45 @@ import PaginationLinks from '@/components/protected/nested-components/Pagination
 
 
 export default function Index() {
-    const [activeLink, setActiveLink] = useState('tik-tok');
+    const [mediaFields, setMediaFields] = useState({
+        field_1: true, 
+        field_2: false, 
+        field_3: false,
+    }); 
+
+    const [media, setMedia] = useState({});
+
+    const handleMediaClick = (index) => {
+        document.getElementById(`media-upload-input-${index}`).click(); 
+    };
+
+    const handleMediaChange = (index, e) => {
+        const file = e.target.files[0]; 
+
+        if (file) {
+            const reader = new FileReader();
+            // reader.onload = () => {
+            reader.onloadend = () => {
+                let newIndex = `media${index}`;
+                setMedia(prevMedia => ({
+                    ...prevMedia,
+                    [newIndex]: reader.result, 
+                })); 
+            };
+            reader.readAsDataURL(file);
+        }
+    }; 
+
+    const handleRemoveMedia = (index) => { 
+        let newIndex = `media${index}`;
+        // setImages(null); 
+        setMedia(prevMedia => ({
+            ...prevMedia,
+            [newIndex]: '', 
+        })); 
+    }; 
+
+    const [activeLink, setActiveLink] = useState('twitter-x');
 
     const { createTwitterX } = useTwitterX();
 
@@ -14,7 +52,11 @@ export default function Index() {
         const formData = new FormData(e.target);
         const message = formData.get('message');
 
-        // console.log(message);
+        console.log(media)
+        console.log(media?.media0)
+        console.log(media?.['media0'])
+
+        console.log(message);
 
         if (!message) {
             alert('Please enter a message');
@@ -22,14 +64,29 @@ export default function Index() {
         }
 
         if (activeLink == 'twitter-x') {
-            await createTwitterX({ message });
+            const formData = new FormData();
+            // formData.append('message', message);
+            formData.append('message', e.target.message.value);
+            // (media?.['media0']) && formData.append('media_1', media?.['media0']); 
+            (media?.['media0']) && formData.append('media_1', e.target.media0.files[0]); 
+            // (mediaFields?.field_2 && media?.['media1']) && formData.append('media_2', media?.['media1']); 
+            (mediaFields?.field_2 && media?.['media1']) && formData.append('media_2', e.target.media1.files[0]); 
+            // (mediaFields?.field_3 && media?.['media2']) && formData.append('media_3', media?.['media2']); 
+            (mediaFields?.field_3 && media?.['media2']) && formData.append('media_3', e.target.media2.files[0]); 
+
+            // const media_1 = media?.['media0']
+
+            // await createTwitterX({ message, media_1 });
+            await createTwitterX(formData);
         } else if (activeLink == 'tik-tok') {
 
         } else if (activeLink == 'instagram') {
 
         } else if (activeLink == 'facebook') {
 
-        }
+        };
+
+        e.target.message.value = '';
     }
 
     return (
@@ -153,7 +210,7 @@ export default function Index() {
 
                                 <div className="modal fade" id="exactModal" tabIndex="-1" aria-labelledby="exactModalLabel" aria-hidden="true">
                                     <div className="modal-dialog">
-                                        <form onSubmit={ handleSubmit } className="modal-content">
+                                        <form onSubmit={ handleSubmit } encType="multipart/form-data" className="modal-content">
                                             <div className="modal-header d-flex align-items-center justify-content-between">
                                                 <h4 className="modal-title fs-5" id="exactModalLabel">Post on&nbsp;
                                                     { (activeLink == 'tik-tok') 
@@ -181,6 +238,204 @@ export default function Index() {
                                                     placeholder="Write something ..." 
                                                     style={{ height: '50px' }}>
                                                 </textarea>
+
+                                                <section className="pt-3">
+                                                    <div className="d-flex justify-content-between flex-wrap gap-1 border-bottom pb-2 my-3">
+                                                        <label htmlFor="images" className="form-label fw-semibold fs-6">Add images/videos to your post</label> 
+                                                        <div className="w-100 d-flex justify-content-end align-items-center flex-wrap gap-2">
+                                                            <span 
+                                                                onClick={ () => {
+                                                                    if (mediaFields?.field_3) {
+                                                                        setMediaFields(prevState => ({
+                                                                            ...prevState,
+                                                                            field_3: false, 
+                                                                            ...Object.fromEntries(Array.from({ length: 6 }, (_, i) => [`field_${i + 1}`, true]).slice(0, 2))
+                                                                        })); 
+                                                                    } else if (mediaFields?.field_2) {
+                                                                        setMediaFields(prevState => ({
+                                                                            ...prevState,
+                                                                            field_2: false, 
+                                                                            ...Object.fromEntries(Array.from({ length: 6 }, (_, i) => [`field_${i + 1}`, true]).slice(0, 1))
+                                                                        })); 
+                                                                    }
+                                                                } }
+                                                                className={`btn btn-sm btn-dark py-0 border-left-radius-35 ${mediaFields?.field_2 == false && ` disabled`}`}>
+                                                                    Less fields
+                                                            </span>
+                                                            <span 
+                                                                onClick={ () => {
+                                                                    if (mediaFields?.field_2 == false) {
+                                                                        setMediaFields(prevState => ({
+                                                                            ...prevState,
+                                                                            field_2: true,
+                                                                            ...Object.fromEntries(Array.from({ length: 4 }, (_, i) => [`field_${i + 3}`, false]))
+                                                                        })); 
+                                                                    } else if (mediaFields?.field_3 == false) {
+                                                                        setMediaFields(prevState => ({
+                                                                            ...prevState,
+                                                                            field_3: true, field_2: true, 
+                                                                            ...Object.fromEntries(Array.from({ length: 3 }, (_, i) => [`field_${i + 4}`, false]))
+                                                                        })); 
+                                                                    } 
+                                                                } }
+                                                                className={`btn btn-sm btn-dark py-0 border-right-radius-35 ${mediaFields?.field_3 && ` disabled`}`}>
+                                                                    More fields
+                                                            </span>
+                                                        </div>
+                                                    </div> 
+                                                    <div className="d-flex flex-wrap gap-3">
+                                                        <div className="mb-3 position-relative"> 
+                                                            {/* Hidden file input for image */}
+                                                            <input
+                                                                type="file"
+                                                                accept="image/*"
+                                                                id={`media-upload-input-${0}`}
+                                                                name="media0"
+                                                                style={{ display: 'none' }} // Hide the file input
+                                                                // onChange={(e) => handleImageChange(0, e)} 
+                                                                onChange={ (e) => { handleMediaChange(0, e)} }
+                                                            />
+                                                            {/* End of Hidden file input for image */}
+
+                                                            {/* Image preview as the clickable element */}
+                                                            <div onClick={() => handleMediaClick(0)} className="cursor-pointer border-radius-15 d-flex justify-content-center align-items-center" style={{ width: '200px', height: '200px', backgroundColor: '#f0f0f0' }}>
+                                                                { media?.['media0'] ? (
+                                                                    <img src={media?.['media0']} alt={`Preview ${1}`} className="border-radius-15" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                                ) : (
+                                                                    <span>
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">
+                                                                            <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                                                                            <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>
+                                                                        </svg>
+                                                                    </span>
+                                                                )}
+                                                            </div> 
+
+                                                            {/* Remove button */}
+                                                            {media?.['media0'] && (
+                                                                <span 
+                                                                    onClick={() => handleRemoveMedia(0)} 
+                                                                    className="bg-transparent border-0"
+                                                                    style={{
+                                                                        position: 'absolute', 
+                                                                        top: '0', 
+                                                                        left: '190px', 
+                                                                        cursor: 'pointer',
+                                                                    }}
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ff0000" className="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                                                                    </svg>
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    
+                                                    { (mediaFields?.field_2) && 
+                                                        <div className="mb-3 position-relative"> 
+                                                            {/* Hidden file input for image */}
+                                                            <input
+                                                                type="file"
+                                                                accept="image/*"
+                                                                id={`media-upload-input-${1}`}
+                                                                name="media1"
+                                                                style={{ display: 'none' }} // Hide the file input
+                                                                onChange={(e) => handleMediaChange(1, e)} 
+                                                                // onChange={ (e) => { product.setData({
+                                                                //                         ...product?.data,
+                                                                //                         image_2: e.target.files[0],
+                                                                //                     });
+                                                                //                     handleImageChange(1, e)} }
+                                                            />
+                                                            {/* End of Hidden file input for image */}
+
+                                                            {/* Media preview as the clickable element */}
+                                                            <div onClick={() => handleMediaClick(1)} className="cursor-pointer border-radius-15 d-flex justify-content-center align-items-center" style={{ width: '200px', height: '200px', backgroundColor: '#f0f0f0' }}>
+                                                                { media?.['media1'] ? (
+                                                                    <img src={media?.['media1']} alt={`Preview ${2}`} className="border-radius-15" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                                ) : (
+                                                                    <span>
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">
+                                                                            <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                                                                            <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>
+                                                                        </svg>
+                                                                    </span>
+                                                                )}
+                                                            </div>
+
+                                                            {/* Remove button */}
+                                                            {media?.['media1'] && (
+                                                                <span 
+                                                                    onClick={() => handleRemoveMedia(1)} 
+                                                                    className="bg-transparent border-0"
+                                                                    style={{
+                                                                        position: 'absolute', 
+                                                                        top: '0', 
+                                                                        left: '190px', 
+                                                                        cursor: 'pointer',
+                                                                    }}
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ff0000" className="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                                                                    </svg>
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    } 
+                                                    { (mediaFields?.field_3) &&
+                                                        <div className="mb-3 position-relative"> 
+                                                            {/* Hidden file input for media */}
+                                                            <input
+                                                                type="file"
+                                                                accept="image/*"
+                                                                id={`media-upload-input-${2}`}
+                                                                name="media2"
+                                                                style={{ display: 'none' }} // Hide the file input
+                                                                onChange={(e) => handleMediaChange(2, e)} 
+                                                                // onChange={ (e) => { product.setData({
+                                                                //                         ...product?.data,
+                                                                //                         image_3: e.target.files[0],
+                                                                //                     });
+                                                                //                     handleImageChange(2, e)} }
+                                                            />
+                                                            {/* End of Hidden file input for image */}
+
+                                                            {/* Image preview as the clickable element */}
+                                                            <div onClick={() => handleMediaClick(2)} className="cursor-pointer border-radius-15 d-flex justify-content-center align-items-center" style={{ width: '200px', height: '200px', backgroundColor: '#f0f0f0' }}>
+                                                                { media?.['media2'] ? (
+                                                                    <img src={media?.['media2']} alt={`Preview ${3}`} className="border-radius-15" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                                ) : (
+                                                                    <span>
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="#414141" className="bi bi-image" viewBox="0 0 16 16">
+                                                                            <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                                                                            <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z"/>
+                                                                        </svg>
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            {/* Remove button */}
+                                                            {media?.['media2'] && (
+                                                                <span 
+                                                                    onClick={() => handleRemoveMedia(2)} 
+                                                                    className="bg-transparent border-0"
+                                                                    style={{
+                                                                        position: 'absolute', 
+                                                                        top: '0', 
+                                                                        left: '190px', 
+                                                                        cursor: 'pointer',
+                                                                    }}
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ff0000" className="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                                                                    </svg>
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    } 
+
+                                                    </div>
+                                                </section> 
+
+
                                             </div>
                                             <div className="modal-footer">
                                                 <button type="submit" className="border-0">

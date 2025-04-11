@@ -1,12 +1,15 @@
 import dotenv from 'dotenv';
 dotenv.config(); 
 import asyncHandler from "express-async-handler"; 
+import cloudinaryImageUpload from '../../config/imageUpload/cloudinary.js';
 import { TwitterApi } from 'twitter-api-v2'; 
+import { unlinkSync } from 'fs';
 import got from 'got';
 import crypto from 'crypto';
 import OAuth from 'oauth-1.0a';
 import { createInterface } from 'readline';
 import { stringify } from 'querystring';
+import SocialPost from '../../models/SocialPost.js';
 
 
 const twitterClient = new TwitterApi({
@@ -182,64 +185,87 @@ const tweet = asyncHandler(async (req, res) => {
 
 const postTweet = asyncHandler(async (req, res) => {
     try {
-        const { message } = req?.body; 
-        const tweet = await twitterClient.v2.tweet(message); 
-        res.status(201).json({ data: tweet }); 
-        // const files = req.files;
+        const { message } = req?.body;
 
-        // let mediaIds = [];
+        const allMedia = [
+            req?.files?.media_1, 
+            req?.files?.media_2, 
+            req?.files?.media_3,
+        ]; 
 
-        // if (files && files.length > 0) {
-        //     for (const file of files) {
-        //         let mediaId;
+        // console.log(allMedia)
+        // console.log(req?.body)
+        // console.log(req?.files)
 
-        //         // Determine if the file is an image or a video
-        //         const isVideo = file.mimetype.startsWith('video/');
-        //         const isImage = file.mimetype.startsWith('image/');
+        const validMedia = allMedia.filter(media => media != null); 
 
-        //         if (isImage) {
-        //             // Simple upload for images
-        //             mediaId = await twitterClient.v1.uploadMedia(file.path, {
-        //                 mimeType: file.mimetype,
-        //             });
-        //         } else if (isVideo) {
-        //             // Chunked upload for videos
-        //             mediaId = await twitterClient.v1.uploadMedia(file.path, {
-        //                 mimeType: file.mimetype,
-        //                 target: 'tweet_video',
-        //             });
-        //         } else {
-        //             throw new Error(`Unsupported media type: ${file.mimetype}`);
-        //         }
+        console.log(validMedia)
 
-        //         mediaIds.push(mediaId);
+        let mediaArray = [];
+        let mediaIds = [];
 
-        //         // Clean up uploaded file
-        //         fs.unlinkSync(file.path);
-        //     }
-        // }
+        if (validMedia?.length > 0) {
+            for (let i = 0; i < validMedia.length; i++) {
+                const media = validMedia[i]; 
+                // console.log(media)
 
-        // const tweet = await twitterClient.v2.tweet({
-        //     text: message,
-        //     media: mediaIds.length ? { media_ids: mediaIds } : undefined,
-        // });
+                let tweetMediaUpload = await cloudinaryImageUpload(media.tempFilePath, "deezysdeals_tweet_media"); 
+                if (!tweetMediaUpload) return res.status(400).json({ message: "Media upload failed" }); 
+
+                mediaArray.push(tweetMediaUpload.secure_url); 
+
+                let mediaId;
+
+                // const mimeType = media.match(/^data:(.+);base64,/)[1];
+
+                // const isVideo = mimeType.startsWith('video/');
+                const isVideo = media.mimetype.startsWith('video/');
+                // const isImage = mimeType.startsWith('image/');
+                const isImage = media.mimetype.startsWith('image/');
+
+                if (isImage) {
+                    // Simple upload for images
+                    console.log(media)
+                    mediaId = await twitterClient.v1.uploadMedia(media.tempFilePath, {
+                        mimeType: media.mimetype,
+                    });
+                } else if (isVideo) {
+                    // Chunked upload for videos
+                    console.log(media)
+                    mediaId = await twitterClient.v1.uploadMedia(media.tempFilePath, {
+                        mimeType: media.mimetype,
+                        target: 'tweet_video',
+                    });
+                } else {
+                    throw new Error(`Unsupported media type: ${media.mimetype}`);
+                }
+
+                mediaIds.push(mediaId);
+
+                // Clean up uploaded file
+                // fs.unlinkSync(media.tempFilePath);
+            }
+        }
+
+        const tweet = await twitterClient.v2.tweet({
+            text: message,
+            media: mediaIds.length ? { media_ids: mediaIds } : undefined,
+        });
+
+        const addTweetToDatabase = new SocialPost({
+            user: req?.user?._id,
+            message: message,
+            media: mediaArray,
+            network: 'twitter-x',
+        });
 
         // res.status(201).json({ data: tweet });
+
+        res.status(201).json({ data: tweet, success: 'Tweet added.' }); 
     } catch (error) {
         res.status(400).json({ message: "An error occured!", details: `${error}` }); 
     }
 });
-// async function postTweet(text) {
-//     try {
-//         const { data } = await twitterClient.v2.tweet(text);
-//         console.log('Tweet posted successfully:', data);
-//     } catch (error) {
-//         console.error('Error posting tweet:', error);
-//     }
-// }
-
-// Example usage
-// postTweet('Hello Twitter from my web app!');
 
 
 export { tweet, postTweet };
