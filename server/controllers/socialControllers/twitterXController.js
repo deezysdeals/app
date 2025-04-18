@@ -252,16 +252,29 @@ const postTweet = asyncHandler(async (req, res) => {
             media: mediaIds.length ? { media_ids: mediaIds } : undefined,
         });
 
-        const addTweetToDatabase = new SocialPost({
-            user: req?.user?._id,
+        const addTweetToDatabase = await SocialPost.create({
+            user: req?.user_id,
             message: message,
             media: mediaArray,
             network: 'twitter-x',
         });
 
-        // res.status(201).json({ data: tweet });
+        // const addTweetToDatabase = new SocialPost({
+        //     user: req?.user_id,
+        //     message: message,
+        //     media: validMedia,
+        //     network: 'twitter-x',
+        // });
 
-        res.status(201).json({ data: tweet, success: 'Tweet added.' }); 
+        // addTweetToDatabase.save()
+        //                 .then(() => {
+        //                     res.status(201).json({ success: `Tweet added`, data: addTweetToDatabase });
+        //                 })
+        //                 .catch((error) => {
+        //                     if (error) return res.status(400).json({ message: "An error occured!", details: `${error}` }); 
+        //                 });
+
+        res.status(201).json({ success: `Tweet added`, data: addTweetToDatabase });
     } catch (error) {
         res.status(400).json({ message: "An error occured!", details: `${error}` }); 
     }

@@ -108,6 +108,24 @@ export function useProduct(id = null) {
             .finally(() => setLoading(false)); 
     }
 
+    async function makeProductFeatured(id, { signal } = {}) {
+        setLoading(true); 
+
+        console.log(id)
+
+        // return axiosInstance.get(`products/${id}`, { signal })
+        return axiosInstance.patch(`products/make-featured/${id}`, { signal })
+            .then(response => {
+                setData(response?.data?.data); 
+                console.log(response?.data);
+            })
+            .catch(error => {
+                setErrors(error?.response); 
+                console.log(error)
+            })
+            .finally(() => setLoading(false));
+    }
+
     async function getProduct(id, { signal } = {}) {
         setLoading(true); 
 
@@ -163,6 +181,7 @@ export function useProduct(id = null) {
         product: { data, setData, errors, loading }, 
         createProduct, 
         addToShop, 
+        makeProductFeatured,
         getProduct, 
         updateProduct, 
         deleteProduct, 

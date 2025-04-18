@@ -193,7 +193,18 @@ const getTopRatedProducts = asyncHandler(async (req, res) => {
 /**
  * GET SUGGESTED PRODUCTS
  */
-const getSuggestedProducts = ''; 
+const getSuggestedProducts = asyncHandler(async (req, res) => {
+    const limit = 20;
+
+    const products = await Product.aggregate([
+        { $match: { deleted_at: null } },
+        { $sample: { size: limit } }
+    ]);
+
+    if (!products?.length) return res.status(404).json({ message: "No suggested products found!" }); 
+
+    res.json({ data: products });
+});
 
 
 export { getProductsPublicVersion, 

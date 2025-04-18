@@ -29,7 +29,9 @@ import siteConfigurationRouter from './apiRoutes/siteConfigurationRoutes.js';
 import sitePaymentConfigurationRouter from './apiRoutes/sitePaymentConfigurationRoutes.js'; 
 import tiktokRouter from './apiRoutes/tiktokRoutes.js'; 
 import twitterXRouter from './apiRoutes/twitterXRoutes.js'; 
+import socialRouter from './apiRoutes/socialRoutes.js'; 
 import dashboardRouter from './apiRoutes/dashboardRoutes.js'; 
+import chatBotRouter from './apiRoutes/chatBotRoutes.js'; 
 
 
 router.use('/auth', authRouter); 
@@ -57,10 +59,12 @@ router.use('/sign-in-attempts', signInAttemptRouter);
 router.use('/trendings', trendingRouter); 
 
 router.use('/dashboard', dashboardRouter); 
+router.use('/chat-bot', chatBotRouter); 
 router.use('/site-configurations', siteConfigurationRouter); 
 router.use('/site-payment-configurations', sitePaymentConfigurationRouter); 
 router.use('/social-media/tiktok', tiktokRouter); 
 router.use('/social-media/twitter-x', twitterXRouter); 
+router.use('/social-media', socialRouter); 
 
 
 export default router;

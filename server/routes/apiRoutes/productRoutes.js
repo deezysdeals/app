@@ -13,6 +13,7 @@ import { getProducts,
 
         getPurchasedProducts, 
         addToShop, 
+        makeProductFeatured, 
         getSoldProducts } from '../../controllers/productController.js'; 
 import { getProductsPublicVersion, 
         getFeaturedProducts, 
@@ -26,7 +27,7 @@ productRouter.get('/quick-version', getProductsPublicVersion);
 productRouter.get('/featured', getFeaturedProducts);
 productRouter.get('/popular', getPopularProducts); 
 productRouter.get('/top-rated', getTopRatedProducts); 
-// productRouter.get('/suggested', getSuggestedProducts); 
+productRouter.get('/suggested', getSuggestedProducts); 
 
 
 /** Additional Routes */
@@ -36,6 +37,8 @@ productRouter.get('/sales-of-purchases', authenticated, checkRoles(roles.admin, 
 
 /** Main Routes */
 productRouter.post('/add-to-shop/:id', authenticated, checkRoles(roles.admin, roles.superAdmin), addToShop); 
+productRouter.patch('/make-featured/:id', authenticated, checkRoles(roles.admin, roles.superAdmin), makeProductFeatured); 
+// productRouter.patch('/make-featured/:id', authenticated, makeProductFeatured); 
 
 productRouter.patch('/:id/restore', authenticated, checkRoles(roles.admin, roles.superAdmin), restoreProduct); 
 

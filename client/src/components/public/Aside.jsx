@@ -132,7 +132,7 @@ export default function Aside() {
                                     className="text-decoration-none text-dark">
                                         <article className="item row align-items-center m-2 py-3 bg-body-tertiary rounded">
                                             <div className="col-md-4">
-                                                <img src={ product?.images?.[0] }
+                                                <img src={ product?.images[0]?.hi_res ?? product?.images?.[0] }
                                                     alt="" style={{ width: '75px', height: '100px' }} className="rounded d-block object-fit-cover" />
                                             </div>
                                             <div className="col-md-8 d-flex flex-column">

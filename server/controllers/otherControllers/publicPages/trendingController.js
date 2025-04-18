@@ -22,14 +22,14 @@ const getTrendings = asyncHandler(async (req, res) => {
 
     // const trendings = await Product.find({ deleted_at: null })
     const trendings = await Product.find({ deleted_at: null, purchased_for_resale: true })
-                            .sort('-created_at')
-                            .skip(skip)
-                            .limit(limit)
-                            .populate({
-                                path: 'user',
-                                select: 'first_name last_name username'
-                            })
-                            .lean(); 
+                                .sort('-created_at')
+                                .skip(skip)
+                                .limit(limit)
+                                .populate({
+                                    path: 'user',
+                                    select: 'first_name last_name username'
+                                })
+                                .lean(); 
     if (!trendings?.length) return res.status(404).json({ message: "No trendings found!" }); 
 
     // const total = await Product.countDocuments({ deleted_at: null }); 
@@ -50,10 +50,26 @@ const getTrendings = asyncHandler(async (req, res) => {
  * GET MINI TRENDINGS
  */ 
 const getMiniTrendings = asyncHandler(async (req, res) => {
-    const trendings = await Product.find({ deleted_at: null })
-                                    .sort('-order_count')
-                                    .limit(3)
-                                    .lean(); 
+    // const trendings = await Product.find({ deleted_at: null })
+    //                                 .sort({ order_count: -1, updated_at: -1 })
+    //                                 .limit(3)
+    //                                 .lean(); 
+
+    const trendings = await Product.aggregate([ {
+                                                    $match: {
+                                                        deleted_at: null,
+                                                        order_count: { $gt: 5 }
+                                                    }
+                                                },
+                                                {
+                                                    $sort: {
+                                                        updated_at: -1
+                                                    }
+                                                },
+                                                {
+                                                    $limit: 3
+                                                } ]);
+
     if (!trendings?.length) return res.status(404).json({ message: "No trendings found!" }); 
 
     res.json({ data: trendings });

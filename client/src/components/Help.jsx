@@ -1,11 +1,35 @@
-import { useState } from 'react';  
+import { useContext, useState } from 'react';
+import axios from 'axios';
+import Constants from '@/utils/Constants.jsx'; 
+import AuthContext from '@/context/AuthContext.jsx'; 
 
 
-export default function Help() { 
-    const [helpToggle, setHelpToggle] = useState(false); 
+export default function Help() {
+    const { user } = useContext(AuthContext); 
+
+    const [helpToggle, setHelpToggle] = useState(false);
+    const [messages, setMessages] = useState([]);
+    const [input, setInput] = useState('');
+
+    const handleSend = async () => {
+        if (!input.trim()) return;
+
+        const userMsg = { text: input, sender: 'user' };
+        setMessages(msgs => [...msgs, userMsg]);
+        setInput('');
+
+        // const { data } = await axios.post('/api/ask', {
+        const { data } = await axios.post(`${ Constants?.serverURL }/api/v1/chat-bot/messages`, {
+            question: input,
+            userId: user?.user?.user_id ?? 'visitor'
+        });
+
+        setMessages(msgs => [...msgs, { text: data.answer, sender: 'bot' }]);
+    };
     
     return (
         <section className="help"> 
+
 
             { helpToggle && 
                 <div id="help-box" className="help-box card p-3">
@@ -15,6 +39,16 @@ export default function Help() {
                     <section className="messages border-bottom w-100">
                         <div className="d-flex flex-column gap-2 pt-2 pb-3">
                             <article className="w-100 d-flex justify-content-start bg-dark rounded text-white text-start p-3 pe-5">
+                                <span className="text-start">How may we help you today?</span>
+                            </article>
+                            {/* <div className="messages"> */}
+                                {messages.map((msg, i) => (
+                                    <article key={i} className={`w-100 d-flex ${(msg.sender == 'bot') ? 'justify-content-start bg-dark text-white text-start' : 'justify-content-end bg-body-tertiary text-end'} rounded p-3`}>
+                                        <span className={`${(msg.sender == 'bot') ? 'text-start' : 'text-end'}`}>{ msg.text }</span>
+                                    </article>
+                                ))}
+                            {/* </div> */}
+                            {/* <article className="w-100 d-flex justify-content-start bg-dark rounded text-white text-start p-3 pe-5">
                                 <span className="text-start">How may we help you today?</span>
                             </article>
                             
@@ -28,7 +62,7 @@ export default function Help() {
                             
                             <article className="w-100 d-flex justify-content-end bg-body-tertiary rounded p-3 ps-5">
                                 <span className="text-end">I need to set up my account</span>
-                            </article>
+                            </article> */}
                         </div> 
                         <div className="email-option mx-4 p-1 rounded bg-secondary text-white my-2">
                             <span className="w-75">Not satisfied with our AI response? <a href="#" className="text-decoration-none text-white fw-semibold">Email us</a>.</span>
@@ -39,10 +73,14 @@ export default function Help() {
                         <form action="" className="w-100 pt-3 d-flex justify-content-between align-items-center gap-1">
                             <div>
                                 <div className="">
-                                    <textarea className="form-control" placeholder="Ask our AI  ..." id="message" style={{ height: '50px' }}></textarea>
+                                    <textarea 
+                                        value={input}
+                                        onChange={ (e) => setInput(e.target.value ) }
+                                        onKeyDown={ (e) => e.key === 'Enter' && handleSend() }
+                                        className="form-control" placeholder="Ask our AI  ..." id="message" style={{ height: '50px' }}></textarea>
                                 </div>
                             </div> 
-                            <div>
+                            <div type="button" onClick={handleSend}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-arrow-right-circle-fill"
                                     viewBox="0 0 16 16">
                                     <path
@@ -51,6 +89,31 @@ export default function Help() {
                             </div> 
                         </form>
                     </section>
+
+
+
+
+{/* 
+                    <div className="chatbot">
+                        <div className="messages">
+                            {messages.map((msg, i) => (
+                            <div key={i} className={`message ${msg.sender}`}>
+                                {msg.text}
+                            </div>
+                            ))}
+                        </div>
+                        <input
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                        />
+                        <button onClick={handleSend}>Send</button>
+                    </div> */}
+
+
+
+
+
                 </div> 
             }
 

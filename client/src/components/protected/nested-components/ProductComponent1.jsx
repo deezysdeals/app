@@ -55,16 +55,18 @@ export default function ProductComponent1({ itemId,
                                             purchasePrice, 
                                             purchaseDate, 
                                             sellingPrice, 
-                                            saleDate }) { 
+                                            saleDate, 
+                                            featured, 
+                                            productQuery }) { 
     const location = useLocation(); 
     const { user } = useContext(AuthContext); 
-    // console.log(user)
+    console.log(user)
     const { cartItems, addToCart, removeFromCart } = useContext(CartContext); 
     const { getFavorites } = useFavorites(); 
     const { deleteFavorite } = useFavorite(); 
     const { productReview, createProductReview } = useProductReview(); 
-    const { products, getProducts } = useProducts(); 
-    const { addToShop, deleteProduct } = useProduct(); 
+    const { products, getProducts } = useProducts(productQuery); 
+    const { addToShop, makeProductFeatured, deleteProduct } = useProduct(); 
     const [displayComponent, setDisplayComponent] = useState(true); 
 
     const [stars, setStars] = useState({
@@ -141,7 +143,25 @@ export default function ProductComponent1({ itemId,
                                             </svg> 
                                         </span>
 
-                                        <ul className="dropdown-menu"> 
+                                        <ul className="dropdown-menu">
+                                            { ((user?.user?.role == 'admin') || (user?.user?.role == 'super-admin')) && (
+                                                <li 
+                                                    type="button"
+                                                    onClick={ async () => {
+                                                        await makeProductFeatured(productId);
+                                                        // await getProducts(productQuery);
+                                                        window.location.reload();
+                                                    }}
+                                                    className="dropdown-item d-flex align-items-center gap-1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-up fw-semibold" viewBox="0 0 16 16">
+                                                        <path fill-rule="evenodd" d="M7.646 2.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 3.707 2.354 9.354a.5.5 0 1 1-.708-.708z"/>
+                                                        <path fill-rule="evenodd" d="M7.646 6.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 7.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/>
+                                                    </svg>
+                                                    <span className="fw-semibold">
+                                                        Make { (featured) ? 'Unfeatured' : 'Featured' }
+                                                    </span>
+                                                </li>
+                                            ) }
                                             <li>
                                                 <Link to={ route('home.products.edit', { id: productId }) } className="dropdown-item d-flex align-items-center gap-1">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-vector-pen" viewBox="0 0 16 16">
@@ -243,6 +263,10 @@ export default function ProductComponent1({ itemId,
                                             </span> 
                                         </div>
                                     }
+                                    <span className="pb-2">
+                                        { featured &&
+                                            <span className="badge bg-warning text-dark border border-light border-radius-25">Featured</span>}
+                                    </span>
                                     <h4 className="card-title fs-6">{ title }</h4>
                                     { (variations && variationsValue) && 
                                         <span className="card-text">

@@ -1053,6 +1053,31 @@ const addToShop2 = asyncHandler(async (req, res) => {
         }
     } 
     fetchAndAddProduct()
+});
+
+/**
+ * MARK PRODUCT AS FEATURED
+ */
+const makeProductFeatured = asyncHandler(async (req, res) => {
+    const { id } = req?.params;
+    console.log(id)
+
+    const foundProduct = await Product.findOne({ _id: id });
+    if (!foundProduct) return res.status(404).json({ message: `No product matches the product ${id}!` });
+
+    if (foundProduct?.featured == true) {
+        foundProduct.featured = false;
+    } else {
+        foundProduct.featured = true;
+    };
+
+    foundProduct.save()
+        .then(() => { 
+			res.status(200).json({ success: `Product updated.`, data: foundProduct });
+        })
+        .catch((error) => {
+            if (error) return res.status(400).json({ message: "An error occured!", details: `${error}` }); 
+        });
 })
 
 /**
@@ -1127,4 +1152,5 @@ export { getProducts,
         
         getPurchasedProducts, 
         addToShop, 
+        makeProductFeatured, 
         getSoldProducts }; 

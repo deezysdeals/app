@@ -146,11 +146,13 @@ export default function Index() {
                                                     imgsSrc={ product?.images }
                                                     title={ product?.title } 
                                                     description='' 
-                                                    oldPrice='' 
+                                                    oldPrice={ ((product?.initial_retail_price>product?.retail_price) && product?.initial_retail_price) ?? '' } 
                                                     currentPrice={ product?.retail_price } 
                                                     rating={ product?.rating?.rate } 
-                                                    category={ product?.category }
-                                                    favorites={ favorites } />
+                                                    category={ product?.category } 
+                                                    featured={ product?.featured }
+                                                    favorites={ favorites }
+                                                    productQuery={ productQuery } />
                                         </li>
                                     )
                                 })) }

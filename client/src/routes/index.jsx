@@ -121,6 +121,12 @@ const routeNames = {
 
     'trending': '/trending', 
 
+    'about-us': '/about-us',
+    'contact-us': '/contact-us',
+    'terms-of-service': '/terms-of-service',
+    'privacy-policy': '/privacy-policy',
+    'return-policy': '/return-policy',
+
     'index': '/'
 } 
 

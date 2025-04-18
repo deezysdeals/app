@@ -1,6 +1,13 @@
-import { useState } from 'react'; 
+import { useEffect, useState } from 'react'; 
+import dayjs from 'dayjs';
+import relativeTime from "dayjs/plugin/relativeTime"; 
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(relativeTime);
+dayjs.extend(utc); 
+import { useSocials } from '../../../hooks/social-media/useSocials.jsx';
 import { useTwitterX } from '../../../hooks/social-media/useTwitterX.jsx';
 import Layout from '@/components/protected/Layout.jsx'; 
+import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
 import PaginationLinks from '@/components/protected/nested-components/PaginationLinks.jsx';
 
 
@@ -45,6 +52,14 @@ export default function Index() {
 
     const [activeLink, setActiveLink] = useState('twitter-x');
 
+    const [socialQuery, setSocialQuery] = useState({ 
+        page: 1, 
+        limit: 10, 
+        network: activeLink
+    }); 
+
+    const { socials, getSocials } = useSocials(socialQuery); 
+    console.log(socials)
     const { createTwitterX } = useTwitterX();
 
     const handleSubmit = async (e) => {
@@ -87,6 +102,11 @@ export default function Index() {
         };
 
         e.target.message.value = '';
+        // e.target.media0.files[0] = '';
+        // e.target.media1.files[0] = '';
+        // e.target.media2.files[0] = '';
+
+        await getSocials(socialQuery);
     }
 
     return (
@@ -450,57 +470,42 @@ export default function Index() {
                             </section>
 
                             <div className="d-flex justify-content-between flex-wrap pb-4">
-                                <span className="border-bottom fw-semibold pb-1">Previous Messages</span>
-                                <span>1 - 10 of 500 (page 1 of 20)</span>
+                                { (socials?.data?.length > 0) && <span className="border-bottom fw-semibold pb-1">Previous Posts</span> }
+                                { (socials?.data?.length > 0) 
+                                    && <PaginationMeter 
+                                            current_page={ socials?.meta?.current_page } 
+                                            limit={ socials?.meta?.limit } 
+                                            total_pages={ socials?.meta?.total_pages } 
+                                            total_results={ socials?.meta?.total_results } /> } 
                             </div> 
 
-                            <ul className="list-unstyled d-flex flex-column gap-3">
-                                <li className="box-shadow-1 border-radius-25 py-3 px-4 cursor-pointer">
-                                    <p className="fw-semibold">What a wonderful way to buy stuff I need!</p> 
-                                    <p className="text-end"><small>published by&nbsp;</small>Pae Daezi,&nbsp;2 hours, 23 minutes ago</p>
-                                </li>
-                                <li className="box-shadow-1 border-radius-25 py-3 px-4 cursor-pointer">
-                                    <p className="fw-semibold">I got to order these products I've been searching for everywhere!</p> 
-                                    <p className="text-end"><small>published by&nbsp;</small>Pae Daezi,&nbsp;10 days ago</p>
-                                </li>
-                                <li className="box-shadow-1 border-radius-25 py-3 px-4 cursor-pointer">
-                                    <p className="fw-semibold">They never seem to amaze with their excellent customer service!</p> 
-                                    <p className="text-end"><small>published by&nbsp;</small>Max Ralph,&nbsp;10 days ago</p>
-                                </li>
-                                <li className="box-shadow-1 border-radius-25 py-3 px-4 cursor-pointer">
-                                    <p className="fw-semibold">They've got eye for details as always</p> 
-                                    <p className="text-end"><small>published by&nbsp;</small>Max Ralph,&nbsp;15 days ago</p>
-                                </li>
-                                <li className="box-shadow-1 border-radius-25 py-3 px-4 cursor-pointer">
-                                    <p className="fw-semibold">They've got eye for details as always</p> 
-                                    <p className="text-end"><small>published by&nbsp;</small>Max Ralph,&nbsp;15 days ago</p>
-                                </li>
-                                <li className="box-shadow-1 border-radius-25 py-3 px-4 cursor-pointer">
-                                    <p className="fw-semibold">They've got eye for details as always</p> 
-                                    <p className="text-end"><small>published by&nbsp;</small>Max Ralph,&nbsp;15 days ago</p>
-                                </li>
-                                <li className="box-shadow-1 border-radius-25 py-3 px-4 cursor-pointer">
-                                    <p className="fw-semibold">They've got eye for details as always</p> 
-                                    <p className="text-end"><small>published by&nbsp;</small>Max Ralph,&nbsp;15 days ago</p>
-                                </li>
-                                <li className="box-shadow-1 border-radius-25 py-3 px-4 cursor-pointer">
-                                    <p className="fw-semibold">They've got eye for details as always</p> 
-                                    <p className="text-end"><small>published by&nbsp;</small>Max Ralph,&nbsp;15 days ago</p>
-                                </li>
-                                <li className="box-shadow-1 border-radius-25 py-3 px-4 cursor-pointer">
-                                    <p className="fw-semibold">They've got eye for details as always</p> 
-                                    <p className="text-end"><small>published by&nbsp;</small>Max Ralph,&nbsp;15 days ago</p>
-                                </li>
-                                <li className="box-shadow-1 border-radius-25 py-3 px-4 cursor-pointer">
-                                    <p className="fw-semibold">They've got eye for details as always</p> 
-                                    <p className="text-end"><small>published by&nbsp;</small>Max Ralph,&nbsp;15 days ago</p>
-                                </li>
-                            </ul>
+                            { (socials?.data?.length > 0) ? (
+                                <ul className="list-unstyled d-flex flex-column gap-3">
+                                    { (socials?.data?.map((social, index) => {
+                                        return (
+                                            <li key={ index } className="box-shadow-1 border-radius-25 py-3 px-4 cursor-pointer">
+                                                <p className="fw-semibold">{ social?.message }</p> 
+                                                <p className="text-end"><small className="text-secondary">published by&nbsp;</small>{ social?.user?.first_name } { social?.user?.last_name },&nbsp;<small>{ dayjs.utc(social?.created_at).fromNow() }</small></p>
+                                            </li>
+                                            )
+                                    })) }
+                                </ul>
+                            ) : (
+                                <div className="d-flex flex-column justify-content-center align-items-center py-5">
+                                    <p className="text-center">No posts available</p>
+                                    <p className="text-center">Create your first post!</p>
+                                </div>
+                            ) }
                         </section>
                     </div> 
                 </div> 
 
-                <PaginationLinks /> 
+                { (socials?.data?.length > 0) 
+                    && <PaginationLinks 
+                            items={ socials } 
+                            getItems={ getSocials } 
+                            query={ socialQuery } 
+                            setQuery={ setSocialQuery } /> } 
             </div>
         </Layout>
     )

@@ -1,5 +1,5 @@
 // import { useState } from 'react'; 
-// import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import { useSiteConfiguration } from '@/hooks/useSiteConfiguration.jsx'; 
 import Cart from '@/components/Cart.jsx'; 
@@ -49,13 +49,19 @@ export default function Footer() {
                     </div>
                 </div>
             
-                <section className="contact d-flex justify-content-between py-4 px-3">
+                <section className="contact d-flex justify-content-between align-items-center py-4 px-3">
                     <div className="d-flex flex-column gap-2">
                         <span>
-                            <a href="#" className="text-decoration-none text-white">About</a>
+                            <Link to={ route('about-us') } className="text-decoration-none text-white">About</Link>
                         </span>
                         <span>
-                            <a href="#" className="text-decoration-none text-white">Contact</a>
+                            <Link to={ route('contact-us') } className="text-decoration-none text-white">Contact</Link>
+                        </span>
+                        <span>
+                            <Link to={ route('terms-of-service') } className="text-decoration-none text-white">Terms of Service</Link>
+                        </span>
+                        <span>
+                            <Link to={ route('privacy-policy') } className="text-decoration-none text-white">Privacy Policy</Link>
                         </span>
                     </div>
             

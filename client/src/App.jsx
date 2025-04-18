@@ -27,6 +27,13 @@ import Paid from '@/views/public/Paid.jsx';
 import Product from '@/views/public/Product.jsx'; 
 import Products from '@/views/public/Products.jsx'; 
 import Trending from '@/views/public/Trending.jsx'; 
+
+import AboutUs from '@/views/public/AboutUs.jsx';
+import ContactUs from '@/views/public/ContactUs.jsx';
+import PrivacyPolicy from '@/views/public/PrivacyPolicy.jsx';
+import TermsOfService from '@/views/public/TermsOfService.jsx';
+import ReturnPolicy from '@/views/public/ReturnPolicy.jsx';
+
 import Index from '@/views/public/Index.jsx'; 
 
 import ProtectedAdminShow from '@/views/protected/admin/Show.jsx'; 
@@ -144,6 +151,12 @@ function App() {
               <Route path={ route('products.search.index') } element={ <Products /> } /> 
               <Route path={ route('products.index') } element={ <Products /> } /> 
               <Route path={ route('trending') } element={ <Trending /> } /> 
+
+              <Route path={ route('about-us') } element={ <AboutUs /> } />
+              <Route path={ route('contact-us') } element={ <ContactUs /> } />
+              <Route path={ route('privacy-policy') } element={ <PrivacyPolicy /> } />
+              <Route path={ route('terms-of-service') } element={ <TermsOfService /> } />
+              <Route path={ route('return-policy') } element={ <ReturnPolicy /> } />
 
               <Route path={ route('index') } element={ <Index /> } /> 
 
