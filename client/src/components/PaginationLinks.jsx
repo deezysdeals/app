@@ -32,7 +32,7 @@ export default function PaginationLinks({ items,
                         ...prevState, 
                         page: previousPage
                     })); 
-                    await getItems(); 
+                    await getItems(query); 
                     await scrollToTop(); 
                 } }
                 className="btn btn-dark px-3 border-radius-35 d-flex gap-2">
@@ -55,7 +55,7 @@ export default function PaginationLinks({ items,
                         ...prevState, 
                         page: nextPage
                     })); 
-                    await getItems(); 
+                    await getItems(query); 
                     await scrollToTop(); 
                 } } 
                 className="btn btn-dark px-3 border-radius-35 d-flex gap-2">

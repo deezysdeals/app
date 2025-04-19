@@ -66,29 +66,30 @@ const createOrderPayment = async (req, res) => {
                         );
                         console.log('upsertProduct:', upsertProduct);
 
-                        console.log('Retail Price', Number(upsertProduct?.retail_price)); 
-                        console.log('Selling Price', Number(upsertProduct?.retail_price + (10/100))); 
-
                         const newOrderItem = await OrderItem.create({
                             user: userPlacingOrder?._id, 
                             product: upsertProduct?._id, 
                             order: newOrder?._id, 
                             quantity: item?.quantity, 
                             // cost_price: upsertProduct?.retail_price, 
-                            cost_price: Number(upsertProduct?.purchase_price), 
+                            cost_price: Number(upsertProduct?.purchase_price) || Number(upsertProduct?.retail_price), 
                             // selling_price: Number(upsertProduct?.retail_price + (10/100))
                             selling_price: Number(upsertProduct?.retail_price)
                         }); 
+                        // console.log('Cost Price', newOrderItem?.cost_price); 
                         // console.log('Selling Price', newOrderItem?.selling_price); 
                         // console.log({'Test': newOrderItem?.selling_price * newOrderItem?.quantity}); 
 
                         let orderItemPrice = (newOrderItem?.selling_price ?? upsertProduct?.retail_price) * newOrderItem?.quantity; 
                         totalToBePaid += orderItemPrice; 
-                        // console.log({ 'totaltobe': totalToBePaid }); 
+                        
+                        console.log({ 'totaltobe': totalToBePaid }); 
+                        console.log({ 'orderitemPrice': orderItemPrice }); 
                         // console.log({'Cart length:': cart?.length}); 
                         // console.log({'Index': index}); 
 
                         if ((cart?.length) == index+1) { 
+                            console.log('createOrder: ', await createOrder(totalToBePaid))
                             const { jsonResponse, httpStatusCode } = await createOrder(totalToBePaid); 
 
                             console.log('status 1', httpStatusCode); 

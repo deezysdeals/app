@@ -25,7 +25,7 @@ export default function Suggestions() {
                         return (
                             <ProductComponent1 
                                 key = { product?._id } 
-                                itemId = { product?.asin } 
+                                itemId = { product?._id } 
                                 asin = { product?.asin } 
                                 imgSrc =  { product?.images[0]?.hi_res ?? product?.images?.[0] }
                                 title = { product?.title } 
