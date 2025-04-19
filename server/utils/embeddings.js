@@ -16,8 +16,8 @@ async function getEmbedding(text) {
 }
 
 async function indexProducts() {
-    const products = await Product.find();
-    console.log(products)
+    const products = await Product.find({ deleted_at: null });
+    // console.log(products)
     for (const product of products) {
         try {
             const text = `${product.title}`;

@@ -44,7 +44,10 @@ export default function Help() {
                             {/* <div className="messages"> */}
                                 {messages.map((msg, i) => (
                                     <article key={i} className={`w-100 d-flex ${(msg.sender == 'bot') ? 'justify-content-start bg-dark text-white text-start' : 'justify-content-end bg-body-tertiary text-end'} rounded p-3`}>
-                                        <span className={`${(msg.sender == 'bot') ? 'text-start' : 'text-end'}`}>{ msg.text }</span>
+                                        <span className={`${(msg.sender == 'bot') ? 'text-start' : 'text-end'}`}>
+                                            {/* { (msg.sender == 'bot') ? msg.text?.replace(/<think>.*?<\/think>/, '').trim() : msg.text } */}
+                                            { msg.text?.replace(/<think>.*?<\/think>/, '')?.trim()  }
+                                        </span>
                                     </article>
                                 ))}
                             {/* </div> */}
@@ -65,7 +68,7 @@ export default function Help() {
                             </article> */}
                         </div> 
                         <div className="email-option mx-4 p-1 rounded bg-secondary text-white my-2">
-                            <span className="w-75">Not satisfied with our AI response? <a href="#" className="text-decoration-none text-white fw-semibold">Email us</a>.</span>
+                            <span className="w-75">Not satisfied with our AI response? <a href="mailto:support@deezysdeals.com" className="text-decoration-none text-white fw-semibold">Email us</a>.</span>
                         </div>
                     </section> 
 
@@ -77,6 +80,7 @@ export default function Help() {
                                         value={input}
                                         onChange={ (e) => setInput(e.target.value ) }
                                         onKeyDown={ (e) => e.key === 'Enter' && handleSend() }
+                                        // onMouseEnter={ (e) => e.key === 'Enter' && handleSend() }
                                         className="form-control" placeholder="Ask our AI  ..." id="message" style={{ height: '50px' }}></textarea>
                                 </div>
                             </div> 

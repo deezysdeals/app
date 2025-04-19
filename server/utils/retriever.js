@@ -1,6 +1,7 @@
 import Product from '../models/Product.js'; 
 import Order from '../models/Order.js'; 
 
+
 const cosineSimilarity = (a, b) => {
     // Add validation for inputs
     if (!a || !b || !Array.isArray(a) || !Array.isArray(b)) {
@@ -19,13 +20,14 @@ const cosineSimilarity = (a, b) => {
     return dot / (Math.sqrt(magA) * Math.sqrt(magB));
 };
 
-async function getRelevantProducts(queryEmbedding, limit = 3) {
+async function getRelevantProducts(queryEmbedding, limit = 100) {
     if (!queryEmbedding || !Array.isArray(queryEmbedding)) {
         throw new Error('Invalid query embedding');
     }
     
     // const products = await Product.find({ embedding: { $exists: true } }); // Only get products with embeddings
-    const products = await Product.find(); // Only get products with embeddings
+    const products = await Product.find({ deleted_at: null });
+    console.log(products);
     const scored = products.map(p => ({
         product: p,
         score: cosineSimilarity(queryEmbedding, p.embedding)
@@ -33,13 +35,13 @@ async function getRelevantProducts(queryEmbedding, limit = 3) {
     return scored.sort((a, b) => b.score - a.score).slice(0, limit);
 }
 
-async function getRelevantOrders(queryEmbedding, limit = 3) {
+async function getRelevantOrders(queryEmbedding, limit = 100) {
     if (!queryEmbedding || !Array.isArray(queryEmbedding)) {
         throw new Error('Invalid query embedding');
     }
     
     // const orders = await Order.find({ embedding: { $exists: true } }); // Only get orders with embeddings
-    const orders = await Order.find(); // Only get orders with embeddings
+    const orders = await Order.find({ deleted_at: null }); 
     const scored = orders.map(o => ({
         order: o,
         score: cosineSimilarity(queryEmbedding, o.embedding) // Fixed typo: was 'p.embedding'

@@ -83,8 +83,8 @@ const createOrderPayment = async (req, res) => {
                             product: upsertProduct?._id, 
                             order: newOrder?._id, 
                             quantity: item?.quantity, 
-                            cost_price: upsertProduct?.retail_price, 
-                            selling_price: Number(upsertProduct?.retail_price + (10/100))
+                            cost_price: Number(upsertProduct?.purchase_price) ?? Number(upsertProduct?.retail_price), 
+                            selling_price: Number(upsertProduct?.retail_price)
                             }],
                             { session }
                         ); 
