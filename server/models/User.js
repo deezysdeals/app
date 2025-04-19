@@ -53,6 +53,12 @@ const userSchema = new Schema({
             type: String, 
             required: true 
         }, 
+        role: { 
+            type: String, 
+            required: true, 
+            enum: ['admin', 'dispatcher', 'enterprise', 'individual'], 
+            default: 'individual' 
+        }, 
         email_verify_token: String, 
         email_verified: Date, 
         auth_token: String, 
@@ -60,9 +66,15 @@ const userSchema = new Schema({
         verified: { type: Boolean, default: false }, 
         verified_by: { type: Schema.Types.ObjectId, ref: 'User' }, 
         online: { type: Boolean, default: false }, 
+        sign_in_count: { type: Number, default: 0 }, 
         show_online_status: { type: Boolean, default: true }, 
         last_time_active: String, 
         active: { type: Boolean, default: true }, 
+        total_amount_spent_on_orders: { type: Number },  
+        total_orders: { type: Number }, 
+        receive_notifications: { type: Boolean, default: false }, 
+        banned: { type: Boolean, default: false }, 
+        banned_at: { type: String, default: null }, 
         deleted_at: { type: String, default: null } 
     }, 
     {

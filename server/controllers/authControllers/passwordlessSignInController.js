@@ -2,7 +2,6 @@ import asyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken'; 
 import User from '../../models/User.js'; 
 import passwordlessSignInMailTemplate from '../../mails/templates/passwordlessSignInMail.js'; 
-import sendMail from '../../mails/sendMail.js'; 
 
 
 const passwordlessSignInRequest = asyncHandler(async (req, res) => { 
@@ -33,10 +32,9 @@ const passwordlessSignInRequest = asyncHandler(async (req, res) => {
         }); 
 
     (async function () {
-        const mailSubject = "Passwordless Sign In Link";
-        const mailBody = passwordlessSignInMailTemplate(userFound); 
 
-        await sendMail(process.env.EMAIL_ADDRESS, userFound?.email, mailSubject, mailBody);
+        passwordlessSignInMailTemplate(userFound); 
+
     })();
 }); 
 
@@ -91,7 +89,7 @@ const passwordlessSignIn = asyncHandler(async (req, res) => {
             .then(function () {
                 res.cookie('jwt', refresh, {
                     httpOnly: true, 
-                    secure: false, 
+                    secure: true, 
                     sameSite: 'None', 
                     maxAge: 1 * 60 * 60 * 1000      // 1 hour
                 });

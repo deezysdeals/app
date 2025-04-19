@@ -2,6 +2,7 @@ const routeNames = {
 
     /** Auth Routes */ 
     'sign-up': '/sign-up', 
+    'sign-up-as-enteprise': '/sign-up-as-enteprise', 
     'verify-email': '/verify-email/:username/:token', 
     'sign-in': '/sign-in', 
     'passwordless-signin': '/passwordless-signin/:username/:token', 
@@ -15,26 +16,39 @@ const routeNames = {
     'home.admin.edit': '/home/admin/:username/edit', 
     'home.admin.index': '/home/admin', 
 
-    'home.calendar.index': '/home/calendar', 
+    'home.brands.show': '/home/brands/:id/show', 
+    'home.brands.edit': '/home/brands/:id/edit', 
+    'home.brands.create': '/home/brands/create', 
+    'home.brands.index': '/home/brands', 
 
     'home.clients.show': '/home/clients/:username/show', 
     'home.clients.edit': '/home/clients/:username/edit', 
     'home.clients.index': '/home/clients', 
 
+    'home.deals.show': '/home/deals/:id/show', 
     'home.deals.edit': '/home/deals/:id/edit', 
+    'home.deals.create': '/home/deals/create', 
     'home.deals.index': '/home/deals', 
 
     'home.deliveries.edit': '/home/deliveries/:id/edit', 
     'home.deliveries.index': '/home/deliveries', 
 
-    'home.discounts.show': '/home/discounts/:id/show', 
-    'home.discounts.edit': '/home/discounts/:id/edit', 
-    'home.discounts.index': '/home/discounts', 
+    'home.favorites.show': '/home/favorites/:id/show', 
+    'home.favorites.edit': '/home/favorites/:id/edit', 
+    'home.favorites.index': '/home/favorites', 
 
     'home.invoices.show': '/home/invoices/:id/show', 
     'home.invoices.index': '/home/invoices', 
 
+    'home.market.show': '/home/market/:id/show', 
+    'home.market.search.index': '/home/market/:search_key', 
+    // 'home.market.search.index': '/home/market/?search=:search_key', 
+    'home.market.index': '/home/market', 
+
     'home.notifications.index': '/home/notifications', 
+    
+    'home.order-items.edit': '/home/order-items/:id/edit', 
+    'home.order-items.index': '/home/ordered-items', 
     
     'home.orders.show': '/home/orders/:id/show', 
     'home.orders.edit': '/home/orders/:id/edit', 
@@ -43,6 +57,7 @@ const routeNames = {
     'home.payments.index': '/home/payments', 
 
     'home.products.edit': '/home/products/:id/edit', 
+    'home.products.create': '/home/products/create', 
     'home.products.index': '/home/products', 
 
     'home.profile.index': '/home/profile', 
@@ -59,13 +74,26 @@ const routeNames = {
 
     'home.settings.index': '/home/settings', 
 
-    'home.site-updates.index': '/home/site-updates', 
+    'home.site-configurations.index': '/home/site-configurations', 
 
     // 'home.social-media.show': '/home/social-media/:id/show', 
     'home.social-media.edit': '/home/social-media/:id/edit', 
+    'home.social-media.tiktok': '/home/social-media/tiktok', 
+    'home.social-media.twitter-x': '/home/social-media/twitter-x', 
     'home.social-media.index': '/home/social-media', 
 
-    'home.settings.index': '/home/settings', 
+    'home.users.show.orders': '/home/users/:username/orders', 
+    'home.users.show.ordered-items': '/home/users/:username/ordered-items', 
+    'home.users.show.payments': '/home/users/:username/payments', 
+    'home.users.show.product-reviews': '/home/users/:username/product-reviews', 
+    'home.users.show.deliveries': '/home/users/:username/deliveries', 
+    'home.users.show.purchases': '/home/users/:username/purchases', 
+    'home.users.show.client-queries': '/home/users/:username/client-queries', 
+    'home.users.show.query-responses': '/home/users/:username/query-responses', 
+
+    'home.users.show': '/home/users/:username/show', 
+    'home.users.edit': '/home/users/:username/edit', 
+    'home.users.index': '/home/user-management', 
 
     'home.index': '/home', 
 
@@ -74,14 +102,30 @@ const routeNames = {
     'brands.show': '/brands/:id/show', 
     'brands.index': '/brands', 
 
+    'deals.show': '/deals/:id/show', 
+    'deals.index': '/deals', 
+
     'categories.show': '/categories/:id/show', 
-    'categories.index': '/categories', 
+    'categories.index': '/categories/:source', 
 
     'cart': '/cart', 
     'paid': '/paid', 
+    'pay': '/pay', 
+    'order-placed': '/order-placed', 
 
-    'products.show': '/products/:id/show', 
-    'products.index': '/products', 
+    'products.show': '/products/:source/:id/show', 
+    // 'products.search.index': '/products/?source=:source&?search_key=:search_key&?price_range_start=:price_range_start&?price_range_end=:price_range_end', 
+    'products.search.index': '/products/:source/:search_key/:price_range_start/:price_range_end', 
+    // 'products.search.index': `/products/${':source' ?? '?'}/${':search_key' ?? '?'}/${':price_range_start' ?? '?'}/${':price_range_end' ?? '?'}`, 
+    'products.index': '/products/:source', 
+
+    'trending': '/trending', 
+
+    'about-us': '/about-us',
+    'contact-us': '/contact-us',
+    'terms-of-service': '/terms-of-service',
+    'privacy-policy': '/privacy-policy',
+    'return-policy': '/return-policy',
 
     'index': '/'
 } 

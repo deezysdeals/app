@@ -1,20 +1,35 @@
+import { Link } from 'react-router-dom'; 
+import { route } from '@/routes'; 
+import { useSiteConfiguration } from '@/hooks/useSiteConfiguration.jsx'; 
+
+
 export default function Hero() {
+    const { siteConfiguration, updateSiteConfiguration, getSiteConfiguration } = useSiteConfiguration(); 
+    // console.log(siteConfiguration); 
+
     return (
         <section className="hero p-3 pb-5"
-            style={{ background: 'url(https://plus.unsplash.com/premium_photo-1682435561654-20d84cef00eb?q=80&w=1018&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)', backgroundSize: 'cover', backgroundRepeat: 'no-repeat' }}>
+            style={{ background: `url(${siteConfiguration?.data?.homepage_hero_image_path?.url})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat' }}>
             <div className="content h-100 py-3"> 
-                <div id="carouselExampleSlidesOnly" className="carousel slide" data-bs-ride="carousel">
+                <div id="carouselExampleAutoplaying" className="carousel slide carousel-fade" data-bs-ride="carousel">
                     <div className="carousel-inner">
                         <div className="text py-4 carousel-item active">
-                            <h2 className="fw-bold">It's Christmas!</h2>
-                            <p className="fw-semibold">Get <u className="text-decoration">25% off</u> on your favorite high-quality
-                                products.</p>
+                            <h2 className="fw-bold">{ siteConfiguration?.data?.homepage_hero_text_1_heading }</h2>
+                            <p className="fw-semibold">{ siteConfiguration?.data?.homepage_hero_text_1_content }</p>
                         </div>
                         <div className="text py-4 carousel-item">
-                            <h2 className="fw-bold">Get Discounts!</h2>
-                            <p className="fw-semibold">Get disount on all purchases as from September 23.</p>
+                            <h2 className="fw-bold">{ siteConfiguration?.data?.homepage_hero_text_2_heading }</h2>
+                            <p className="fw-semibold">{ siteConfiguration?.data?.homepage_hero_text_2_content }</p>
                         </div>
                     </div>
+                    <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+                        <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span className="visually-hidden">Previous</span>
+                    </button>
+                    <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+                        <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span className="visually-hidden">Next</span>
+                    </button>
                 </div>
                 
                 <div className="rating">
@@ -65,14 +80,14 @@ export default function Hero() {
 
             <div className="footer d-flex justify-content-center pt-4">
                 <span className="shop-now btn border-radius-35">
-                    <a href="#" className="text-decoration-none ps-1 fw-semibold">
+                    <Link to={ route('products.index', { source: 'shop' }) } className="text-decoration-none ps-1 fw-semibold">
                         <span>Start Shopping</span>&nbsp;&nbsp;
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-arrow-right-circle-fill"
                             viewBox="0 0 16 16">
                             <path
                                 d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
                         </svg>
-                    </a>
+                    </Link>
                 </span> 
             </div>
         </section> 

@@ -1,7 +1,9 @@
 const roles = {
-    superAdmin: 'generic-user', 
-    vendor: 'admin',
-    individual: 'superadmin'
+    individual: 'individual', 
+    vendor: 'vendor',
+    dispatcher: 'dispatcher', 
+    admin: 'admin', 
+    superAdmin: 'superadmin', 
 }
 
 export default roles;

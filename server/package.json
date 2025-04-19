@@ -8,24 +8,36 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "devstart": "nodemon index.js"
+    "dev": "nodemon index.js"
   },
   "license": "ISC",
   "dependencies": {
+    "@paypal/paypal-server-sdk": "^0.6.0",
+    "@xenova/transformers": "^2.17.2",
+    "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
+    "cloudinary": "^2.5.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",
     "express-fileupload": "^1.5.1",
     "express-rate-limit": "^7.3.1",
+    "got": "^14.4.6",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.1",
     "morgan": "^1.10.0",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.14",
-    "rotating-file-stream": "^3.2.3"
+    "oauth-1.0a": "^2.2.6",
+    "puppeteer": "^23.4.0",
+    "puppeteer-core": "^23.4.0",
+    "rotating-file-stream": "^3.2.3",
+    "slug": "^9.1.0",
+    "twitter-api-v2": "^1.18.2"
   }
 }

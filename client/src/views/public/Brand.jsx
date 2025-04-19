@@ -1,867 +1,164 @@
-import { Link } from 'react-router-dom'; 
+import { useState } from 'react';
+import { Link, useParams } from 'react-router-dom'; 
 import { route } from '@/routes'; 
+import { useBrand } from '@/hooks/useBrand.jsx'; 
+import { useBrandProducts } from '@/hooks/public/useBrandProducts.jsx'; 
+import scrollToTop from '@/utils/ScrollToTop.jsx'; 
+// import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
+import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
+import Next from '@/components/protected/nested-components/pagination-links/Next.jsx'; 
+// import Last from '@/components/protected/nested-components/pagination-links/Last.jsx'; 
+// import PaginationMeter from '@/components/protected/nested-components/PaginationMeter.jsx'; 
+import ProductComponent2 from '@/components/public/nested-components/ProductComponent2.jsx'; 
 import Aside from '@/components/public/Aside.jsx'; 
 import Layout from '@/components/public/Layout.jsx'; 
-import PaginationLinks from '@/components/public/nested-components/PaginationLinks.jsx'; 
 
 
 export default function Brand() {
+    const params = useParams(); 
+    const { brand, getBrand } = useBrand(params?.id); 
+    console.log(brand);
+
+    const [brandProductQuery, setBrandProductQuery] = useState({
+        page: 1, 
+        limit: 100,
+        brand: params?.id
+    }); 
+    const { brandProducts, getBrandProducts } = useBrandProducts(brandProductQuery); 
+    // console.log(brandProducts);
+
     return (
         <Layout> 
-            <h2 className="px-3 fw-semibold border-bottom pb-2 fs-3">Versace</h2>
+            <div className="px-3 border-bottom pb-2 d-flex flex-column">
+                <h2 className="fw-semibold fs-3">{ brand?.data?.data?.name }</h2>
 
-            <div className="px-3 fs-6 d-flex justify-content-end align-items-center">
-                <span>1-16 of over 100,000 results</span>
+                <div className="socials d-flex align-items-center gap-3 flex-wrap">
+                    { ((brand?.data?.data?.web_address) && (brand?.data?.data?.web_address != 'undefined')) && 
+                        <span className="d-flex align-items-center gap-1">
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-globe2" viewBox="0 0 16 16">
+                                    <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m7.5-6.923c-.67.204-1.335.82-1.887 1.855q-.215.403-.395.872c.705.157 1.472.257 2.282.287zM4.249 3.539q.214-.577.481-1.078a7 7 0 0 1 .597-.933A7 7 0 0 0 3.051 3.05q.544.277 1.198.49zM3.509 7.5c.036-1.07.188-2.087.436-3.008a9 9 0 0 1-1.565-.667A6.96 6.96 0 0 0 1.018 7.5zm1.4-2.741a12.3 12.3 0 0 0-.4 2.741H7.5V5.091c-.91-.03-1.783-.145-2.591-.332M8.5 5.09V7.5h2.99a12.3 12.3 0 0 0-.399-2.741c-.808.187-1.681.301-2.591.332zM4.51 8.5c.035.987.176 1.914.399 2.741A13.6 13.6 0 0 1 7.5 10.91V8.5zm3.99 0v2.409c.91.03 1.783.145 2.591.332.223-.827.364-1.754.4-2.741zm-3.282 3.696q.18.469.395.872c.552 1.035 1.218 1.65 1.887 1.855V11.91c-.81.03-1.577.13-2.282.287zm.11 2.276a7 7 0 0 1-.598-.933 9 9 0 0 1-.481-1.079 8.4 8.4 0 0 0-1.198.49 7 7 0 0 0 2.276 1.522zm-1.383-2.964A13.4 13.4 0 0 1 3.508 8.5h-2.49a6.96 6.96 0 0 0 1.362 3.675c.47-.258.995-.482 1.565-.667m6.728 2.964a7 7 0 0 0 2.275-1.521 8.4 8.4 0 0 0-1.197-.49 9 9 0 0 1-.481 1.078 7 7 0 0 1-.597.933M8.5 11.909v3.014c.67-.204 1.335-.82 1.887-1.855q.216-.403.395-.872A12.6 12.6 0 0 0 8.5 11.91zm3.555-.401c.57.185 1.095.409 1.565.667A6.96 6.96 0 0 0 14.982 8.5h-2.49a13.4 13.4 0 0 1-.437 3.008M14.982 7.5a6.96 6.96 0 0 0-1.362-3.675c-.47.258-.995.482-1.565.667.248.92.4 1.938.437 3.008zM11.27 2.461q.266.502.482 1.078a8.4 8.4 0 0 0 1.196-.49 7 7 0 0 0-2.275-1.52c.218.283.418.597.597.932m-.488 1.343a8 8 0 0 0-.395-.872C9.835 1.897 9.17 1.282 8.5 1.077V4.09c.81-.03 1.577-.13 2.282-.287z"/>
+                                </svg>
+                            </span>
+                            <span>{ brand?.data?.data?.web_address }</span>
+                        </span> }
+                    { ((brand?.data?.data?.facebook) && (brand?.data?.data?.facebook != 'undefined')) && 
+                        <span className="d-flex align-items-center gap-1">
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-facebook" viewBox="0 0 16 16">
+                                    <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/>
+                                </svg>
+                            </span>
+                            <span>{ brand?.data?.data?.facebook }</span>
+                        </span> }
+                    { ((brand?.data?.data?.instagram) && (brand?.data?.data?.instagram != 'undefined')) && 
+                        <span className="d-flex align-items-center gap-1">
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-instagram" viewBox="0 0 16 16">
+                                    <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/>
+                                </svg>
+                            </span>
+                            <span>{ brand?.data?.data?.instagram }</span>
+                        </span> }
+                    { ((brand?.data?.data?.twitter_x) && (brand?.data?.data?.twitter_x != 'undefined')) && 
+                        <span className="d-flex align-items-center gap-1">
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-twitter-x" viewBox="0 0 16 16">
+                                        <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>
+                                    </svg>
+                            </span>
+                            <span>{ brand?.data?.data?.twitter_x }</span>
+                        </span> }
+                    { ((brand?.data?.data?.other_social) && (brand?.data?.data?.other_social != 'undefined')) && 
+                        <span className="d-flex align-items-center gap-1">
+                            <span>
+                                { brand?.data?.data?.other_social }:
+                            </span>
+                            <span style={{ textTransform: 'capitalize' }}>{ brand?.data?.data?.other_social_handle }</span>
+                        </span> }
+                </div> 
             </div>
+
+            {/* <div className="px-3 fs-6 d-flex justify-content-end align-items-center">
+                <span>1-16 of over 100,000 results</span>
+            </div> */}
             <section className="grid grid-order-reverse pt-3 px-3"> 
 
                 <Aside />
 
                 <div className="main"> 
-                    <section className="products pt-3">
-                        <article className="card border-0 mb-5">
-                            <Link 
-                                to={ route('products.show', {id: '123'}) } 
-                                className="text-decoration-none text-dark">
-                                    <div className="row align-items-center g-3">
-                                        <div className="col-sm-12 col-lg-4">
-                                            <div id="carouselExample" className="carousel slide">
-                                                <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>
-                                                    <div className="images">
-                                                        <div className="carousel-item active">
-                                                            <img src="https://images.unsplash.com/photo-1695527081756-6e15ed27c6a3?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://plus.unsplash.com/premium_photo-1678739395192-bfdd13322d34?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://images.unsplash.com/photo-1527385352018-3c26dd6c3916?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                    </div> 
-
-                                                    <div>
-                                                        <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Previous</span>
-                                                        </button>
-                                                        <button className="carousel-control-next position-absolute right-0 pe-1" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Next</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-12 col-lg-8">
-                                            <div className="card-body d-flex flex-column gap-0">
-                                                <h4 className="card-title fs-4">Portable Monitor 15.6inch FHD 1080P USB C HDMI
-                                                    Gaming Ultra-Slim IPS
-                                                    Display
-                                                    w/Smart Cover & Speakers,HDR Plug&Play,
-                                                    External Monitor for Laptop PC Phone Mac (15.6'' 1080P)</h4>
-                                                <span className="card-text"><small>Options: <span className="fw-semibold">7
-                                                            sizes</span></small></span>
-                                                <span className="card-text">10k+ bought in the last month</span>
-                                                <span className="card-text"><small><s>$86.99</s></small>&nbsp;<span
-                                                        className="fw-semibold">$79.99</span></span>
-                                                <span className="card-text"><small><span
-                                                            className="bg-success border-radius-35 px-2 py-1 text-white fw-semibold">Save
-                                                            $15.00</span>&nbsp;with coupon</small></span>
-                                                <span className="card-text">Delivery&nbsp;<span className="fw-semibold">Fri, Aug
-                                                        30</span></span>
-                                                <span>
-                                                    <small>More Buying Choices:</small>
-                                                    <small className="fw-semibold">$400.98(46 used & new offers)</small>
-                                                </span>
-                                                <div className="pt-2 d-flex gap-2">
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bookmark" viewBox="0 0 16 16">
-                                                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-heart" viewBox="0 0 16 16">
-                                                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bag" viewBox="0 0 16 16">
-                                                            <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </Link>
-                        </article>
-                        <article className="card border-0 mb-5">
-                            <Link 
-                                to={ route('products.show', {id: '123'}) }  
-                                className="text-decoration-none text-dark">
-                                    <div className="row align-items-center g-3">
-                                        <div className="col-sm-12 col-lg-4">
-                                            <div id="carousel2Example" className="carousel slide">
-                                                <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>
-                                                    <div className="images"> 
-                                                        <div className="carousel-item active">
-                                                            <img src="https://plus.unsplash.com/premium_photo-1678739395192-bfdd13322d34?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://images.unsplash.com/photo-1695527081756-6e15ed27c6a3?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div> 
-                                                        <div className="carousel-item">
-                                                            <img src="https://images.unsplash.com/photo-1527385352018-3c26dd6c3916?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                    </div> 
-
-                                                    <div>
-                                                        <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target="#carousel2Example" data-bs-slide="prev">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Previous</span>
-                                                        </button>
-                                                        <button className="carousel-control-next position-absolute right-0 pe-1" type="button" data-bs-target="#carousel2Example" data-bs-slide="next">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Next</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-12 col-lg-8">
-                                            <div className="card-body d-flex flex-column gap-0">
-                                                <h4 className="card-title fs-4">Portable Monitor 15.6inch FHD 1080P USB C HDMI
-                                                    Gaming Ultra-Slim IPS
-                                                    Display
-                                                    w/Smart Cover & Speakers,HDR Plug&Play,
-                                                    External Monitor for Laptop PC Phone Mac (15.6'' 1080P)</h4>
-                                                <span className="card-text"><small>Options: <span className="fw-semibold">7
-                                                            sizes</span></small></span>
-                                                <span className="card-text">10k+ bought in the last month</span>
-                                                <span className="card-text"><small><s>$86.99</s></small>&nbsp;<span
-                                                        className="fw-semibold">$79.99</span></span>
-                                                <span className="card-text"><small><span
-                                                            className="bg-success border-radius-35 px-2 py-1 text-white fw-semibold">Save
-                                                            $15.00</span>&nbsp;with coupon</small></span>
-                                                <span className="card-text">Delivery&nbsp;<span className="fw-semibold">Fri, Aug
-                                                        30</span></span>
-                                                <span>
-                                                    <small>More Buying Choices:</small>
-                                                    <small className="fw-semibold">$400.98(46 used & new offers)</small>
-                                                </span>
-                                                <div className="pt-2 d-flex gap-2">
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bookmark" viewBox="0 0 16 16">
-                                                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-heart" viewBox="0 0 16 16">
-                                                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bag" viewBox="0 0 16 16">
-                                                            <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </Link>
-                        </article>
-                        <article className="card border-0 mb-5">
-                            <Link 
-                                to={ route('products.show', {id: '123'}) } 
-                                className="text-decoration-none text-dark">
-                                    <div className="row align-items-center g-3">
-                                        <div className="col-sm-12 col-lg-4">
-                                            <div id="carousel3Example" className="carousel slide">
-                                                <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>
-                                                    <div className="images"> 
-                                                        <div className="carousel-item active">
-                                                            <img src="https://images.unsplash.com/photo-1527385352018-3c26dd6c3916?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://images.unsplash.com/photo-1695527081756-6e15ed27c6a3?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://plus.unsplash.com/premium_photo-1678739395192-bfdd13322d34?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                    </div> 
-
-                                                    <div>
-                                                        <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target="#carousel3Example" data-bs-slide="prev">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Previous</span>
-                                                        </button>
-                                                        <button className="carousel-control-next position-absolute right-0 pe-1" type="button" data-bs-target="#carousel3Example" data-bs-slide="next">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Next</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-12 col-md-8">
-                                            <div className="card-body d-flex flex-column gap-0">
-                                                <h4 className="card-title fs-4">Portable Monitor 15.6inch FHD 1080P USB C HDMI
-                                                    Gaming Ultra-Slim IPS
-                                                    Display
-                                                    w/Smart Cover & Speakers,HDR Plug&Play,
-                                                    External Monitor for Laptop PC Phone Mac (15.6'' 1080P)</h4>
-                                                <span className="card-text"><small>Options: <span className="fw-semibold">7
-                                                            sizes</span></small></span>
-                                                <span className="card-text">10k+ bought in the last month</span>
-                                                <span className="card-text"><small><s>$86.99</s></small>&nbsp;<span
-                                                        className="fw-semibold">$79.99</span></span>
-                                                <span className="card-text"><small><span
-                                                            className="bg-success border-radius-35 px-2 py-1 text-white fw-semibold">Save
-                                                            $15.00</span>&nbsp;with coupon</small></span>
-                                                <span className="card-text">Delivery&nbsp;<span className="fw-semibold">Fri, Aug
-                                                        30</span></span>
-                                                <span>
-                                                    <small>More Buying Choices:</small>
-                                                    <small className="fw-semibold">$400.98(46 used & new offers)</small>
-                                                </span>
-                                                <div className="pt-2 d-flex gap-2">
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bookmark" viewBox="0 0 16 16">
-                                                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-heart" viewBox="0 0 16 16">
-                                                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bag" viewBox="0 0 16 16">
-                                                            <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </Link>
-                        </article>
-                        <article className="card border-0 mb-5">
-                            <Link 
-                                to={ route('products.show', {id: '123'}) } 
-                                className="text-decoration-none text-dark">
-                                    <div className="row align-items-center g-3">
-                                        <div className="col-sm-12 col-lg-4">
-                                            <div id="carousel4Example" className="carousel slide">
-                                                <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>
-                                                    <div className="images">
-                                                        <div className="carousel-item active">
-                                                            <img src="https://images.unsplash.com/photo-1695527081756-6e15ed27c6a3?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://plus.unsplash.com/premium_photo-1678739395192-bfdd13322d34?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://images.unsplash.com/photo-1527385352018-3c26dd6c3916?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                    </div> 
-
-                                                    <div>
-                                                        <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target="#carousel4Example" data-bs-slide="prev">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Previous</span>
-                                                        </button>
-                                                        <button className="carousel-control-next position-absolute right-0 pe-1" type="button" data-bs-target="#carousel4Example" data-bs-slide="next">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Next</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-12 col-lg-8">
-                                            <div className="card-body d-flex flex-column gap-0">
-                                                <h4 className="card-title fs-4">Portable Monitor 15.6inch FHD 1080P USB C HDMI
-                                                    Gaming Ultra-Slim IPS
-                                                    Display
-                                                    w/Smart Cover & Speakers,HDR Plug&Play,
-                                                    External Monitor for Laptop PC Phone Mac (15.6'' 1080P)</h4>
-                                                <span className="card-text"><small>Options: <span className="fw-semibold">7
-                                                            sizes</span></small></span>
-                                                <span className="card-text">10k+ bought in the last month</span>
-                                                <span className="card-text"><small><s>$86.99</s></small>&nbsp;<span
-                                                        className="fw-semibold">$79.99</span></span>
-                                                <span className="card-text"><small><span
-                                                            className="bg-success border-radius-35 px-2 py-1 text-white fw-semibold">Save
-                                                            $15.00</span>&nbsp;with coupon</small></span>
-                                                <span className="card-text">Delivery&nbsp;<span className="fw-semibold">Fri, Aug
-                                                        30</span></span>
-                                                <span>
-                                                    <small>More Buying Choices:</small>
-                                                    <small className="fw-semibold">$400.98(46 used & new offers)</small>
-                                                </span>
-                                                <div className="pt-2 d-flex gap-2">
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bookmark" viewBox="0 0 16 16">
-                                                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-heart" viewBox="0 0 16 16">
-                                                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bag" viewBox="0 0 16 16">
-                                                            <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </Link>
-                        </article>
-                        <article className="card border-0 mb-5">
-                            <Link 
-                                to={ route('products.show', {id: '123'}) } 
-                                className="text-decoration-none text-dark">
-                                    <div className="row align-items-center g-3">
-                                        <div className="col-sm-12 col-lg-4">
-                                            <div id="carousel5Example" className="carousel slide">
-                                                <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>
-                                                    <div className="images">
-                                                        <div className="carousel-item active">
-                                                            <img src="https://images.unsplash.com/photo-1695527081756-6e15ed27c6a3?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://plus.unsplash.com/premium_photo-1678739395192-bfdd13322d34?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://images.unsplash.com/photo-1527385352018-3c26dd6c3916?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                    </div> 
-
-                                                    <div>
-                                                        <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target="#carousel5Example" data-bs-slide="prev">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Previous</span>
-                                                        </button>
-                                                        <button className="carousel-control-next position-absolute right-0 pe-1" type="button" data-bs-target="#carousel5Example" data-bs-slide="next">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Next</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-12 col-lg-8">
-                                            <div className="card-body d-flex flex-column gap-0">
-                                                <h4 className="card-title fs-4">Portable Monitor 15.6inch FHD 1080P USB C HDMI
-                                                    Gaming Ultra-Slim IPS
-                                                    Display
-                                                    w/Smart Cover & Speakers,HDR Plug&Play,
-                                                    External Monitor for Laptop PC Phone Mac (15.6'' 1080P)</h4>
-                                                <span className="card-text"><small>Options: <span className="fw-semibold">7
-                                                            sizes</span></small></span>
-                                                <span className="card-text">10k+ bought in the last month</span>
-                                                <span className="card-text"><small><s>$86.99</s></small>&nbsp;<span
-                                                        className="fw-semibold">$79.99</span></span>
-                                                <span className="card-text"><small><span
-                                                            className="bg-success border-radius-35 px-2 py-1 text-white fw-semibold">Save
-                                                            $15.00</span>&nbsp;with coupon</small></span>
-                                                <span className="card-text">Delivery&nbsp;<span className="fw-semibold">Fri, Aug
-                                                        30</span></span>
-                                                <span>
-                                                    <small>More Buying Choices:</small>
-                                                    <small className="fw-semibold">$400.98(46 used & new offers)</small>
-                                                </span>
-                                                <div className="pt-2 d-flex gap-2">
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bookmark" viewBox="0 0 16 16">
-                                                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-heart" viewBox="0 0 16 16">
-                                                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bag" viewBox="0 0 16 16">
-                                                            <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </Link>
-                        </article>
-                        <article className="card border-0 mb-5">
-                            <Link 
-                                to={ route('products.show', {id: '123'}) } 
-                                className="text-decoration-none text-dark">
-                                <div className="row align-items-center g-3">
-                                    <div className="col-sm-12 col-lg-4">
-                                        <div id="carousel6Example" className="carousel slide">
-                                            <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>
-                                                <div className="images">
-                                                    <div className="carousel-item active">
-                                                        <img src="https://images.unsplash.com/photo-1695527081756-6e15ed27c6a3?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                    </div>
-                                                    <div className="carousel-item">
-                                                        <img src="https://plus.unsplash.com/premium_photo-1678739395192-bfdd13322d34?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                    </div>
-                                                    <div className="carousel-item">
-                                                        <img src="https://images.unsplash.com/photo-1527385352018-3c26dd6c3916?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                    </div>
-                                                </div> 
-
-                                                <div>
-                                                    <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target="#carousel6Example" data-bs-slide="prev">
-                                                        <span>
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
-                                                                <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
-                                                            </svg>
-                                                        </span>
-                                                        <span className="visually-hidden">Previous</span>
-                                                    </button>
-                                                    <button className="carousel-control-next position-absolute right-0 pe-1" type="button" data-bs-target="#carousel6Example" data-bs-slide="next">
-                                                        <span>
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                                                <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
-                                                            </svg>
-                                                        </span>
-                                                        <span className="visually-hidden">Next</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-sm-12 col-lg-8">
-                                        <div className="card-body d-flex flex-column gap-0">
-                                            <h4 className="card-title fs-4">Portable Monitor 15.6inch FHD 1080P USB C HDMI
-                                                Gaming Ultra-Slim IPS
-                                                Display
-                                                w/Smart Cover & Speakers,HDR Plug&Play,
-                                                External Monitor for Laptop PC Phone Mac (15.6'' 1080P)</h4>
-                                            <span className="card-text"><small>Options: <span className="fw-semibold">7
-                                                        sizes</span></small></span>
-                                            <span className="card-text">10k+ bought in the last month</span>
-                                            <span className="card-text"><small><s>$86.99</s></small>&nbsp;<span
-                                                    className="fw-semibold">$79.99</span></span>
-                                            <span className="card-text"><small><span
-                                                        className="bg-success border-radius-35 px-2 py-1 text-white fw-semibold">Save
-                                                        $15.00</span>&nbsp;with coupon</small></span>
-                                            <span className="card-text">Delivery&nbsp;<span className="fw-semibold">Fri, Aug
-                                                    30</span></span>
-                                            <span>
-                                                <small>More Buying Choices:</small>
-                                                <small className="fw-semibold">$400.98(46 used & new offers)</small>
-                                            </span>
-                                            <div className="pt-2 d-flex gap-2">
-                                                <span>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bookmark" viewBox="0 0 16 16">
-                                                        <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
-                                                    </svg>
-                                                </span>
-                                                <span>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-heart" viewBox="0 0 16 16">
-                                                        <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-                                                    </svg>
-                                                </span>
-                                                <span>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bag" viewBox="0 0 16 16">
-                                                        <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                                                    </svg>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Link>
-                        </article>
-                        <article className="card border-0 mb-5">
-                            <Link 
-                                to={ route('products.show', {id: '123'}) } 
-                                className="text-decoration-none text-dark">
-                                    <div className="row align-items-center g-3">
-                                        <div className="col-sm-12 col-lg-4">
-                                            <div id="carousel7Example" className="carousel slide">
-                                                <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>
-                                                    <div className="images">
-                                                        <div className="carousel-item active">
-                                                            <img src="https://images.unsplash.com/photo-1695527081756-6e15ed27c6a3?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://plus.unsplash.com/premium_photo-1678739395192-bfdd13322d34?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://images.unsplash.com/photo-1527385352018-3c26dd6c3916?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                    </div> 
-
-                                                    <div>
-                                                        <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target="#carousel7Example" data-bs-slide="prev">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Previous</span>
-                                                        </button>
-                                                        <button className="carousel-control-next position-absolute right-0 pe-1" type="button" data-bs-target="#carousel7Example" data-bs-slide="next">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Next</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-12 col-lg-8">
-                                            <div className="card-body d-flex flex-column gap-0">
-                                                <h4 className="card-title fs-4">Portable Monitor 15.6inch FHD 1080P USB C HDMI
-                                                    Gaming Ultra-Slim IPS
-                                                    Display
-                                                    w/Smart Cover & Speakers,HDR Plug&Play,
-                                                    External Monitor for Laptop PC Phone Mac (15.6'' 1080P)</h4>
-                                                <span className="card-text"><small>Options: <span className="fw-semibold">7
-                                                            sizes</span></small></span>
-                                                <span className="card-text">10k+ bought in the last month</span>
-                                                <span className="card-text"><small><s>$86.99</s></small>&nbsp;<span
-                                                        className="fw-semibold">$79.99</span></span>
-                                                <span className="card-text"><small><span
-                                                            className="bg-success border-radius-35 px-2 py-1 text-white fw-semibold">Save
-                                                            $15.00</span>&nbsp;with coupon</small></span>
-                                                <span className="card-text">Delivery&nbsp;<span className="fw-semibold">Fri, Aug
-                                                        30</span></span>
-                                                <span>
-                                                    <small>More Buying Choices:</small>
-                                                    <small className="fw-semibold">$400.98(46 used & new offers)</small>
-                                                </span>
-                                                <div className="pt-2 d-flex gap-2">
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bookmark" viewBox="0 0 16 16">
-                                                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-heart" viewBox="0 0 16 16">
-                                                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bag" viewBox="0 0 16 16">
-                                                            <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </Link>
-                        </article>
-                        <article className="card border-0 mb-5">
-                            <Link 
-                                to={ route('products.show', {id: '123'}) } 
-                                className="text-decoration-none text-dark">
-                                <div className="row align-items-center g-3">
-                                    <div className="col-sm-12 col-lg-4">
-                                        <div id="carousel8Example" className="carousel slide">
-                                            <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>
-                                                <div className="images">
-                                                    <div className="carousel-item active">
-                                                        <img src="https://images.unsplash.com/photo-1695527081756-6e15ed27c6a3?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                    </div>
-                                                    <div className="carousel-item">
-                                                        <img src="https://plus.unsplash.com/premium_photo-1678739395192-bfdd13322d34?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                    </div>
-                                                    <div className="carousel-item">
-                                                        <img src="https://images.unsplash.com/photo-1527385352018-3c26dd6c3916?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                    </div>
-                                                </div> 
-
-                                                <div>
-                                                    <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target="#carousel8Example" data-bs-slide="prev">
-                                                        <span>
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
-                                                                <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
-                                                            </svg>
-                                                        </span>
-                                                        <span className="visually-hidden">Previous</span>
-                                                    </button>
-                                                    <button className="carousel-control-next position-absolute right-0 pe-1" type="button" data-bs-target="#carousel8Example" data-bs-slide="next">
-                                                        <span>
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                                                <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
-                                                            </svg>
-                                                        </span>
-                                                        <span className="visually-hidden">Next</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-sm-12 col-lg-12">
-                                        <div className="card-body d-flex flex-column gap-0">
-                                            <h4 className="card-title fs-4">Portable Monitor 15.6inch FHD 1080P USB C HDMI
-                                                Gaming Ultra-Slim IPS
-                                                Display
-                                                w/Smart Cover & Speakers,HDR Plug&Play,
-                                                External Monitor for Laptop PC Phone Mac (15.6'' 1080P)</h4>
-                                            <span className="card-text"><small>Options: <span className="fw-semibold">7
-                                                        sizes</span></small></span>
-                                            <span className="card-text">10k+ bought in the last month</span>
-                                            <span className="card-text"><small><s>$86.99</s></small>&nbsp;<span
-                                                    className="fw-semibold">$79.99</span></span>
-                                            <span className="card-text"><small><span
-                                                        className="bg-success border-radius-35 px-2 py-1 text-white fw-semibold">Save
-                                                        $15.00</span>&nbsp;with coupon</small></span>
-                                            <span className="card-text">Delivery&nbsp;<span className="fw-semibold">Fri, Aug
-                                                    30</span></span>
-                                            <span>
-                                                <small>More Buying Choices:</small>
-                                                <small className="fw-semibold">$400.98(46 used & new offers)</small>
-                                            </span>
-                                            <div className="pt-2 d-flex gap-2">
-                                                <span>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bookmark" viewBox="0 0 16 16">
-                                                        <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
-                                                    </svg>
-                                                </span>
-                                                <span>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-heart" viewBox="0 0 16 16">
-                                                        <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-                                                    </svg>
-                                                </span>
-                                                <span>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bag" viewBox="0 0 16 16">
-                                                        <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                                                    </svg>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Link>
-                        </article>
-                        <article className="card border-0 mb-5">
-                            <Link 
-                                to={ route('products.show', {id: '123'}) } 
-                                className="text-decoration-none text-dark">
-                                    <div className="row align-items-center g-3">
-                                        <div className="col-sm-12 col-lg-4">
-                                            <div id="carousel9Example" className="carousel slide">
-                                                <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>
-                                                    <div className="images">
-                                                        <div className="carousel-item active">
-                                                            <img src="https://images.unsplash.com/photo-1695527081756-6e15ed27c6a3?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://plus.unsplash.com/premium_photo-1678739395192-bfdd13322d34?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://images.unsplash.com/photo-1527385352018-3c26dd6c3916?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                    </div> 
-
-                                                    <div>
-                                                        <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target="#carousel9Example" data-bs-slide="prev">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Previous</span>
-                                                        </button>
-                                                        <button className="carousel-control-next position-absolute right-0 pe-1" type="button" data-bs-target="#carousel9Example" data-bs-slide="next">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Next</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-12 col-lg-8">
-                                            <div className="card-body d-flex flex-column gap-0">
-                                                <h4 className="card-title fs-4">Portable Monitor 15.6inch FHD 1080P USB C HDMI
-                                                    Gaming Ultra-Slim IPS
-                                                    Display
-                                                    w/Smart Cover & Speakers,HDR Plug&Play,
-                                                    External Monitor for Laptop PC Phone Mac (15.6'' 1080P)</h4>
-                                                <span className="card-text"><small>Options: <span className="fw-semibold">7
-                                                            sizes</span></small></span>
-                                                <span className="card-text">10k+ bought in the last month</span>
-                                                <span className="card-text"><small><s>$86.99</s></small>&nbsp;<span
-                                                        className="fw-semibold">$79.99</span></span>
-                                                <span className="card-text"><small><span
-                                                            className="bg-success border-radius-35 px-2 py-1 text-white fw-semibold">Save
-                                                            $15.00</span>&nbsp;with coupon</small></span>
-                                                <span className="card-text">Delivery&nbsp;<span className="fw-semibold">Fri, Aug
-                                                        30</span></span>
-                                                <span>
-                                                    <small>More Buying Choices:</small>
-                                                    <small className="fw-semibold">$400.98(46 used & new offers)</small>
-                                                </span>
-                                                <div className="pt-2 d-flex gap-2">
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bookmark" viewBox="0 0 16 16">
-                                                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-heart" viewBox="0 0 16 16">
-                                                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bag" viewBox="0 0 16 16">
-                                                            <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </Link>
-                        </article>
-                        <article className="card border-0 mb-5">
-                            <Link 
-                                to={ route('products.show', {id: '123'}) } 
-                                className="text-decoration-none text-dark">
-                                    <div className="row align-items-center g-3">
-                                        <div className="col-sm-12 col-lg-4">
-                                            <div id="carousel10Example" className="carousel slide">
-                                                <div className="carousel-inner position-relative" style={{ width: '225px', height: '250px' }}>
-                                                    <div className="images">
-                                                        <div className="carousel-item active">
-                                                            <img src="https://images.unsplash.com/photo-1695527081756-6e15ed27c6a3?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://plus.unsplash.com/premium_photo-1678739395192-bfdd13322d34?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                        <div className="carousel-item">
-                                                            <img src="https://images.unsplash.com/photo-1527385352018-3c26dd6c3916?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="d-block img-fluid object-fit-cover border-radius-35" style={{ width: '225px', height: '250px' }} alt="..." />
-                                                        </div>
-                                                    </div> 
-
-                                                    <div>
-                                                        <button className="carousel-control-prev position-absolute left-0 ps-1" type="button" data-bs-target="#carousel10Example" data-bs-slide="prev">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Previous</span>
-                                                        </button>
-                                                        <button className="carousel-control-next position-absolute right-0 pe-1" type="button" data-bs-target="#carousel10Example" data-bs-slide="next">
-                                                            <span>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                                                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
-                                                                </svg>
-                                                            </span>
-                                                            <span className="visually-hidden">Next</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-12 col-lg-8">
-                                            <div className="card-body d-flex flex-column gap-0">
-                                                <h4 className="card-title fs-4">Portable Monitor 15.6inch FHD 1080P USB C HDMI
-                                                    Gaming Ultra-Slim IPS
-                                                    Display
-                                                    w/Smart Cover & Speakers,HDR Plug&Play,
-                                                    External Monitor for Laptop PC Phone Mac (15.6'' 1080P)</h4>
-                                                <span className="card-text"><small>Options: <span className="fw-semibold">7
-                                                            sizes</span></small></span>
-                                                <span className="card-text">10k+ bought in the last month</span>
-                                                <span className="card-text"><small><s>$86.99</s></small>&nbsp;<span
-                                                        className="fw-semibold">$79.99</span></span>
-                                                <span className="card-text"><small><span
-                                                            className="bg-success border-radius-35 px-2 py-1 text-white fw-semibold">Save
-                                                            $15.00</span>&nbsp;with coupon</small></span>
-                                                <span className="card-text">Delivery&nbsp;<span className="fw-semibold">Fri, Aug
-                                                        30</span></span>
-                                                <span>
-                                                    <small>More Buying Choices:</small>
-                                                    <small className="fw-semibold">$400.98(46 used & new offers)</small>
-                                                </span>
-                                                <div className="pt-2 d-flex gap-2">
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bookmark" viewBox="0 0 16 16">
-                                                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-heart" viewBox="0 0 16 16">
-                                                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-                                                        </svg>
-                                                    </span>
-                                                    <span>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-bag" viewBox="0 0 16 16">
-                                                            <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                                                        </svg>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </Link>
-                        </article>
+                    <section className="products pt-4">
+                        {(brandProducts?.data?.length > 0) ? (brandProducts?.data?.map((product, index) => {
+                            return (
+                                <article key={ product?._id } className="card border-0 mb-5">
+                                    <ProductComponent2 
+                                        // key = { product?.id } 
+                                        itemId = { product?.id || product?._id } 
+                                        asin = { product?.asin || product?.id } 
+                                        imgSrc =  { product?.image || product?.images }
+                                        title = { product?.title } 
+                                        description = '' 
+                                        oldPrice = { product?.initial_retail_price && product?.initial_retail_price } 
+                                        currentPrice = { product?.retail_price || product?.price } 
+                                        rating = { product?.rating?.rate } 
+                                        orderCount = { product?.order_count } 
+                                        salesCount = { product?.sale_count } 
+                                        category = { product?.category } />
+                                </article>
+                            )
+                        })) : (
+                            <div className="py-5 d-flex justify-content-center align-items-center">
+                                <span>No products yet associated with brand.</span>
+                            </div>
+                        )}
                     </section> 
 
-                    <PaginationLinks /> 
+                    {/* <PaginationLinks />  */}
+                    { (brandProducts?.data?.length > 0) && 
+                        <section className="pagination-links py-5 d-flex justify-content-end gap-2 pe-2"> 
+                            <span 
+                                type="button" 
+                                onClick={ async () => { 
+                                    scrollToTop(); 
+                                    let previousPage = ((brandProducts?.meta?.current_page >= 1) ? (brandProducts?.meta?.current_page - 1) : 1)
+                                    setBrandProductQuery(prevState => ({
+                                        ...prevState, 
+                                        page: previousPage
+                                    })); 
+                                    await getBrandProducts(brandProductQuery); 
+                                } }>
+                                    <Previous /> 
+                            </span> 
+                            <span 
+                                type="button" 
+                                onClick={ async () => { 
+                                    scrollToTop(); 
+                                    let nextPage = ((brandProducts?.meta?.current_page < brandProducts?.meta?.total_pages) ? (brandProducts?.meta?.current_page + 1) : brandProducts?.meta?.total_pages)
+                                    setBrandProductQuery(prevState => ({
+                                        ...prevState, 
+                                        page: nextPage
+                                    })); 
+                                    await getBrandProducts(brandProductQuery); 
+                                } }>
+                                <Next /> 
+                            </span> 
+                            {/* <span 
+                                type="button" 
+                                onClick={ async () => { 
+                                    scrollToTop(); 
+                                    // await getProducts(products?.meta?.total_pages); 
+                                    let lastPage = products?.meta?.total_pages
+                                    setProductQuery(prevState => ({
+                                        ...prevState, 
+                                        // role: productQuery?.role, 
+                                        page: lastPage
+                                    })); 
+                                    await getProducts(productQuery); 
+                                } }>
+                                    <Last />
+                            </span> */}
+                        </section> 
+                    }
                 </div> 
 
             </section> 

@@ -3,16 +3,11 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema; 
 
 const categorySchema = new Schema({ 
-        id: { 
-            type: String, 
-            minLength: 1, 
-            unique: true 
-        },
-        name: { 
-            type: String, 
-            minLength: 1, 
-            unique: true 
-        }
+        user: { type: Schema.Types.ObjectId, ref: 'User' }, 
+        name: { type: String, unique: true }, 
+        link: { type: String }, 
+        node: { type: String }, 
+        order_count: { type: Number, default: 0 }, 
     }, 
     {
         timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }

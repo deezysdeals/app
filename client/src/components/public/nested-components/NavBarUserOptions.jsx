@@ -1,9 +1,12 @@
-import { useState } from 'react'; 
+import { useContext, useState } from 'react'; 
+import AuthContext from '@/context/AuthContext.jsx'; 
 import { Link } from 'react-router-dom'; 
 import { route } from '@/routes'; 
+import UserNoImage from '@/assets/images/user-icon.jpg'; 
 
 
 export default function NavBarUserOptions() { 
+    const { user, signOut } = useContext(AuthContext); 
     const [userOptionsToggle, setUserOptionsToggle] = useState(false); 
 
     return (
@@ -13,28 +16,15 @@ export default function NavBarUserOptions() {
                     id="user-icon" 
                     className="user" 
                     onClick={ () => setUserOptionsToggle(!userOptionsToggle) }>
-                    <img src="https://plus.unsplash.com/premium_photo-1683140621573-233422bfc7f1?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    <img src={ user?.user?.user_image ? user?.user?.user_image : UserNoImage }
                         alt="" className="object-fit-cover border border-2"
                         style={{ height: '25px', width: '25px', borderRadius: '50px' }} />
                 </span>
     
                 <div id="user-options"
-                    className={`user-options position-absolute bg-white p-3 border border-1 rounded text-nowrap hidden`}
+                    className="user-options position-absolute bg-white px-3 py-4 border border-1 border-radius-25 text-nowrap hidden box-shadow-1 fw-semibold"
                     style={{ top: '40px', right: '0', display: userOptionsToggle && 'block' }}>
                     <ul className="list-unstyled d-flex flex-column gap-3">
-                        <li className="text-dark">
-                            <Link to={ route('home.index') } className="text-decoration-none text-dark d-flex justify-content-end gap-1">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 18V15" stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                    <path
-                                        d="M10.07 2.81997L3.14002 8.36997C2.36002 8.98997 1.86002 10.3 2.03002 11.28L3.36002 19.24C3.60002 20.66 4.96002 21.81 6.40002 21.81H17.6C19.03 21.81 20.4 20.65 20.64 19.24L21.97 11.28C22.13 10.3 21.63 8.98997 20.86 8.36997L13.93 2.82997C12.86 1.96997 11.13 1.96997 10.07 2.81997Z"
-                                        stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                                <span>
-                                    Dashboard
-                                </span>
-                            </Link>
-                        </li>
                         <li className="text-dark d-flex justify-content-end gap-1">
                             <Link to={ route('home.settings.index') } className="text-decoration-none text-dark d-flex justify-content-end gap-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -47,7 +37,10 @@ export default function NavBarUserOptions() {
                                 </span>
                             </Link>
                         </li>
-                        <li className="text-danger d-flex justify-content-end gap-1">
+                        <li 
+                            type="button" 
+                            onClick={ signOut }
+                            className="text-danger d-flex justify-content-end gap-1">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                                 className="bi bi-power" viewBox="0 0 16 16">
                                 <path d="M7.5 1v7h1V1z" />

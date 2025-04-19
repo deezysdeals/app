@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler'; 
-const cloudinaryImageUpload = require('../../config/imageUpload/cloudinary'); 
+// const cloudinaryImageUpload = require('../../config/imageUpload/cloudinary'); 
+import cloudinaryImageUpload from '../../config/imageUpload/cloudinary.js';
 import User from '../../models/User.js'; 
 
 
@@ -33,7 +34,7 @@ const updateProfile = asyncHandler(async (req, res) => {
         if (req?.files?.user_photo) {
             const userImage = req?.files?.user_photo;
 
-            userImageUpload = await cloudinaryImageUpload(userImage?.tempFilePath, 'tasha-best-decor-user-images'); 
+            userImageUpload = await cloudinaryImageUpload(userImage?.tempFilePath, 'deezysdeals_user_images'); 
 
             if (!userImageUpload) return res.status(409).json({ message: "Image upload failed" })
         };
@@ -57,8 +58,18 @@ const updateProfile = asyncHandler(async (req, res) => {
     }
 }); 
 
+const updateNotificationSetting = asyncHandler(async (req, res) => {
+
+}); 
+
+const updateVisibilitySetting = asyncHandler(async (req, res) => {
+
+}); 
+
 
 export {
     getProfile, 
-    updateProfile
+    updateProfile, 
+    updateNotificationSetting, 
+    updateVisibilitySetting
 };

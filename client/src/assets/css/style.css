@@ -20,6 +20,21 @@
     border-radius: 35px;
 }
 
+.border-left-radius-35 {
+    border-top-left-radius: 35px; 
+    border-bottom-left-radius: 35px;
+} 
+
+.border-right-radius-35 {
+    border-top-right-radius: 35px; 
+    border-bottom-right-radius: 35px;
+} 
+
+.form-field-required::before {
+    content: "*";
+    color: #ff0000; 
+}
+
 .box-shadow-1 {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
@@ -49,7 +64,6 @@
     border: none;
     outline: none;
 }
-
 /** End Search */
 
 
@@ -229,6 +243,10 @@
     opacity: 0.7;
     text-decoration: none;
     cursor: pointer;
+} 
+
+.swal2-button {
+    border-radius: 35px !important;
 }
 
 /** End Modals */
@@ -622,7 +640,7 @@ main .testimonials .row .intro {
 
 .footer .cart-box {
     width: 275px;
-    height: 60vh;
+    max-height: 60vh;
     overflow-y: scroll;
     position: fixed;
     bottom: 35px;
@@ -639,7 +657,7 @@ main .testimonials .row .intro {
 .footer .cart-box .item-description {
     font-size: x-small;
 }
-
+ 
 .footer .cart-footer {
     /* position: relative;  */
     bottom: 75px;
@@ -656,7 +674,7 @@ main .testimonials .row .intro {
     right: 0;
 }
 
-.footer .cart-btn::after {
+/* .footer .cart-btn::after {
     content: '';
     background-color: orangered;
     position: absolute;
@@ -665,7 +683,7 @@ main .testimonials .row .intro {
     border-radius: 50px;
     top: -5px;
     left: -7px
-}
+} */
 
 .footer .footer-end {
     border-radius: 35px 35px 0 0;
@@ -780,23 +798,29 @@ main .grid .aside.dashboard-aside .sidenav .active {
 main .grid .main .dashboard-content .dashboard-boxes .line {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    /* gap: 1.5rem; */
 }
 
 main .grid .main .dashboard-content .dashboard-boxes .line.line-1 {
     display: grid;
     grid-template-areas:
-        "sales-purchase"
-        "client-growth"
-        "customers-volume";
+        "order-expenditure"
+        "sale-purchase"
+        "client-checkin"
+        "client-volume";
 }
 
-main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .sales-purchase {
+main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .order-expenditure {
     display: grid;
     grid-template-columns: 1fr;
 }
 
-main .grid .main .dashboard-content .dashboard-boxes .line.line-2 {
+main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .sale-purchase {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+main .grid .main .dashboard-content .dashboard-boxes .line.line-3 {
     display: grid;
     grid-template-columns: 2fr 3fr;
     grid-template-areas:
@@ -804,23 +828,27 @@ main .grid .main .dashboard-content .dashboard-boxes .line.line-2 {
         "orders orders";
 }
 
-main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .sales-purchase {
-    grid-area: sales-purchase;
+main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .order-expenditure {
+    grid-area: order-expenditure;
 }
 
-main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .client-growth {
-    grid-area: client-growth;
+main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .sale-purchase {
+    grid-area: sale-purchase;
 }
 
-main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .customers-volume {
-    grid-area: customers-volume;
+main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .client-checkin {
+    grid-area: client-checkin;
 }
 
-main .grid .main .dashboard-content .dashboard-boxes .line.line-2 .statistics {
+main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .client-volume {
+    grid-area: client-volume;
+}
+
+main .grid .main .dashboard-content .dashboard-boxes .line.line-3 .statistics {
     grid-area: statistics;
 }
 
-main .grid .main .dashboard-content .dashboard-boxes .line.line-2 .orders {
+main .grid .main .dashboard-content .dashboard-boxes .line.line-3 .orders {
     grid-area: orders;
 }
 
@@ -828,6 +856,10 @@ main .grid .main .dashboard-content .profile-form,
 main .grid .dashboard-content .hero-form, 
 main .grid .dashboard-content .activities-form {
     width: 100%;
+} 
+
+main .grid .main .dashboard-content .profile-form .fields {
+    display: grid; 
 }
 
 
@@ -1187,26 +1219,38 @@ main .grid .dashboard-content .activities-form {
         display: grid;
         /* grid-template-columns: repeat(2, 1fr); */
         grid-template-areas:
-            "sales-purchase sales-purchase"
-            "client-growth customers-volume";
+            "order-expenditure order-expenditure"
+            "sale-purchase sale-purchase"
+            "client-checkin client-volume";
     }
 
-    main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .sales-purchase {
+    main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .order-expenditure {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
     }
 
-    main .grid .main .dashboard-content .dashboard-boxes .line.line-2 {
+    main .grid .main .dashboard-content .dashboard-boxes .line.line-1 .sale-purchase {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    main .grid .main .dashboard-content .dashboard-boxes .line.line-3 {
         display: grid;
         grid-template-columns: 2fr 3fr;
         grid-template-areas:
             "statistics orders";
     }
 
-    main .grid .main .dashboard-content .profile-form, 
+    /* main .grid .main .dashboard-content .profile-form,  */
     main .grid .dashboard-content .hero-form, 
     main .grid .dashboard-content .activities-form {
         width: 65%;
+    } 
+
+    main .grid .main .dashboard-content .profile-form .fields {
+        /* display: grid; */
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 2rem;
     }
 
 }
@@ -1318,12 +1362,13 @@ main .grid .dashboard-content .activities-form {
     main .grid .main .dashboard-content .dashboard-boxes .line.line-1 {
         display: grid;
         grid-template-areas:
-            "sales-purchase"
-            "client-growth"
-            "customers-volume";
+            "order-expenditure"
+            "sale-purchase"
+            "client-checkin"
+            "client-volume";
     }
 
-    main .grid .main .dashboard-content .dashboard-boxes .line.line-2 {
+    main .grid .main .dashboard-content .dashboard-boxes .line.line-3 {
         display: grid;
         grid-template-columns: 2fr 3fr;
         grid-template-areas:
@@ -1345,11 +1390,12 @@ main .grid .dashboard-content .activities-form {
     main .grid .main .dashboard-content .dashboard-boxes .line.line-1 {
         display: grid;
         grid-template-areas:
-            "sales-purchase sales-purchase"
-            "client-growth customers-volume";
+            "order-expenditure order-expenditure"
+            "sale-purchase sale-purchase"
+            "client-checkin client-volume";
     }
 
-    main .grid .main .dashboard-content .dashboard-boxes .line.line-2 {
+    main .grid .main .dashboard-content .dashboard-boxes .line.line-3 {
         display: grid;
         grid-template-columns: 2fr 3fr;
         grid-template-areas:
@@ -1373,7 +1419,7 @@ main .grid .dashboard-content .activities-form {
         position: relative;
     } 
 
-    main .grid .main .dashboard-content .profile-form, 
+    /* main .grid .main .dashboard-content .profile-form,  */
     main .grid .dashboard-content .hero-form, 
     main .grid .dashboard-content .activities-form {
         width: 50%;

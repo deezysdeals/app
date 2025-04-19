@@ -1,4 +1,9 @@
+import dotenv from 'dotenv';
+dotenv.config(); 
 import nodemailer from 'nodemailer'; 
+import { fileURLToPath } from 'url'; 
+import { dirname, join, resolve } from 'path'; 
+const __dirname = dirname(fileURLToPath(import.meta.url)); 
 
 
 const sendMail = async (senderEmail, recipientEmail, subject, html) => {
@@ -6,7 +11,7 @@ const sendMail = async (senderEmail, recipientEmail, subject, html) => {
 
         var transporter; 
 
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.NODE_ENV == 'production') {
             transporter = nodemailer.createTransport({
                 // host​:​ ​"​smtp.gmail.com​"​,
                 host: process.env.MAIL_HOST,
@@ -33,7 +38,14 @@ const sendMail = async (senderEmail, recipientEmail, subject, html) => {
             from: senderEmail, 
             to: recipientEmail, 
             subject: subject, 
-            html: html
+            html: html, 
+            attachments: [
+                {
+                    filename: 'logo.png', // The logo file 
+                    path: resolve(__dirname, '..', 'views', 'images', 'logo.png'), 
+                    cid: 'logo' // Same CID as used in the img tag in the template 
+                }
+            ]
         });
 
         console.log("Email sent sucessfully");

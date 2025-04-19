@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler'; 
 import jwt from 'jsonwebtoken'; 
 import User from '../../models/User.js';
+import SignInAttempt from '../../models/SignInAttempt.js';
 
 
 const signInUser = asyncHandler(async (req, res) => {
@@ -21,8 +22,19 @@ const signInUser = asyncHandler(async (req, res) => {
 
     if (userFound) {
         userFound.online = true;
+        userFound.sign_in_count = userFound?.sign_in_count+1;
         userFound.last_time_active = '';
-    };
+    }; 
+
+    // Record the sign-in attempt
+    if (userFound?.role == 'individual' || userFound?.role == 'enterprise') {
+        await SignInAttempt.create({
+            user: userFound?._id, 
+            // ip_address: (req?.connection?.remoteAddress)?.slice(7) || req?.headers['x-forwarded-for']
+            ip_address: (req?.connection?.remoteAddress)?.replace(/^::ffff:/, '') || req?.headers['x-forwarded-for']
+        }); 
+    }
+    // End of Record the sign-in attempt
 
     const access = jwt.sign(
         {
@@ -43,28 +55,33 @@ const signInUser = asyncHandler(async (req, res) => {
         }, 
         process.env.ACCESS_TOKEN_SECRET, 
         { expiresIn: 60 * 60 }
+        // { expiresIn: 1 * 60 }
     );
 
     const refresh = jwt.sign(
         { "user_id": userFound._id }, 
         process.env.REFRESH_TOKEN_SECRET, 
         { expiresIn: 60 * 60 }
+        // { expiresIn: 1 * 60 }
     );
 
     userFound.save()
         .then(function () {
             res.cookie('jwt', refresh, {
                 httpOnly: true, 
-                secure: false, 
+                secure: true, 
                 sameSite: 'None', 
-                maxAge: 1 * 60 * 60 * 1000      // 1 hour
-            });
+                maxAge: 12 * 60 * 60 * 1000      // 12 hours
+                // maxAge: 5 * 60 * 60 * 1000      // 1 hour
+                // maxAge: 1 * 60 * 1000      // 1 minute
+            }); 
+            // res.cookie('jwt', refresh, { httpOnly: true, secure: true, sameSite: 'Strict' });
 
             res.json({ access })
         })
         .catch(function (error) {
             return res.status(400).json(error);
-        });
+        }); 
 }); 
 
 
