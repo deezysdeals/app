@@ -22,8 +22,8 @@ const client = new Client({
     },
     timeout: 0,
     // environment: process.env.NODE_ENV === 'production' ? Environment.Live : Environment.Sandbox,
-    environment: Environment.Sandbox,
-    // environment: Environment.Live,
+    // environment: Environment.Sandbox,
+    environment: Environment.Live,
     logging: {
         logLevel: LogLevel.Info,
         logRequest: { logBody: true },
