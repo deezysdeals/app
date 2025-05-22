@@ -4,6 +4,10 @@
 
 
 /** Utility Classes */
+
+* {
+    box-sizing: border-box;
+}
 .cursor-pointer {
     cursor: pointer;
 }
@@ -508,6 +512,13 @@ footer .shop-now a:focus {
 
 /** Main */
 
+main .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    position: relative;
+}
+
 main .grid.grid-order-reverse {
     display: grid; 
     row-gap: 3rem;
@@ -522,7 +533,9 @@ main .grid.grid-order-reverse main {
 }
 
 main .grid aside {
-    /* max-width: 300px;  */
+    /* min-width: 300px;  */
+    min-width: 22.5vw;
+    max-width: 500px; 
     max-width: 100%;
 }
 
@@ -546,6 +559,7 @@ main .grid aside .trending .btn a:hover {
 
 main .grid .main .products,
 main .grid .main .top-rated,
+main .grid .main .amazon-referrals,
 main .grid .main .categories,
 main .grid .main .deals,
 main .grid .main .brands {
@@ -1271,10 +1285,10 @@ main .grid .main .dashboard-content .profile-form .fields {
     }
 
     main .grid {
-        display: grid;
+        /* display: grid; */
         grid-template-columns: 1fr 2fr;
-        gap: 3rem;
-        position: relative;
+        /* gap: 3rem;
+        position: relative; */
     }
 
     main .grid.grid-order-reverse aside {
@@ -1295,6 +1309,7 @@ main .grid .main .dashboard-content .profile-form .fields {
 
     main .grid .main .products,
     main .grid .main .top-rated,
+    main .grid .main .amazon-referrals,
     main .grid .main .categories,
     main .grid .main .deals,
     main .grid .main .brands {
