@@ -7,6 +7,7 @@ import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx';
 import { useFeaturedProducts } from '@/hooks/public/useFeaturedProducts.jsx'; 
 import { usePopularProducts } from '@/hooks/public/usePopularProducts.jsx'; 
 import { useTopRatedProducts } from '@/hooks/public/useTopRatedProducts.jsx'; 
+import { useAmazonAffiliateProducts } from '@/hooks/public/useAmazonAffiliateProducts.jsx'; 
 import { useProducts } from '@/hooks/useProducts.jsx'; 
 // import { useBrands } from '@/hooks/useBrands.jsx'; 
 import { usePopularBrands } from '@/hooks/public/usePopularBrands.jsx'; 
@@ -32,6 +33,8 @@ export default function Index() {
     console.log(popularProducts); 
     const { topRatedProducts } = useTopRatedProducts(); 
     console.log(topRatedProducts);
+    const { amazonAffiliateProducts } = useAmazonAffiliateProducts();
+    console.log(amazonAffiliateProducts);
 
     let popularCategoriesList; 
     if (popularCategories?.data?.length > 0) {
@@ -129,6 +132,7 @@ export default function Index() {
                                     return (
                                         <ProductComponent1 
                                             key = { product?.id || product?._id } 
+                                            itemId = { product?.id || product?._id } 
                                             asin = { product?.asin || product?.id } 
                                             imgSrc =  { product?.images }
                                             title = { product?.title } 
@@ -169,6 +173,7 @@ export default function Index() {
                                     console.log(product)
                                     return (
                                         <ProductComponent1 
+                                            key = { product?.id || product?._id } 
                                             itemId = { product?.id || product?._id } 
                                             asin = { product?.asin || product?.id } 
                                             imgSrc =  { product?.images }
@@ -183,7 +188,40 @@ export default function Index() {
                         
                             </nav>
                         </div>
-                    </section> 
+                    </section>
+
+                    { (amazonAffiliateProducts?.data?.length > 0) && (
+                        <section className="amazon-referrals pt-5">
+                            <h3 className="fw-bold border-bottom pb-2 fs-4">Amazon Deals</h3>
+                            <p><small>Get discounts from Amazon when you buy through (by clicking) these (our site) links.</small></p>
+
+                            <div className="nav-scroller">
+                                <nav className="nav justify-content-between py-3" style={{ height: '325px', overflowY: 'hidden' }}>
+                            
+                                    { (amazonAffiliateProducts?.data?.map(product => {
+                                        const ratingCalculated = (Number(product?.total_rating_value) / Number(product?.total_rating_count)) || 5; 
+                                        // console.log('rating calculated', ratingCalculated);
+                                        console.log(product)
+                                        return (
+                                            <ProductComponent1 
+                                                key = { product?.id || product?._id } 
+                                                itemId = { product?.id || product?._id } 
+                                                asin = { product?.asin || product?.id } 
+                                                amazonAffiliateLink = { product?.amazon_affiliate_link } 
+                                                imgSrc =  { product?.images }
+                                                title = { product?.title } 
+                                                description = '' 
+                                                oldPrice = { product?.initial_retail_price && Number(product?.initial_retail_price)?.toFixed(2) } 
+                                                currentPrice = { Number(product?.retail_price)?.toFixed(2) } 
+                                                rating = { ratingCalculated || product?.rating?.rate } 
+                                                category = { product?.category } /> 
+                                        )
+                                    })) }
+                            
+                                </nav>
+                            </div>
+                        </section>
+                    ) }
 
                     <section className="categories pt-5">
                         <h3 className="fw-bold border-bottom pb-2 fs-4">Popular Categories</h3>

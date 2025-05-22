@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react'; 
 import AuthContext from '@/context/AuthContext.jsx'; 
-import useImageHandler from '@/utils/useImageHandler';
+import useImageHandler from '@/utils/useImageHandler.jsx';
 import swal from 'sweetalert2'; 
 import { useAddresses } from '@/hooks/useAddresses.jsx'; 
 import { useAddress } from '@/hooks/useAddress.jsx'; 

@@ -5,7 +5,7 @@ import { useVoiceToText } from '@/utils/useVoiceToText.jsx';
 // import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx'; 
 // import { useProducts } from '@/hooks/external/useProducts.jsx';
 // import { useProducts } from '@/hooks/useProducts.jsx';
-import { useSearchProducts } from '@/hooks/external/useSearchProducts.jsx';
+import { useSearchProducts } from '@/hooks/external/market/amazon/useSearchProducts.jsx';
 import scrollToTop from '@/utils/ScrollToTop.jsx'; 
 import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
 import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
