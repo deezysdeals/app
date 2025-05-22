@@ -1,4 +1,5 @@
 import asyncHandler from 'express-async-handler'; 
+import cloudinaryImageUpload from '../config/imageUpload/cloudinary.js';
 import ProductImage from '../models/ProductImage.js'; 
 
 
@@ -10,20 +11,36 @@ const getProductImages = asyncHandler(async (req, res) => {
 });
 
 const createProductImage = asyncHandler(async (req, res) => {
-    const { product, 
-            description, 
-            is_product_default } = req?.body; 
+    // const { product, 
+    //         description, 
+    //         is_product_default } = req?.body; 
+
+    // const productImage = new ProductImage({
+    //     added_by: req?.user_id, 
+    //     product, 
+    //     description, 
+    //     is_product_default 
+    // }); 
+
+    // if (is_product_default == 'true') { 
+    //     await ProductImage.updateMany({ is_product_default: true }, { is_product_default: false });
+    // }; 
+
+    const { product } = req?.body;
+
+    let productImageUpload = await cloudinaryImageUpload(req?.files?.image?.tempFilePath, "deezysdeals_product_images"); 
+    if (!productImageUpload) return res.status(400).json({ message: "Image upload failed" }); 
+
+    console.log(product, req?.files)
 
     const productImage = new ProductImage({
-        added_by: req?.user_id, 
+        user: req?.user_id, 
         product, 
-        description, 
-        is_product_default 
+        image_path: { 
+            public_id: productImageUpload.public_id,
+            url: productImageUpload.secure_url
+        },  
     }); 
-
-    if (is_product_default == 'true') { 
-        await ProductImage.updateMany({ is_product_default: true }, { is_product_default: false });
-    }; 
 
     productImage.save()
         .then(() => {

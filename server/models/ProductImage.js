@@ -10,18 +10,18 @@ const productImageSchema = new Schema({
         // description: { type: String, required: true }, 
         image_path: [
             {
-            hi_res: { 
-                    public_id: { type: String, default: '' },
-                    url: { type: String, default: '' }
-                },
-            large: { 
-                    public_id: { type: String, default: '' },
-                    url: { type: String, default: '' }
-                },
-            thumb: { 
-                    public_id: { type: String, default: '' },
-                    url: { type: String, default: '' }
-                }
+                hi_res: { 
+                            public_id: { type: String, default: '' },
+                            url: { type: String, default: '' }
+                        },
+                large: { 
+                            public_id: { type: String, default: '' },
+                            url: { type: String, default: '' }
+                        },
+                thumb: { 
+                            public_id: { type: String, default: '' },
+                            url: { type: String, default: '' }
+                        }
             }
         ],
         // image_path: { 

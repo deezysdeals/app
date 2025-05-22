@@ -36,7 +36,7 @@ export default function Pay() {
         "client-id": `${Constants?.paypalClientID}`,
         "enable-funding": "venmo",
         "disable-funding": "paylater",
-        // "buyer-country": "US",
+        "buyer-country": "US",
         currency: "USD",
         "data-page-type": "product-details",
         components: "buttons,card-fields",

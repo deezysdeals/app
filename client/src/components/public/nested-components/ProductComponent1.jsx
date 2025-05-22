@@ -8,6 +8,7 @@ import { useFavorite } from '@/hooks/useFavorite.jsx';
 
 export default function ProductComponent1({ itemId, 
                                             asin, 
+                                            amazonAffiliateLink,
                                             imgSrc, 
                                             title, 
                                             description = '', 
@@ -39,13 +40,25 @@ export default function ProductComponent1({ itemId,
             <div 
                 className="text-decoration-none">
                     <div className="card border-radius-35 w-100" style={{ height: '100%' }}> 
-                        <Link to={ route('products.show', { id: itemId, source: source }) } >
-                            <img src={ imgSrc?.[0]?.hi_res ? imgSrc?.[0]?.hi_res
-                                        : imgSrc?.[0]?.large ? imgSrc?.[0]?.large
-                                        : imgSrc?.[0]?.thumb ? imgSrc?.[0]?.thumb
-                                        : imgSrc }
-                                className="d-block card-img-top object-fit-cover" style={{ borderRadius: '35px 35px 0 0', width: '225px', height: '142.5px' }} alt="..." />
-                        </Link>
+                        { amazonAffiliateLink ? (
+                            <a href={ amazonAffiliateLink } target="_blank" className="text-decoration-none text-dark">
+                                <img src={ imgSrc?.[0]?.hi_res ? imgSrc?.[0]?.hi_res
+                                            : imgSrc?.[0]?.large ? imgSrc?.[0]?.large
+                                            : imgSrc?.[0]?.thumb ? imgSrc?.[0]?.thumb
+                                            : imgSrc?.[0]?.image_path ? imgSrc?.[0]?.image_path?.[0]?.hi_res?.url
+                                            : imgSrc }
+                                    className="d-block card-img-top object-fit-cover" style={{ borderRadius: '35px 35px 0 0', width: '225px', height: '142.5px' }} alt="..." />
+                            </a>
+                        ) : (
+                            <Link to={ route('products.show', { id: itemId, source: source }) } >
+                                <img src={ imgSrc?.[0]?.hi_res ? imgSrc?.[0]?.hi_res
+                                            : imgSrc?.[0]?.large ? imgSrc?.[0]?.large
+                                            : imgSrc?.[0]?.thumb ? imgSrc?.[0]?.thumb
+                                            : imgSrc?.image_path ? imgSrc?.[0]?.image_path?.[0]?.hi_res?.url
+                                            : imgSrc }
+                                    className="d-block card-img-top object-fit-cover" style={{ borderRadius: '35px 35px 0 0', width: '225px', height: '142.5px' }} alt="..." />
+                            </Link>
+                        ) }
                         
                         <div className="card-body pb-4 d-flex flex-column justify-content-between" style={{ height: '142.5px' }}> 
                             <div className="stars d-flex pb-1"> 
@@ -243,12 +256,18 @@ export default function ProductComponent1({ itemId,
 
                                 }
                             </div>
-                            <h5 className="card-title w-100 text-wrap text-start fs-6 fw-semibold"> 
-                                <Link 
-                                    to={ route('products.show', { id: itemId, source: source }) } 
-                                    className="text-decoration-none text-dark">
+                            <h5 className="card-title w-100 text-wrap text-start fs-6 fw-semibold">
+                                { amazonAffiliateLink ? (
+                                    <a href={ amazonAffiliateLink } target="_blank" className="text-decoration-none text-dark">
                                         { (title)?.substring(0,30) } { (title)?.length > 30 && '...' }
-                                </Link>
+                                    </a>
+                                ) : (
+                                    <Link 
+                                        to={ route('products.show', { id: itemId, source: source }) } 
+                                        className="text-decoration-none text-dark">
+                                            { (title)?.substring(0,30) } { (title)?.length > 30 && '...' }
+                                    </Link>
+                                ) }
                             </h5>
                             <div className="card-text buy d-flex justify-content-between gap-3">
                                 <div className="price fw-bold">
@@ -304,7 +323,8 @@ export default function ProductComponent1({ itemId,
                                                                             imgSrc?.[0]?.hi_res ? imgSrc?.[0]?.hi_res
                                                                                 : imgSrc?.[0]?.large ? imgSrc?.[0]?.large
                                                                                 : imgSrc?.[0]?.thumb ? imgSrc?.[0]?.thumb
-                                                                                : imgSrc, 
+                                                                                : imgSrc?.[0]?.image_path ? imgSrc?.[0]?.image_path?.[0]?.hi_res?.url
+                                                                                : imgSrc,
                                                                             title, 
                                                                             description, 
                                                                             oldPrice, 

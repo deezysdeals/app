@@ -191,6 +191,22 @@ const getTopRatedProducts = asyncHandler(async (req, res) => {
 }); 
 
 /**
+ * GET AMAZON AFFILIATE LINK PRODUCTS
+ */
+const getAmazonAffiliateLinkProducts = asyncHandler(async (req, res) => {
+    const limit = 20; 
+    
+    const products = await Product.aggregate([
+                                                { $match: { deleted_at: null, amazon_affiliate_link: { $ne: null } } },
+                                                { $sample: { size: limit } }
+                                            ]);
+
+    if (!products?.length) return res.status(404).json({ message: "No amazon affiliate link products found!" }); 
+
+    res.json({ data: products }); 
+}); 
+
+/**
  * GET SUGGESTED PRODUCTS
  */
 const getSuggestedProducts = asyncHandler(async (req, res) => {
@@ -211,4 +227,5 @@ export { getProductsPublicVersion,
         getFeaturedProducts, 
         getPopularProducts, 
         getTopRatedProducts, 
+        getAmazonAffiliateLinkProducts, 
         getSuggestedProducts }

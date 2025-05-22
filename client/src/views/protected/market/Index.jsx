@@ -4,7 +4,8 @@ import { route } from '@/routes';
 import { useVoiceToText } from '@/utils/useVoiceToText.jsx'; 
 // import { useProductsExt } from '@/hooks/external/useFakeStoreProducts.jsx'; 
 // import { useProducts } from '@/hooks/useProducts.jsx';
-import { useProducts } from '@/hooks/external/useProducts.jsx';
+import { useProductsAliExpress } from '@/hooks/external/market/aliExpress/useProducts.jsx';
+import { useProductsAmazon } from '@/hooks/external/market/amazon/useProducts.jsx';
 import scrollToTop from '@/utils/ScrollToTop.jsx'; 
 import First from '@/components/protected/nested-components/pagination-links/First.jsx'; 
 import Previous from '@/components/protected/nested-components/pagination-links/Previous.jsx'; 
@@ -24,17 +25,21 @@ export default function Index() {
     const [pageToVisit, setPageToVisit] = useState(1);
     console.log(pageToVisit)
 
-    const [productQuery, setProductQuery] = useState({
-        page: pageToVisit, 
-    }); 
+    const { productsAliExpress, getProductsAliExpress } = useProductsAliExpress();
+    const { productsAmazon, getProductsAmazon } = useProductsAmazon();
 
-    const { products, getProducts } = useProducts(productQuery);
-    console.log(products);
+    useEffect(() => {
+        if (productQuery.source === 'aliExpress') {
+            getProductsAliExpress(productQuery);
+        } else if (productQuery.source === 'amazon') {
+            getProductsAmazon(productQuery);
+        }
+    }, [productQuery]);
 
     // useEffect to update productsResult when products or searchProducts change
     useEffect(() => {
-        setProductsResult(products);
-    }, [products]); 
+        (productQuery?.source == 'aliExpress') ? setProductsResult(productsAliExpress) : setProductsResult(productsAmazon);
+    }, [productsAmazon]); 
 
     useEffect(() => {
         setProductQuery(prev => ({
@@ -67,7 +72,47 @@ export default function Index() {
         <Layout>
             <div className="main">
                 <div className="dashboard-content pt-3"> 
-                    <h2 className="border-bottom pb-1 fs-4">Market</h2>
+                    <section className="d-flex justify-content-between align-items-center gap-3 flex-wrap border-bottom pb-1">
+                        <h2 className="fs-4">Market</h2> 
+                        <div>
+                            <ul className="list-unstyled d-flex flex-wrap gap-1"> 
+                                <li>
+                                    <span 
+                                        type="button" 
+                                        onClick={ async () => { 
+                                            let firstPage = 1; 
+                                            setProductQuery(prevState => ({
+                                                ...prevState, 
+                                                page: firstPage, 
+                                                source: 'aliExpress'
+                                            })); 
+                                            setProductsResult(await getProductsAliExpress(productQuery));
+                                            scrollToTop(); 
+                                        }}
+                                        className={`badge rounded-pill ${(productQuery?.source == 'aliExpress') ? `text-bg-secondary` : `text-bg-dark`}`}>
+                                            AliExpress
+                                    </span>
+                                </li> 
+                                <li>
+                                    <span 
+                                        type="button" 
+                                        onClick={ async () => { 
+                                            let firstPage = 1; 
+                                            setProductQuery(prevState => ({
+                                                ...prevState, 
+                                                page: firstPage, 
+                                                source: 'amazon'
+                                            })); 
+                                            setProductsResult(await getProductsAmazon(productQuery));
+                                            scrollToTop(); 
+                                        }}
+                                        className={`badge rounded-pill ${(productQuery?.source == 'amazon') ? `text-bg-secondary` : `text-bg-dark`}`}>
+                                            Amazon
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </section>
 
                     <div className="d-flex justify-content-between flex-wrap gap-2 pt-4"> 
                         <form className="search" onSubmit={ handleSearchProducts }>

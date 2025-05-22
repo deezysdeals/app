@@ -143,7 +143,7 @@ export default function Index() {
                                                     itemId={ product?._id } 
                                                     productId={ product?._id } 
                                                     asin={ product?.asin }
-                                                    imgsSrc={ product?.images }
+                                                    imgsSrc={ product?.images ?? product?.product_images }
                                                     title={ product?.title } 
                                                     description='' 
                                                     oldPrice={ ((product?.initial_retail_price>product?.retail_price) && product?.initial_retail_price) ?? '' } 

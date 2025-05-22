@@ -19,6 +19,7 @@ import { getProductsPublicVersion,
         getFeaturedProducts, 
         getPopularProducts, 
         getTopRatedProducts, 
+        getAmazonAffiliateLinkProducts, 
         getSuggestedProducts } from '../../controllers/otherControllers/publicPages/productController.js'
 
 
@@ -27,6 +28,7 @@ productRouter.get('/quick-version', getProductsPublicVersion);
 productRouter.get('/featured', getFeaturedProducts);
 productRouter.get('/popular', getPopularProducts); 
 productRouter.get('/top-rated', getTopRatedProducts); 
+productRouter.get('/amazon-affiliate-linked', getAmazonAffiliateLinkProducts); 
 productRouter.get('/suggested', getSuggestedProducts); 
 
 

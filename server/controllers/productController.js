@@ -324,19 +324,21 @@ const getProduct = asyncHandler(async (req, res) => {
     const { id } = req?.params; 
 
 	const product = await Product.findOne({ _id: id })
-		.select(['-created_at', '-updated_at', '-deleted_at'])
-		.lean();
+                                .select(['-created_at', '-updated_at', '-deleted_at'])
+                                .populate({
+                                    path: 'brand'
+                                })
+                                .populate({
+                                    path: 'deal'
+                                })
+                                .lean();
 
 	if (!product) return res.status(404).json({ message: `No product matches product ${id}!` }); 
 
     let productObj = product; 
 
     let productCategories = await CategoryProduct.find({ product: product?._id })
-                                                .select('-product -deleted_at')
-                                                .populate({
-                                                    path: 'category', 
-                                                    select: 'title description'
-                                                })
+                                                .populate({ path: 'category' })
                                                 .lean(); 
 
     let productImages = await ProductImage.find({ product: product?._id })
@@ -368,36 +370,18 @@ const getProduct = asyncHandler(async (req, res) => {
  * UPDATE A PRODUCT
  */
 const updateProduct = asyncHandler(async (req, res) => {
-    const { brand, 
+    const { 
+            // brand, 
             deal, 
             asin, 
             title, 
-            category_1, category_2, category_3, category_4, category_5, category_6, category_7, 
-            info_1, info_1_value, 
-            info_2, info_2_value, 
-            info_3, info_3_value, 
-            info_4, info_4_value, 
-            info_5, info_5_value, 
-            info_6, info_6_value, 
-            info_7, info_7_value, 
-            info_8, info_8_value, 
-            info_9, info_9_value, 
-            info_10, info_10_value, 
-            info_11, info_11_value, 
-            info_12, info_12_value, 
-            info_13, info_13_value, 
-            info_14, info_14_value, 
-            info_15, info_15_value, 
-            info_16, info_16_value, 
-            info_17, info_17_value, 
-            info_18, info_18_value, 
-            info_19, info_19_value, 
-            info_20, info_20_value, 
-            description_1, description_2, description_3, 
-            feature_1, feature_2, feature_3, feature_4, feature_5, feature_6, feature_7, feature_8, feature_9, feature_10, 
-            purchase_price, 
             initial_retail_price, 
-            retail_price } = req?.body; 
+            retail_price,
+            purchase_price, 
+            info, 
+            descriptions, 
+            features, 
+            categories } = req?.body; 
 
     const { id } = req?.params; 
 
@@ -408,11 +392,11 @@ const updateProduct = asyncHandler(async (req, res) => {
         const product = await Product.findOne({ _id: id }).exec(); 
         if (!product) return res.status(404).json({ message: "Product not found!" }); 
 
-        let brandExists;
-        if (brand) {
-            brandExists = await Brand.findOne({ _id: brand }).lean(); 
-            if (!brandExists) return res.status(404).json({ message: "Brand not found!" }); 
-        }
+        // let brandExists;
+        // if (brand) {
+        //     brandExists = await Brand.findOne({ _id: brand }).lean(); 
+        //     if (!brandExists) return res.status(404).json({ message: "Brand not found!" }); 
+        // }
 
         let dealExists;
         if (deal) {
@@ -420,7 +404,7 @@ const updateProduct = asyncHandler(async (req, res) => {
             if (!dealExists) return res.status(404).json({ message: "Deal not found!" }); 
         }
 
-        if (brand) product.brand = brandExists?._id; 
+        // if (brand) product.brand = brandExists?._id; 
         if (deal) product.deal = deal; 
         if (asin) product.asin = asin; 
         if (title) product.title = title; 
@@ -429,183 +413,188 @@ const updateProduct = asyncHandler(async (req, res) => {
         if (initial_retail_price) product.initial_retail_price = initial_retail_price; 
         if (retail_price) product.retail_price = retail_price; 
 
+        const info_array = JSON.parse(req?.body?.info || '[]');
+        const descriptions_array = JSON.parse(req?.body?.descriptions || '[]');
+        const features_array = JSON.parse(req?.body?.features || '[]');
+        const categories_array = JSON.parse(req?.body?.categories || '[]');
+
+        const images = req?.files; // array of files
+        console.log(req?.files)
+
         /** Images Section */ 
         let imagesArray = []; 
 
-        const imageKeys = ['image_1', 'image_2', 'image_3', 'image_4', 'image_5', 'image_6']; 
+        if (req?.files?.images) {
+            // for (let { file, index } of validImages) {
+            //     let productImageUpload = await cloudinaryImageUpload(file.tempFilePath, "deezysdeals_product_images");
+            //     if (!productImageUpload) return res.status(400).json({ message: "Image upload failed" });
 
-        const validImages = imageKeys
-            .map((key, index) => req?.files?.[key] ? { file: req?.files[key], index: index + 1 } : null)
-            .filter(item => item !== null); 
+            //     await ProductImage.create({
+            //         product: product._id, 
+            //         image_index: index,
+            //         image_path: {
+            //             url: productImageUpload.secure_url, 
+            //             public_id: productImageUpload.public_id
+            //         }
+            //     });
 
-        if (validImages.length > 0) {
-            for (let { file, index } of validImages) {
-                let productImageUpload = await cloudinaryImageUpload(file.tempFilePath, "deezysdeals_product_images");
-                if (!productImageUpload) return res.status(400).json({ message: "Image upload failed" });
+            //     imagesArray.push(productImageUpload.secure_url);
+            // }
 
-                let productImage = await ProductImage.findOne({ product: product._id, image_index: index }).exec();
-                
-                if (productImage) {
-                    productImage.image_path.url = productImageUpload.secure_url;
-                    productImage.image_path.public_id = productImageUpload.public_id;
-                    await productImage.save();
-                } else {
+            await Promise.all(
+                req?.files?.images?.map(async (file, index) => {
+                    const productImageUpload = await cloudinaryImageUpload(file?.tempFilePath, "deezysdeals_product_images");
+
+                    if (!productImageUpload) {
+                        throw new Error("Image upload failed");
+                    }
+
                     await ProductImage.create({
-                        product: product._id, 
+                        user: req?.user_id,
+                        product: product._id,
                         image_index: index,
-                        image_path: {
-                            url: productImageUpload.secure_url, 
-                            public_id: productImageUpload.public_id
-                        }
+                        image_path: [
+                            {
+                                hi_res: {
+                                    url: productImageUpload.secure_url,
+                                    public_id: productImageUpload.public_id
+                                },
+                                // large: {
+                                //     url: productImageUpload.secure_url,
+                                //     public_id: productImageUpload.public_id
+                                // },
+                                // thumb: {
+                                //     url: productImageUpload.secure_url,
+                                //     public_id: productImageUpload.public_id
+                                // },
+                            }
+                        ]
                     });
-                }
 
-                imagesArray.push(productImageUpload.secure_url);
-            }
-
-            const updateProductImages = await Product.findOneAndUpdate(
-                { _id: product._id },
-                { $set: { images: imagesArray } },  // Replace the entire array with the new images
-                { new: true }
+                    return imagesArray.push({
+                        hi_res: productImageUpload.secure_url,
+                        large: productImageUpload.secure_url,
+                        thumb: productImageUpload.secure_url
+                    });
+                })
             );
+
+            // const imagesArray = uploadImages; 
+
+            // const updateProductImages = await Product.findOneAndUpdate(
+            //     { _id: product._id },
+            //     { $set: { images: imagesArray } },  // Replace the entire array with the new images
+            //     { new: true }
+            // );
+
+            const addImagesToProduct = await Product.findOneAndUpdate(
+                { _id: product._id }, 
+                { $push: { images: { $each: imagesArray } } },
+                { new: true } 
+            ); 
+
+            // product.images.push(...imagesArray);
         }
         /** End Images Section */
 
         /** Infos Section */ 
-        const dynamicInfoData = new Map([
-            [info_1 || '', info_1_value || ''],
-            [info_2 || '', info_2_value || ''],
-            [info_3 || '', info_3_value || ''], 
-            [info_4 || '', info_4_value || ''], 
-            [info_5 || '', info_5_value || ''], 
-            [info_6 || '', info_6_value || ''], 
-            [info_7 || '', info_7_value || ''], 
-            [info_8 || '', info_8_value || ''], 
-            [info_9 || '', info_9_value || ''], 
-            [info_10 || '', info_10_value || ''], 
-            [info_11 || '', info_11_value || ''], 
-            [info_12 || '', info_12_value || ''], 
-            [info_13 || '', info_13_value || ''], 
-            [info_14 || '', info_14_value || ''], 
-            [info_15 || '', info_15_value || ''], 
-            [info_16 || '', info_16_value || ''], 
-            [info_17 || '', info_17_value || ''], 
-            [info_18 || '', info_18_value || ''], 
-            [info_19 || '', info_19_value || ''], 
-            [info_20 || '', info_20_value || ''], 
-        ]); 
+        if (req?.body?.info) {
+            const dynamicInfoData = Object.fromEntries(
+                info_array.map(item => [item.title, item.value])
+            );
 
-        const updateProductInfo = await ProductInfo.findOneAndUpdate(
-            { product: product._id }, 
-            { $set: { user: req?.user_id, dynamic_data: dynamicInfoData } },  
-            { new: true, upsert: true } 
-        );
+            const updateProductInfo = await ProductInfo.findOneAndUpdate(
+                { product: product._id }, 
+                { $set: { user: req?.user_id, dynamic_data: dynamicInfoData } },  
+                { new: true, upsert: true } 
+            );
+        }
         /** End Infos Section */ 
 
         /** Descriptions Section */ 
-        const descriptions = [
-            description_1, 
-            description_2, 
-            description_3
-        ]; 
+        if (req?.body?.descriptions) {
+            const validDescriptions = descriptions_array.filter(description => description != null);
 
-        const validDescriptions = descriptions.filter(description => description != null);
+            if (validDescriptions?.length > 0) {
+                for (let i = 0; i < validDescriptions.length; i++) {
+                    const description = validDescriptions[i];
+                    const descriptionIndex = i + 1; 
 
-        if (validDescriptions?.length > 0) {
-            for (let i = 0; i < validDescriptions.length; i++) {
-                const description = validDescriptions[i];
-                const descriptionIndex = i + 1; 
+                    const existingDescription = await ProductDescription.findOne({ product: product._id, description_index: descriptionIndex }).exec();
 
-                const existingDescription = await ProductDescription.findOne({ product: product._id, description_index: descriptionIndex }).exec();
-
-                if (existingDescription) {
-                    existingDescription.content = description;
-                    await existingDescription.save();
-                } else {
-                    await ProductDescription.create({
-                        user: req?.user_id,
-                        product: product._id,
-                        description_index: descriptionIndex, 
-                        content: description,
-                    });
+                    if (existingDescription) {
+                        existingDescription.content = description;
+                        await existingDescription.save();
+                    } else {
+                        await ProductDescription.create({
+                            user: req?.user_id,
+                            product: product._id,
+                            // description_index: descriptionIndex, 
+                            content: description,
+                        });
+                    }
                 }
-            }
-        } 
+            } 
+        }
         /** End of Descriptions Section */ 
 
         /** Features Section */ 
-        const features = [
-            feature_1, 
-            feature_2, 
-            feature_3, 
-            feature_4, 
-            feature_5, 
-            feature_6, 
-            feature_7, 
-            feature_8, 
-            feature_9, 
-            feature_10, 
-        ]; 
+        if (req?.body?.features) {
+            const validFeatures = features_array?.filter(feature => feature != null);
 
-        const validFeatures = features.filter(feature => feature != null);
+            if (validFeatures?.length > 0) {
+                for (let i = 0; i < validFeatures.length; i++) {
+                    const feature = validFeatures[i];
+                    const featureIndex = i + 1; 
 
-        if (validFeatures?.length > 0) {
-            for (let i = 0; i < validFeatures.length; i++) {
-                const feature = validFeatures[i];
-                const featureIndex = i + 1; 
+                    const existingFeature = await ProductFeature.findOne({ product: product._id, feature_index: featureIndex }).exec();
 
-                const existingFeature = await ProductFeature.findOne({ product: product._id, feature_index: featureIndex }).exec();
-
-                if (existingFeature) {
-                    existingFeature.content = feature;
-                    await existingFeature.save();
-                } else {
-                    await ProductFeature.create({
-                        user: req?.user_id,
-                        product: product._id,
-                        feature_index: featureIndex, 
-                        content: feature,
-                    });
+                    if (existingFeature) {
+                        existingFeature.content = feature;
+                        await existingFeature.save();
+                    } else {
+                        await ProductFeature.create({
+                            user: req?.user_id,
+                            product: product._id,
+                            // feature_index: featureIndex, 
+                            content: feature,
+                        });
+                    }
                 }
-            }
-        } 
+            } 
+        }
         /** End of Features Section */ 
 
         /** Categories Section */ 
-        const categories = [
-            category_1, 
-            category_2, 
-            category_3, 
-            category_4, 
-            category_5, 
-            category_6, 
-        ]; 
-        console.log(brand)
-        console.log(deal)
-        console.log(categories)
+        // console.log(brand)
+        if (req?.body?.categories) {
+            const validCategories = categories_array?.filter(category => category != null); 
 
-        const validCategories = categories.filter(category => category != null); 
+            // let categoryExists; 
 
-        let categoryExists; 
+            if (validCategories?.length > 0) {
+                for (let i = 0; i < validCategories.length; i++) {
+                    const category = validCategories[i]; 
+                    // console.log(validCategories); 
+                    console.log('category', category); 
 
-        if (validCategories?.length > 0) {
-            for (let i = 0; i < validCategories.length; i++) {
-                const category = validCategories[i]; 
-                // console.log(validCategories); 
-                console.log('category', category); 
+                    const categoryExists = await Category.findOne({ name: category }).lean();
 
-                categoryExists = await CategoryProduct.findOne({ product: product._id, 
-                                                                category: category }).lean();
+                    if (categoryExists) {
+                        let categoryProductExists = await CategoryProduct.findOne({ product: product._id, 
+                                                                        category: categoryExists?._id }).lean();
 
-                if (!categoryExists) {
-                    await CategoryProduct.create({
-                        user: req?.user_id,
-                        product: product._id, 
-                        category: category
-                    });
+                        if (!categoryProductExists) {
+                            await CategoryProduct.create({
+                                user: req?.user_id,
+                                product: product._id, 
+                                category: categoryExists?._id
+                            });
+                        }
+                    }
                 }
-            }
-        } 
+            } 
+        }
         /** End of Categories Section */ 
 
         product.save()
@@ -620,7 +609,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 
         await session.abortTransaction(); 
 
-        res.status(500).json({ message: "An error occured! Product not saved.", details: `${error}` }); 
+        res.status(500).json({ message: "An error occured! Product not saved.", details: `${JSON.stringify(error)}` }); 
 
     } finally {
 

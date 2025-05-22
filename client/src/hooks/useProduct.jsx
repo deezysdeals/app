@@ -141,7 +141,7 @@ export function useProduct(id = null) {
         setErrors({}); 
         console.log(product);
 
-        return axiosInstance.put(`products/${id}`, product)
+        return axiosInstance.putForm(`products/${id}`, product)
             .then(() => navigate(route('home.products.index')))
             .catch(error => {
                 setErrors(error?.response); 

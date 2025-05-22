@@ -11,6 +11,7 @@ const productSchema = new Schema({
         // category: { type: Schema.Types.ObjectId, ref: 'Category' }, 
         // sub_category: { type: Schema.Types.ObjectId, ref: 'SubCategory' }, 
         asin: { type: String, minLength: 1, unique: true }, 
+        amazon_affiliate_link: { type: String }, 
         title: { type: String, required: true }, 
         slug: { type: String, required: true }, 
         // description: { type: String },
