@@ -88,7 +88,7 @@ export default function Index() {
                         <h3 className="fw-bold border-bottom pb-2 fs-4">Featured Products</h3> 
 
                         <div className="nav-scroller">
-                            <nav className="nav justify-content-between py-3" style={{ height: '325px', overflowY: 'hidden' }}>
+                            <nav className="nav justify-content-start py-3" style={{ height: '325px', overflowY: 'hidden' }}>
 
                                 { (featuredProductsList?.data?.length > 0) && (featuredProductsList?.data?.map(product => { 
                                     const ratingCalculated = (Number(product?.total_rating_value) / Number(product?.total_rating_count)) || 5; 
@@ -127,7 +127,7 @@ export default function Index() {
                         <h3 className="fw-bold border-bottom pb-2 fs-4">Popular Products</h3> 
 
                         <div className="nav-scroller">
-                            <nav className="nav justify-content-between py-3" style={{ height: '325px', overflowY: 'hidden' }}>
+                            <nav className="nav justify-content-start py-3" style={{ height: '325px', overflowY: 'hidden' }}>
 
                                 { (popularProductsList?.data?.length > 0) && (popularProductsList?.data?.map(product => {
                                     const ratingCalculated = (Number(product?.total_rating_value) / Number(product?.total_rating_count)) || 5; 
@@ -167,7 +167,7 @@ export default function Index() {
                         <h3 className="fw-bold border-bottom pb-2 fs-4">Top-Rated</h3> 
 
                         <div className="nav-scroller">
-                            <nav className="nav justify-content-between py-3" style={{ height: '325px', overflowY: 'hidden' }}>
+                            <nav className="nav justify-content-start py-3" style={{ height: '325px', overflowY: 'hidden' }}>
                         
                                 { (topRatedProductsList?.data?.length > 0) && (topRatedProductsList?.data?.map(product => {
                                     const ratingCalculated = (Number(product?.total_rating_value) / Number(product?.total_rating_count)) || 5; 
@@ -198,7 +198,7 @@ export default function Index() {
                             <p><small>Get discounts from Amazon when you buy through (by clicking) these (our site) links.</small></p>
 
                             <div className="nav-scroller">
-                                <nav className="nav justify-content-between py-3" style={{ height: '325px', overflowY: 'hidden' }}>
+                                <nav className="nav justify-content-start py-3" style={{ height: '325px', overflowY: 'hidden' }}>
                             
                                     { (amazonAffiliateProducts?.data?.map(product => {
                                         const ratingCalculated = (Number(product?.total_rating_value) / Number(product?.total_rating_count)) || 5; 
@@ -229,7 +229,7 @@ export default function Index() {
                         <h3 className="fw-bold border-bottom pb-2 fs-4">Popular Categories</h3>
                     
                         <div className="nav-scroller">
-                            <nav className="nav justify-content-between py-4"> 
+                            <nav className="nav justify-content-start py-4"> 
 
                                 {(popularCategoriesList?.data?.length > 0) && (popularCategoriesList?.data?.map((category, index) => {
                                     console.log(category);
@@ -261,7 +261,7 @@ export default function Index() {
                         <h3 className="fw-bold border-bottom pb-2 fs-4">Deals</h3> 
 
                         <div className="nav-scroller">
-                            <nav className="nav justify-content-between py-3">
+                            <nav className="nav justify-content-start py-3">
                                 { (deals?.data?.length > 0) && deals?.data?.map((deal, index) => {
                                     return (
                                         <DealComponent 

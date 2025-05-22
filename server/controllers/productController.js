@@ -374,6 +374,7 @@ const updateProduct = asyncHandler(async (req, res) => {
             // brand, 
             deal, 
             asin, 
+            amazon_affiliate_link,
             title, 
             initial_retail_price, 
             retail_price,
@@ -407,6 +408,7 @@ const updateProduct = asyncHandler(async (req, res) => {
         // if (brand) product.brand = brandExists?._id; 
         if (deal) product.deal = deal; 
         if (asin) product.asin = asin; 
+        if (amazon_affiliate_link) product.amazon_affiliate_link = amazon_affiliate_link; 
         if (title) product.title = title; 
         if (slug) product.slug = slugIt(title + '-' + new Date().toISOString() );
         if (purchase_price) product.purchase_price = purchase_price; 
