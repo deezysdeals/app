@@ -67,6 +67,7 @@ export default function Edit() {
         const formData = new FormData(); 
         formData.append('title', product.data.title); 
         product?.data?.asin && formData.append('asin', product.data.asin); 
+        product?.data?.amazon_affiliate_link && formData.append('amazon_affiliate_link', product.data.amazon_affiliate_link); 
         product?.data?.initial_retail_price 
             ? formData.append('initial_retail_price', product.data.initial_retail_price) 
             : formData.append('initial_retail_price', 0); 
@@ -153,6 +154,29 @@ export default function Edit() {
                                                     aria-describedby="product asin" />
                                             </div>
                                             <div className="form-text px-3"><small>The Amazon Standard Identification Number. Leave vacant if you do not have it.</small></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="row g-2">
+                                    <div className="col-md">
+                                        <div className="mb-3">
+                                            <div className="input-group">
+                                                <span className="input-group-text border-radius-35 fw-semibold">Amazon Affiliate Link</span>
+                                                <input 
+                                                    type="text" 
+                                                    value={ product?.data?.amazon_affiliate_link ?? '' } 
+                                                    onChange={ event => product.setData({
+                                                        ...product?.data,
+                                                        amazon_affiliate_link: event.target.value,
+                                                    }) }
+                                                    placeholder="e.g. https://amzn.to/3YzcFhx" 
+                                                    id="amazon_affiliate_link" 
+                                                    className="form-control border-radius-35" 
+                                                    aria-label="Amazon Affiliate Link" 
+                                                    aria-describedby="amazon affiliate link" />
+                                            </div>
+                                            <div className="form-text px-3"><small>The affiliate link of product retrieved from Amazon website.</small></div>
                                         </div>
                                     </div>
                                 </div> 
