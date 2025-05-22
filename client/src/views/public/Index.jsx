@@ -77,10 +77,12 @@ export default function Index() {
 
     return (
         <Layout>
+            {/* <section className="row gap-3 pt-3 px-3">  */}
             <section className="grid grid-order-reverse pt-3 px-3"> 
 
                 <Aside />
 
+                {/* <div className="main col-12 col-md-8 col-lg-9"> */}
                 <div className="main">
                     <section className="products featured-products pt-5">
                         <h3 className="fw-bold border-bottom pb-2 fs-4">Featured Products</h3> 

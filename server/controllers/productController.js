@@ -418,7 +418,6 @@ const updateProduct = asyncHandler(async (req, res) => {
         const features_array = JSON.parse(req?.body?.features || '[]');
         const categories_array = JSON.parse(req?.body?.categories || '[]');
 
-        const images = req?.files; // array of files
         console.log(req?.files)
 
         /** Images Section */ 

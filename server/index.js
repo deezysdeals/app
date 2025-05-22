@@ -79,11 +79,11 @@ app.use(errorHandler);
 mongoose.connection.once('open', () => {
     console.log('Database connection established');
     
-    app.listen(PORT, () => console.log(`Server is running on port ${PORT}`)); // Removed the listen function for serverless function
+    // app.listen(PORT, () => console.log(`Server is running on port ${PORT}`)); // Remove the listen function for serverless function
 });
 
 mongoose.connection.on('error', err => {
     console.log(err);
 });
 
-// export default app;
+export default app;  // uncomment for serverless functions
