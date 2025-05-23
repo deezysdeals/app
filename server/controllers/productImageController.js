@@ -96,7 +96,7 @@ const deleteProductImage = asyncHandler(async (req, res) => {
 
     if (!productImage) return res.status(404).json({ message: `No product image matches the product image ${id}!` }); 
 
-    if (productImage.deleted_at == '') {
+    if (productImage.deleted_at == ('' || null)) {
         productImage.deleted_at = new Date().toISOString();
         productImage.deleted_by = req?.user_id;
     }
@@ -116,8 +116,8 @@ const restoreProductImage = asyncHandler(async (req, res) => {
 
     if (!productImage) return res.status(404).json({ message: `No product image matches the product image ${id}!` }); 
 
-    if (productImage.deleted_at != '') {
-        productImage.deleted_at = '';
+    if (productImage.deleted_at != ('' || null)) {
+        productImage.deleted_at = null;
         productImage.deleted_by = '';
     };
 

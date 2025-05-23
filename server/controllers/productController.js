@@ -337,23 +337,23 @@ const getProduct = asyncHandler(async (req, res) => {
 
     let productObj = product; 
 
-    let productCategories = await CategoryProduct.find({ product: product?._id })
+    let productCategories = await CategoryProduct.find({ product: product?._id, deleted_at: null })
                                                 .populate({ path: 'category' })
                                                 .lean(); 
 
-    let productImages = await ProductImage.find({ product: product?._id })
+    let productImages = await ProductImage.find({ product: product?._id, deleted_at: null })
                                         .select('-product -deleted_at')
                                         .lean(); 
 
-    let productInfo = await ProductInfo.find({ product: product?._id })
+    let productInfo = await ProductInfo.find({ product: product?._id, deleted_at: null })
                                         .select('-product -deleted_at')
                                         .lean(); 
 
-    let productFeatures = await ProductFeature.find({ product: product._id })
+    let productFeatures = await ProductFeature.find({ product: product._id, deleted_at: null })
                                         .select('-product -deleted_at')
                                         .lean(); 
 
-    let productDescriptions = await ProductDescription.find({ product: product._id })
+    let productDescriptions = await ProductDescription.find({ product: product._id, deleted_at: null })
                                         .select('-product -deleted_at')
                                         .lean(); 
 

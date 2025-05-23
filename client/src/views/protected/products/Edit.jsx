@@ -7,6 +7,10 @@ import { useCategories } from '@/hooks/useCategories.jsx';
 import { useDeals } from '@/hooks/useDeals.jsx'; 
 import { useProduct } from '@/hooks/useProduct.jsx'; 
 import { useProductImage } from '@/hooks/useProductImage.jsx'; 
+import { useProductInfo } from '@/hooks/useProductInfo.jsx'; 
+import { useProductDescription } from '@/hooks/useProductDescription.jsx'; 
+import { useProductFeature } from '@/hooks/useProductFeature.jsx'; 
+import { useProductCategory } from '@/hooks/useProductCategory.jsx'; 
 import Layout from '@/components/protected/Layout.jsx'; 
 
 
@@ -21,6 +25,10 @@ export default function Edit() {
     // console.log(product?.data?.images?.created_at == '2024-12-08T19:20:48.594Z'); 
     // console.log(product?.data?.images?.find(product => product?.created_at == '2024-12-08T19:20:48.594Z')); 
     const { createProductImage, deleteProductImage } = useProductImage();
+    const { deleteProductInfo } = useProductInfo();
+    const { deleteProductDescription } = useProductDescription();
+    const { deleteProductFeature } = useProductFeature();
+    const { deleteProductCategory } = useProductCategory();
 
     const [newImage, setNewImage] = useState();
     const [imagesArray, setImagesArray] = useState([]); 
@@ -421,6 +429,7 @@ export default function Edit() {
                                                         <span 
                                                             // onClick={() => handleRemoveImage(0)} 
                                                             onClick={ async () => {
+                                                                console.log(image?._id);
                                                                 await deleteProductImage(image?._id);
                                                                 await getProduct(params?.id);
                                                             }} 
@@ -858,7 +867,7 @@ export default function Edit() {
                                                         </div>
                                                         <span 
                                                             onClick={ async () => {
-                                                                await deleteCategory(category?._id);
+                                                                await deleteProductCategory(category?._id);
                                                                 await getProduct(params?.id);
                                                             }} 
                                                             className="bg-transparent border-0"
