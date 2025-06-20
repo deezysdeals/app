@@ -34,9 +34,9 @@ export default function Pay() {
     const [isPaying, setIsPaying] = useState(false);
     const initialOptions = {
         "client-id": `${Constants?.paypalClientID}`,
-        // "enable-funding": "venmo",
+        "enable-funding": "venmo",
         // "disable-funding": "paylater",
-        // "buyer-country": "US",
+        "buyer-country": "US",
         currency: "USD",
         "data-page-type": "product-details",
         components: "buttons,card-fields",
