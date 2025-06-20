@@ -101,7 +101,7 @@ export default function ProductComponent3({ productArticle }) {
                                             }
                                             <span className="card-text">
                                                 { ((Number(productArticle?.data?.initial_retail_price) > Number(productArticle?.data?.retail_price)) 
-                                                        && (Number(productArticle?.data?.initial_retail_price)>0)) &&
+                                                        && (Number(productArticle?.data?.initial_retail_price)?.toFixed()>0)) &&
                                                     <small>
                                                         <s>${ Number(productArticle?.data?.initial_retail_price) }</s>&nbsp;
                                                     </small> 

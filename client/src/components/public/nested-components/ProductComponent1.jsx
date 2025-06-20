@@ -271,7 +271,7 @@ export default function ProductComponent1({ itemId,
                             </h5>
                             <div className="card-text buy d-flex justify-content-between gap-3">
                                 <div className="price fw-bold">
-                                    <span><s className="old-price"><small>${ oldPrice ? oldPrice : (currentPrice*1.05)?.toFixed(2) }</small></s>&nbsp;<span className="new-price fw-semibold text-success">${ Number(currentPrice)?.toFixed(2) }</span></span>
+                                    <span><s className="old-price"><small>${ (oldPrice && oldPrice>0) ? oldPrice : (currentPrice*1.05)?.toFixed(2) }</small></s>&nbsp;<span className="new-price fw-semibold text-success">${ Number(currentPrice)?.toFixed(2) }</span></span>
                                 </div>
                             
                                 <div className="actions d-flex gap-3">

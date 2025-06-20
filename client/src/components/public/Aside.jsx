@@ -141,7 +141,7 @@ export default function Aside() {
                                                 <h5 className="item-title fw-semibold">{ (product?.title)?.slice(0,15) }</h5>
                                                 <p className="item-description">{ product?.description?.[0]?.slice(0,15) }</p>
                                                 <p className="item-amount">
-                                                    { product?.initial_retail_price && 
+                                                    { ((Number(product?.initial_retail_price)?.toFixed()>0) && product?.initial_retail_price) && 
                                                     <s className="">${ product?.initial_retail_price }&nbsp;</s> }
                                                     <span className="fw-semibold text-success">${ product?.retail_price }</span>
                                                 </p>

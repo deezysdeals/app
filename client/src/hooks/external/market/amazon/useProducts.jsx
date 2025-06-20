@@ -20,7 +20,8 @@ export function useProductsAmazon(productQuery) {
         console.log(productQuery?.page);
 
         // return axiosInstanceAmazonParazun.get(`product-details/?asin=B00FLYWNYQ&country=${ country }`, { signal })
-        return axiosInstanceAmazonParazun.get(`deals/?page=${productQuery?.page}`, { signal })
+        // return axiosInstanceAmazonParazun.get(`deals/?page=${productQuery?.page}`, { signal })
+        return axiosInstanceAmazonParazun.get(`deals/?page=1`, { signal })
             .then(response => {
                 console.log(response);
                 setProductsAmazon(response);

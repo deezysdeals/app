@@ -23,10 +23,16 @@ export default function Index() {
     const [searchKey, setSearchKey] = useState(params?.search_key ?? '');
     console.log(searchKey);
     const [pageToVisit, setPageToVisit] = useState(1);
-    console.log(pageToVisit)
+    console.log(pageToVisit);
 
-    const { productsAliExpress, getProductsAliExpress } = useProductsAliExpress();
-    const { productsAmazon, getProductsAmazon } = useProductsAmazon();
+    const [productQuery, setProductQuery] = useState({
+        page: 1, 
+        limit: 10, 
+        source: 'aliExpress'
+    }); 
+
+    const { productsAliExpress, getProductsAliExpress } = useProductsAliExpress(productQuery);
+    const { productsAmazon, getProductsAmazon } = useProductsAmazon(productQuery);
 
     useEffect(() => {
         if (productQuery.source === 'aliExpress') {

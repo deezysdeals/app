@@ -40,6 +40,7 @@ const paymentsController = new PaymentsController(client);
 // const createOrder = async (cart) => {
 export async function createOrder(cartTotalAmount) {
     // console.log('cart amount passed', cart); 
+    console.log('cart amount passed', cartTotalAmount); 
     const payload = {
         body: {
             intent: "CAPTURE",

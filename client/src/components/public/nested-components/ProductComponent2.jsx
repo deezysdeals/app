@@ -116,7 +116,9 @@ export default function ProductComponent2({ source,
                             </span> 
                         }
                         <span className="card-text fs-5">
-                            <small><s>{ oldPrice && '$'+Number(oldPrice)?.toFixed(2) }</s>{ oldPrice && <span>&nbsp;</span>}</small>
+                            { (Number(oldPrice)?.toFixed()>0) &&
+                                <small><s>{ oldPrice && '$'+Number(oldPrice)?.toFixed(2) }</s>{ oldPrice && <span>&nbsp;</span>}</small>
+                            }
                             { (!location.pathname.startsWith('/home/sales')) 
                                 ?   <span className="fw-semibold">
                                         { currentPrice ? '$'+Number(currentPrice)?.toFixed(2) : '$'+0 }
