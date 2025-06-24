@@ -209,6 +209,7 @@ export default function Pay() {
     function onError(error) {
         /** Do something with the error from the SDK */  
         // navigate(route('sign-in')); 
+        console.log(error);
         swal.fire({ 
             text: `Error processing payment!`, 
             color: '#900000', 

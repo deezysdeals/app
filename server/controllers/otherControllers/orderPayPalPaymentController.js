@@ -89,7 +89,7 @@ const createOrderPayment = async (req, res) => {
                         // console.log({'Index': index}); 
 
                         if ((cart?.length) == index+1) { 
-                            console.log('createOrder: ', await createOrder(totalToBePaid))
+                            // console.log('createOrder: ', await createOrder(totalToBePaid))
                             const { jsonResponse, httpStatusCode } = await createOrder(totalToBePaid); 
 
                             console.log('status 1', httpStatusCode); 

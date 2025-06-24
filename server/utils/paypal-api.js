@@ -57,7 +57,8 @@ export async function createOrder(cartTotalAmount) {
     }; 
 
     try {
-        const { body, ...httpResponse } = await ordersController.ordersCreate(
+        // const { body, ...httpResponse } = await ordersController.ordersCreate(
+        const { body, ...httpResponse } = await ordersController.createOrder(
             payload
         );
         // Get more response info...
@@ -86,7 +87,8 @@ export async function captureOrder(orderID) {
     };
 
     try {
-        const { body, ...httpResponse } = await ordersController.ordersCapture(
+        // const { body, ...httpResponse } = await ordersController.ordersCapture(
+        const { body, ...httpResponse } = await ordersController.captureOrder(
             collect
         );
         // Get more response info...
