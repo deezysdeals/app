@@ -1,7 +1,10 @@
 const allowedOrigins = [
     'https://www.deezysdeals.com', 
+    'http://www.deezysdeals.com', 
     'https://www.deezysdeals.online', 
+    'http://www.deezysdeals.online', 
     'https://deezysdeals.com', 
+    'http://deezysdeals.com', 
     'https://maxralph.store', 
     'https://www.maxralph.store', 
     'http://localhost:5174', 

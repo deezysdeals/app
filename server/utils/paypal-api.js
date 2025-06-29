@@ -22,8 +22,8 @@ const client = new Client({
     },
     timeout: 0,
     // environment: process.env.NODE_ENV === 'production' ? Environment.Live : Environment.Sandbox,
-    // environment: Environment.Sandbox,
-    environment: Environment.Live,
+    environment: Environment.Sandbox,
+    // environment: Environment.Live,
     logging: {
         logLevel: LogLevel.Info,
         logRequest: { logBody: true },
@@ -118,7 +118,7 @@ export async function authorizeOrder(orderID) {
 
     try {
         const { body, ...httpResponse } =
-            await ordersController.ordersAuthorize(collect);
+            await ordersController.authorizeOrder(collect);
         // Get more response info...
         // const { statusCode, headers } = httpResponse;
         return {
@@ -148,7 +148,7 @@ export async function captureAuthorize(authorizationId) {
     };
     try {
         const { body, ...httpResponse } =
-            await paymentsController.authorizationsCapture(collect);
+            await paymentsController.captureAuthorize(collect);
         // Get more response info...
         // const { statusCode, headers } = httpResponse;
         return {

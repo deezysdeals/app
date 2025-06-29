@@ -41,8 +41,8 @@ export default function Pay() {
         "data-page-type": "product-details",
         components: "buttons,card-fields",
         // components: "buttons",
-        // "data-sdk-integration-source": "developer-studio",
-        "data-sdk-integration-source": "button",
+        "data-sdk-integration-source": "developer-studio",
+        // "data-sdk-integration-source": "button",
         // 'data-native-popup': 'false'
     }; 
 
@@ -72,6 +72,7 @@ export default function Pay() {
             [field]: value,
         }));
     } 
+
     async function createOrder() {
 
         try {
@@ -87,7 +88,7 @@ export default function Pay() {
                 }
             );
 
-            const orderData = response?.data; 
+            const orderData = await response?.data; 
             console.log(orderData);
 
             if (orderData.id) {
@@ -140,7 +141,7 @@ export default function Pay() {
                 }
             );
 
-            const orderData = response?.data;
+            const orderData = await response?.data;
 
             // Three cases to handle:
             // (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
