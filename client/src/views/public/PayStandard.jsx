@@ -24,7 +24,7 @@ export default function PayStandard() {
 
     const initialOptions = {
         "client-id": `${Constants?.paypalClientID}`,
-        "enable-funding": "venmo",
+        // "enable-funding": "venmo",
         "disable-funding": "",
         "buyer-country": "US",
         currency: "USD",
