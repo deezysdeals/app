@@ -22,6 +22,7 @@ import Categories from '@/views/public/Categories.jsx';
 import Category from '@/views/public/Category.jsx'; 
 import Deal from '@/views/public/Deal.jsx'; 
 import OrderPlaced from '@/views/public/OrderPlaced.jsx'; 
+import PayStandard from '@/views/public/PayStandard.jsx'; 
 import Pay from '@/views/public/Pay.jsx'; 
 import Paid from '@/views/public/Paid.jsx'; 
 import Product from '@/views/public/Product.jsx'; 
@@ -145,6 +146,7 @@ function App() {
               <Route path={ route('categories.index') } element={ <Categories /> } /> 
               <Route path={ route('deals.show') } element={ <Deal /> } /> 
               <Route path={ route('order-placed') } element={ <OrderPlaced /> } /> 
+              <Route path={ route('paypal-test.standard') } element={ <PayStandard /> } /> 
               <Route path={ route('pay') } element={ <Pay /> } /> 
               <Route path={ route('paid') } element={ <Paid /> } /> 
               <Route path={ route('products.show') } element={ <Product /> } /> 

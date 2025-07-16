@@ -111,6 +111,7 @@ const routeNames = {
     'cart': '/cart', 
     'paid': '/paid', 
     'pay': '/pay', 
+    'paypal-test.standard': '/paypal-test/standard', 
     'order-placed': '/order-placed', 
 
     'products.show': '/products/:source/:id/show', 
