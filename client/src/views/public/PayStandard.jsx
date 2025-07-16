@@ -77,7 +77,7 @@ export default function PayStandard() {
                                     }}
                                 createOrder={async () => {
                                         try {
-                                            const response = await fetch(`http://localhost:5001/api/v1/paypal/payments`, {
+                                            const response = await fetch(`${ Constants?.serverURL }/api/v1/paypal/payments`, {
                                                 method: "POST",
                                                 headers: {
                                                     'Authorization': `Bearer ${authTokens?.access}`,
@@ -112,7 +112,7 @@ export default function PayStandard() {
                                     }}
                                 onApprove={async (data, actions) => {
                                         try {
-                                            const response = await fetch(`http://localhost:5001/api/v1/paypal/payments/${data.orderID}/capture`,
+                                            const response = await fetch(`${ Constants?.serverURL }/api/v1/paypal/payments/${data.orderID}/capture`,
                                                 {
                                                     method: "POST",
                                                     headers: {
