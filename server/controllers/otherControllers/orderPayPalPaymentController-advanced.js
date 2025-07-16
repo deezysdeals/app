@@ -1,5 +1,7 @@
 import { createOrder, 
-        captureOrder
+        captureOrder, 
+        authorizeOrder, 
+        captureAuthorize 
 } from '../../utils/paypal-api.js'; 
 import orderPlacedNoticationMailTemplate from '../../mails/templates/orderNotificationMail.js'; 
 import Product from '../../models/Product.js'; 
@@ -258,8 +260,11 @@ const captureOrderPayment = async (req, res) => {
  */
 const authorizeOrderPayment = async (req, res) => {
     try {
-        res.status(200).json({ message: 'This endpoint is not implemented yet.' });
+        const { orderID } = req.params;
+        const { jsonResponse, httpStatusCode } = await authorizeOrder(orderID);
+        res.status(httpStatusCode).json(jsonResponse);
     } catch (error) {
+        console.error("Failed to create order:", error);
         res.status(500).json({ error: "Failed to authorize order." });
     }
 }
@@ -269,9 +274,14 @@ const authorizeOrderPayment = async (req, res) => {
  */
 const captureAuthorisedOrderPayment = async (req, res) => {
     try {
-        res.status(200).json({ message: 'This endpoint is not implemented yet.' });
+        const { authorizationId } = req.params;
+        const { jsonResponse, httpStatusCode } = await captureAuthorize(
+            authorizationId
+        );
+        res.status(httpStatusCode).json(jsonResponse);
     } catch (error) {
-        res.status(500).json({ error: "Failed to authorize order." });
+        console.error("Failed to create order:", error);
+        res.status(500).json({ error: "Failed to capture authorize." });
     }
 }
 

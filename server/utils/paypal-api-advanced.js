@@ -1,17 +1,13 @@
-import express from "express";
 import "dotenv/config";
 import {
     ApiError,
-    CheckoutPaymentIntent,
     Client,
     Environment,
     LogLevel,
     OrdersController,
     PaymentsController,
-    PaypalExperienceLandingPage,
-    PaypalExperienceUserAction,
-    ShippingPreference,
-} from "@paypal/paypal-server-sdk";
+} from "@paypal/paypal-server-sdk"; 
+
 
 const {
     PAYPAL_CLIENT_ID,
@@ -25,28 +21,27 @@ const client = new Client({
         oAuthClientSecret: PAYPAL_CLIENT_SECRET,
     },
     timeout: 0,
-    environment: Environment.Sandbox,
-    // environment: Environment.Live,
+    // environment: process.env.NODE_ENV === 'production' ? Environment.Live : Environment.Sandbox,
+    // environment: Environment.Sandbox,
+    environment: Environment.Live,
     logging: {
         logLevel: LogLevel.Info,
         logRequest: { logBody: true },
         logResponse: { logHeaders: true },
     },
-});
-
+}); 
 const ordersController = new OrdersController(client);
-const paymentsController = new PaymentsController(client);
-
+const paymentsController = new PaymentsController(client); 
 
 /**
  * Create an order to start the transaction.
  * @see https://developer.paypal.com/docs/api/orders/v2/#orders_create
- */
-
+ */ 
+// const createOrder = async (cart) => {
 export async function createOrder(cartTotalAmount) {
     // console.log('cart amount passed', cart); 
     console.log('cart amount passed', cartTotalAmount); 
-    const collect = {
+    const payload = {
         body: {
             intent: "CAPTURE",
             purchaseUnits: [
@@ -54,25 +49,7 @@ export async function createOrder(cartTotalAmount) {
                     amount: {
                         currencyCode: "USD",
                         value: `${cartTotalAmount}`,
-                        breakdown: {
-                            itemTotal: {
-                                currencyCode: "USD",
-                                value: "100",
-                            },
-                        },
                     },
-                    items: [
-                        {
-                            name: "T-Shirt",
-                            unitAmount: {
-                                currencyCode: "USD",
-                                value: "100",
-                            },
-                            quantity: "1",
-                            description: "Super Fresh Shirt",
-                            sku: "sku01",
-                        },
-                    ],
                 },
             ],
         },
@@ -82,7 +59,7 @@ export async function createOrder(cartTotalAmount) {
     try {
         // const { body, ...httpResponse } = await ordersController.ordersCreate(
         const { body, ...httpResponse } = await ordersController.createOrder(
-            collect
+            payload
         );
         // Get more response info...
         // const { statusCode, headers } = httpResponse;
@@ -101,7 +78,8 @@ export async function createOrder(cartTotalAmount) {
 /**
  * Capture payment for the created order to complete the transaction.
  * @see https://developer.paypal.com/docs/api/orders/v2/#orders_capture
- */
+ */ 
+// const captureOrder = async (orderID) => {
 export async function captureOrder(orderID) {
     const collect = {
         id: orderID,
@@ -109,9 +87,69 @@ export async function captureOrder(orderID) {
     };
 
     try {
+        // const { body, ...httpResponse } = await ordersController.ordersCapture(
         const { body, ...httpResponse } = await ordersController.captureOrder(
             collect
         );
+        // Get more response info...
+        // const { statusCode, headers } = httpResponse;
+        return {
+            jsonResponse: JSON.parse(body),
+            httpStatusCode: httpResponse.statusCode,
+        };
+    } catch (error) {
+        if (error instanceof ApiError) {
+            // const { statusCode, headers } = error;
+            throw new Error(error.message);
+        }
+    }
+}; 
+
+/**
+ * Authorize payment for the created order to complete the transaction.
+ * @see https://developer.paypal.com/docs/api/orders/v2/#orders_authorize
+ */
+// const authorizeOrder = async (orderID) => {
+export async function authorizeOrder(orderID) {
+    const collect = {
+        id: orderID,
+        prefer: "return=minimal",
+    };
+
+    try {
+        const { body, ...httpResponse } = await ordersController.authorizeOrder(
+            collect
+        );
+        // Get more response info...
+        // const { statusCode, headers } = httpResponse;
+        return {
+            jsonResponse: JSON.parse(body),
+            httpStatusCode: httpResponse.statusCode,
+        };
+    } catch (error) {
+        if (error instanceof ApiError) {
+            // const { statusCode, headers } = error;
+            throw new Error(error.message);
+        }
+    }
+}; 
+
+/**
+ * Captures an authorized payment, by ID.
+ * @see https://developer.paypal.com/docs/api/payments/v2/#authorizations_capture
+ */
+// const captureAuthorize = async (authorizationId) => {
+export async function captureAuthorize(authorizationId) {
+    const collect = {
+        authorizationId: authorizationId,
+        prefer: "return=minimal",
+        body: {
+            finalCapture: false,
+        },
+    };
+    try {
+        const { body, ...httpResponse } =
+            await paymentsController.captureAuthorize(collect);
         // Get more response info...
         // const { statusCode, headers } = httpResponse;
         return {
