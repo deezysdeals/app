@@ -32,13 +32,13 @@ const orderSchema = new Schema({
         payment_mode:  { 
             type: String, 
             required: true, 
-            enum: ['unpaid', 'cash', 'card', 'paypal'], 
+            enum: ['unpaid', 'cash', 'card', 'paypal', 'stripe'], 
             default: 'unpaid'
         }, 
         billing_status: { 
             type: String, 
             required: true, 
-            enum: ['unpaid', 'pay-on-delivery', 'paying-with-cash', 'paying-with-card', 'paying-with-paypal'], 
+            enum: ['unpaid', 'pay-on-delivery', 'paying-with-cash', 'paying-with-card', 'paying-with-paypal', 'paid-using-stripe'], 
             default: 'unpaid'
         }, 
         total_to_be_paid: { type: Number }, 

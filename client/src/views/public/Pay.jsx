@@ -24,22 +24,7 @@ export default function Pay() {
     const axiosInstance = useAxios(); 
     const navigate = useNavigate(); 
 
-    /** PayPal logic */
-    const [isPaying, setIsPaying] = useState(false);
-    const initialOptions = {
-        "client-id": `${Constants?.paypalClientID}`,
-        "enable-funding": "venmo",
-        // "disable-funding": "paylater",
-        "disable-funding": "",
-        "buyer-country": "US",
-        currency: "USD",
-        "data-page-type": "product-details",
-        components: "buttons",
-        "data-sdk-integration-source": "developer-studio",
-    }; 
-    /** End of PayPal logic */ 
-
-    const { order, createOrderPayOnDelivery } = useOrder(); 
+    const { order, createOrderPayOnDelivery, createOrderAndPay } = useOrder(); 
 
     return ( 
         <Layout> 
@@ -72,143 +57,18 @@ export default function Pay() {
                             ) }
                         </div> 
 
-                        <PayPalScriptProvider options={initialOptions}>
-                            <div className="w-100">
-                                <PayPalButtons
-                                    style={{
-                                        shape: "pill",
-                                        layout: "vertical",
-                                        color: "black",
-                                        label: "pay",
+                        <div className="w-100"> 
+                            { (order?.loading == false) && (
+                                <button 
+                                    onClick={ async () => { 
+                                        let cart = cartItems; 
+                                        console.log(cart)
+                                        await createOrderAndPay(cart); 
                                     }}
-
-                                    createOrder={async () => {
-                                        try {
-                                            const response = await axiosInstance.post(
-                                                `orders/payments`, 
-                                                {
-                                                    cart: cartItems, // The request body
-                                                }, 
-                                                {
-                                                    headers: {
-                                                        'Content-Type': 'application/json', 
-                                                    }
-                                                }
-                                            );
-
-                                            const orderData = await response?.data; 
-                                            console.log(orderData);
-
-                                            if (orderData?.id) {
-                                                console.log(orderData?.id)
-                                                return orderData?.id;
-                                            } else {
-                                                const errorDetail = orderData?.details?.[0];
-                                                const errorMessage = errorDetail
-                                                    ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
-                                                    : JSON.stringify(orderData);
-
-                                                throw new Error(errorMessage);
-                                            }
-                                        } catch (error) {
-                                            console.error(error);
-                                            if (error?.stack.startsWith('InvalidTokenError: Invalid token specified: must be a string') || error?.name == 'InvalidTokenError') {
-                                                navigate(route('sign-in')); 
-                                                swal.fire({ 
-                                                    text: `You must be signed in to proceed!`, 
-                                                    color: '#900000', 
-                                                    width: 325, 
-                                                    position: 'top', 
-                                                    showConfirmButton: false
-                                                })
-                                            } else if ((error?.response?.data?.message == 'You must have an address before you can pay') || (error?.response?.status == 409)) { 
-                                                navigate(`${route('home.profile.index')}#addresses`);
-
-                                                swal.fire({ 
-                                                    text: `${ error?.response?.data?.message + ` Add one now and proceed back to your shopping cart for payment.` }.`, 
-                                                    color: '#900000', 
-                                                    width: 325, 
-                                                    position: 'top', 
-                                                    showConfirmButton: false
-                                                });
-                                            } else {
-                                                console.error(`Could not initiate PayPal Checkout...${error}`);
-                                                swal.fire({ 
-                                                    text: "Could not initiate PayPal Checkout.", 
-                                                    color: '#900000', 
-                                                    width: 325, 
-                                                    position: 'top', 
-                                                    showConfirmButton: false
-                                                });
-                                                return `Could not initiate PayPal Checkout...${error}`;
-                                            }
-                                        }
-
-                                    }}
-
-                                    onApprove={async (data, actions) => { 
-                                        try {
-                                            const response = await axiosInstance.post(
-                                                `orders/payments/${data?.orderID}/capture`, 
-                                                {}, // Empty body as it's a POST request without data payload 
-                                                {
-                                                    headers: {
-                                                        "Content-Type": "application/json"
-                                                    },
-                                                }
-                                            );
-
-                                            const orderData = await response?.data;
-
-                                            // Three cases to handle:
-                                            // (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
-                                            // (2) Other non-recoverable errors -> Show a failure message
-                                            // (3) Successful transaction -> Show confirmation or thank you message
-
-                                            const errorDetail = orderData?.details?.[0];
-
-                                            if (errorDetail?.issue === "INSTRUMENT_DECLINED") {
-                                                // (2) Other non-recoverable errors -> Show a failure message
-                                                return actions.restart();
-                                            } else if (errorDetail) {
-                                                throw new Error(`${errorDetail.description} (${orderData.debug_id})`);
-                                            } else {
-                                                // (3) Successful transaction -> Show confirmation or thank you message 
-                                                const transaction =
-                                                    orderData.purchase_units[0].payments
-                                                        .captures[0];
-
-                                                clearCart(); 
-                                                navigate(route('order-placed'));  
-                                                console.log(
-                                                    "Capture result",
-                                                    orderData,
-                                                    JSON.stringify(orderData, null, 2)
-                                                ); 
-
-                                                swal.fire({ 
-                                                    text: `Transaction ${transaction.status}: ${transaction.id}.`, 
-                                                    // color: '#900000',
-                                                    color: '#823c03', 
-                                                    width: 325, 
-                                                    position: 'top', 
-                                                    showConfirmButton: false
-                                                });
-                                            }
-                                        } catch (error) {
-                                            swal.fire({ 
-                                                text: `Sorry, your transaction could not be processed.`, 
-                                                color: '#900000',
-                                                width: 325, 
-                                                position: 'top', 
-                                                showConfirmButton: false
-                                            });
-                                        }
-                                    }}
-                                />
-                            </div>
-
-                        </PayPalScriptProvider>
+                                    className="btn btn-dark border-radius-35 w-100 py-2">Pay Now
+                                </button>
+                            ) }
+                        </div> 
 
                     </section>
 

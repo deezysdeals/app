@@ -1,10 +1,14 @@
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom'; 
 import { route } from '@/routes'; 
 import Aside from '@/components/public/Aside.jsx'; 
 import Layout from '@/components/public/Layout.jsx'; 
 
 
 export default function Paid() {
+    const [searchParams] = useSearchParams();
+    const sessionId = searchParams.get('session_id');
+
     return (
         <Layout> 
             <section className="grid grid-order-reverse pt-3 px-3"> 

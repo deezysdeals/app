@@ -110,6 +110,7 @@ const routeNames = {
 
     'cart': '/cart', 
     'paid': '/paid', 
+    'payment-failed': '/payment-failed', 
     'pay': '/pay', 
     'paypal-test.standard': '/paypal-test/standard', 
     'order-placed': '/order-placed', 

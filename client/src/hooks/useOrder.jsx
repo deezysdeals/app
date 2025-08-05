@@ -68,6 +68,128 @@ export function useOrder(id = null) {
             .finally(() => setLoading(false));
     } 
 
+    async function createOrderAndPay(cart) {
+        setLoading(true); 
+        setErrors({}); 
+
+        console.log(cart); 
+        return axiosInstance.post('orders/payments', 
+            {
+                cart, 
+            }, 
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                setData(response?.data); 
+                // console.log(response); 
+                // clearCart(); 
+                // navigate(route('order-placed'));
+
+                const sessionUrl = response?.data?.session?.url;
+
+                if (sessionUrl) {
+                    window.location.href = sessionUrl;
+                } else {
+                    console.error('Stripe session URL not found');
+                }
+
+                clearCart(); 
+            })
+            .catch(error => {
+                setErrors(error?.response); 
+
+                if (error?.stack.startsWith('InvalidTokenError: Invalid token specified: must be a string') || error?.name == 'InvalidTokenError') {
+                    navigate(route('sign-in')); 
+                    swal.fire({ 
+                        text: `You must be signed in to proceed!`, 
+                        color: '#900000', 
+                        width: 325, 
+                        position: 'top', 
+                        showConfirmButton: false
+                    })
+                } else if ((error?.response?.data?.message == 'You must have an address before you can pay') || (error?.response?.status == 409)) { 
+                    navigate(`${route('home.profile.index')}#addresses`);
+
+                    swal.fire({ 
+                        text: `${ error?.response?.data?.message + ` Add one now and proceed back to your shopping cart for payment.` }.`, 
+                        color: '#900000', 
+                        width: 325, 
+                        position: 'top', 
+                        showConfirmButton: false
+                    });
+                } else if (error?.response?.status == 400 || error?.response?.status == 409) {
+                    swal.fire({
+                        text: `${error?.response?.data?.message}`, 
+                        color: '#900000', 
+                        width: 325, 
+                        position: 'top', 
+                        showConfirmButton: false
+                    });
+                } else {
+                    console.error(`Could not initiate Checkout...${error}`);
+                    swal.fire({ 
+                        text: "Could not initiate Checkout.", 
+                        color: '#900000', 
+                        width: 325, 
+                        position: 'top', 
+                        showConfirmButton: false
+                    });
+                    return `Could not initiate Checkout...${error}`;
+                }
+
+                console.log(error);
+                console.log(error?.response);
+            })
+            .finally(() => setLoading(false));
+    } 
+
+    async function captureOrderStripePayment() {
+        setLoading(true); 
+        setErrors({}); 
+
+        // console.log(cart); 
+        return axiosInstance.post('orders/payments/capture', 
+            {}, 
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                setData(response?.data); 
+                // console.log(response); 
+                // clearCart(); 
+                navigate(route('order-placed'));
+                // clearCart(); 
+            })
+            .catch(error => {
+                setErrors(error?.response); 
+                if (error?.response?.status == 400 || error?.response?.status == 409) {
+                    swal.fire({
+                        text: `${error?.response?.data?.message}`, 
+                        color: '#900000', 
+                        width: 325, 
+                        position: 'top', 
+                        showConfirmButton: false
+                    });
+                } else {
+                    swal.fire({
+                        text: `${error?.response?.status}: An error occured!`, 
+                        color: '#900000', 
+                        width: 325, 
+                        position: 'top', 
+                        showConfirmButton: false
+                    });
+                }
+                console.log(error);
+                console.log(error?.response);
+            })
+            .finally(() => setLoading(false));
+    } 
+
     async function getOrder(id, { signal } = {}) {
         setLoading(true); 
 
@@ -114,6 +236,8 @@ export function useOrder(id = null) {
         order: { data, setData, errors, loading }, 
         getOrder, 
         createOrderPayOnDelivery, 
+        createOrderAndPay, 
+        captureOrderStripePayment, 
         updateOrder, 
         deleteOrder, 
         destroyOrder, 

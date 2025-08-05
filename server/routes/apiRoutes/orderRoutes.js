@@ -14,21 +14,27 @@ import { getOrders,
         restoreOrder, 
         destroyOrder
 } from '../../controllers/orderController.js'; 
-import { createOrderPayment, 
-        captureOrderPayment, 
-        authorizeOrderPayment, 
-        captureAuthorisedOrderPayment
-} from '../../controllers/otherControllers/orderPayPalPaymentController.js';
+// import { createOrderPayment, 
+//         captureOrderPayment, 
+//         authorizeOrderPayment, 
+//         captureAuthorisedOrderPayment
+// } from '../../controllers/otherControllers/orderPayPalPaymentController.js';
+import { createOrderAndPay, captureOrderStripePayment } from '../../controllers/otherControllers/orderStripePaymentController.js';
 
 
 orderRouter.use(authenticated); 
 
 /** Additional Routes */
 /** Payment */ 
-orderRouter.post('/payments', createOrderPayment); 
-orderRouter.post('/payments/:orderID/capture', captureOrderPayment); 
-orderRouter.post('/payments/:orderID/authorize', authorizeOrderPayment); 
-orderRouter.post('/payments/:authorizationId/captureAuthorize', captureAuthorisedOrderPayment); 
+/** PatyPal */
+// orderRouter.post('/payments', createOrderPayment); 
+// orderRouter.post('/payments/:orderID/capture', captureOrderPayment); 
+// orderRouter.post('/payments/:orderID/authorize', authorizeOrderPayment); 
+// orderRouter.post('/payments/:authorizationId/captureAuthorize', captureAuthorisedOrderPayment); 
+
+/** Stripe */
+orderRouter.post('/payments', createOrderAndPay); 
+orderRouter.post('/payments/capture', express.raw({ type: 'application/json' }), captureOrderStripePayment);
 
 
 /** Main Routes */
