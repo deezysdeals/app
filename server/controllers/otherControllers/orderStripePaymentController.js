@@ -237,7 +237,7 @@ const createOrderAndPay = async (req, res) => {
                         // res.status(402).json({ error: error, message: 'Payment failed' });
                     } 
                 }
-                fetchProductAndProcessOrder(); 
+                await fetchProductAndProcessOrder(); 
 
             }); 
 
