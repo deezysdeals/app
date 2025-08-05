@@ -22,24 +22,23 @@ export default function ContactUs() {
                     
                     <div>
                         <section className="e-mail">
-                            <h4>📬 Email Us</h4>
-                            <p className="mb-0">
-                                <a href="mailto:support@deezysdeals.com">support@deezysdeals.com</a>
+                            <h4 className="fs-5 mb-0">Email Us</h4>
+                            <p className="">
+                                <a href="mailto:support@deezysdeals.com">support@deezysdeals.com</a>&nbsp;
+                                <span>(we respond within 3 hours)</span>
                             </p>
-                            <p>We aim to respond within 3 hours.</p>
                         </section>
 
                         <section className="customer-support">
-                            <h4>📞 Customer Support</h4>
-                            <p className='mb-0'>Call or text:&nbsp;
-                                <a href="tel:+18048477875">+1 804-847-7875</a>
+                            <h4 className="fs-5 mb-0">Customer Support</h4>
+                            <p className=''>Call or text:&nbsp;
+                                <a href="tel:+18048477875">+1 804-847-7875</a>&nbsp;
+                                <span>(available 24/7 every day of the week)</span>
                             </p>
-                            {/* <p>Available: Mon–Fri, 9am – 5pm (EST)</p> */}
-                            <p>Available: 24/7</p>
                         </section>
 
                         <section className="mailing-address">
-                            <h4>📍 Mailing Address</h4>
+                            <h4 className="fs-5 mb-0">Mailing Address</h4>
                             <p className="d-flex flex-column">
                                 <span>Deezy’s Deals</span>
                                 <span>702 E Broadway, Virginia</span>

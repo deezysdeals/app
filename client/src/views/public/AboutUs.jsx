@@ -29,11 +29,11 @@ export default function AboutUs() {
                         <section className="why-choose-us">
                             <h4>Why Choose Us?</h4>
                             <ul>
-                                <li>🛍️ Curated selections with daily deals.</li>
-                                <li>🚚 Fast, reliable shipping.</li>
-                                <li>💬 Responsive customer support when you are not satisfied with response from our AI Assistant.</li>
-                                <li>🔒 Secure checkout and payment options.</li>
-                                <li>💡 Transparency and trust at every step.</li>
+                                <li>Curated selections with daily deals.</li>
+                                <li>Fast, reliable shipping.</li>
+                                <li>Responsive customer support when you are not satisfied with response from our AI Assistant.</li>
+                                <li>Secure checkout and payment options.</li>
+                                <li>Transparency and trust at every step.</li>
                             </ul>
                         </section>
 

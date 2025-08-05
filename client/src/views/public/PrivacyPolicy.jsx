@@ -19,7 +19,7 @@ export default function PrivacyPolicy() {
 
                     <div className="">
                         <section className="information-we-collect">
-                            <h3>Information We Collect</h3>
+                            <h3 className="fs-5 mb-0">Information We Collect</h3>
                             <p>We collect personal information that you provide to us, such as:</p>
                             <ul>
                                 <li>Name</li>
@@ -31,7 +31,7 @@ export default function PrivacyPolicy() {
                         </section>
 
                         <section className="use-of-information">
-                            <h3>Use of Information</h3>
+                            <h3 className="fs-5 mb-0">Use of Information</h3>
                             <p>Your information is used to:</p>
                             <ul>
                                 <li>Process and fulfill orders.</li>
@@ -44,7 +44,7 @@ export default function PrivacyPolicy() {
                         </section>
 
                         <section className="sharing-of-information">
-                            <h3>Sharing of Information</h3>
+                            <h3 className="fs-5 mb-0">Sharing of Information</h3>
                             <p>We do not sell or rent your personal information. However, we may share your data with trusted third parties for purposes such as:</p>
                             <ul>
                                 <li>Payment processing</li>
@@ -55,12 +55,12 @@ export default function PrivacyPolicy() {
                         </section>
 
                         <section className="data-security">
-                            <h3>Data Security</h3>
+                            <h3 className="fs-5 mb-0">Data Security</h3>
                             <p>We implement reasonable security measures to protect your personal information. However, no method of transmission over the internet is 100% secure, and we cannot guarantee absolute security.</p>
                         </section>
 
                         <section className="your-rights">
-                            <h3>Your Rights</h3>
+                            <h3 className="fs-5 mb-0">Your Rights</h3>
                             <p>Depending on your location, you may have rights regarding your personal information, including:</p>
                             <ul>
                                 <li>Accessing your data.</li>
@@ -72,12 +72,12 @@ export default function PrivacyPolicy() {
                         </section>
 
                         <section className="cookies">
-                            <h3>Cookies</h3>
+                            <h3 className="fs-5 mb-0">Cookies</h3>
                             <p>We use cookies to enhance your experience on our website. You can control cookie settings through your browser.</p>
                         </section>
 
                         <section className="changes-to-this-privacy-policy">
-                            <h3>Changes to This Privacy Policy</h3>
+                            <h3 className="fs-5 mb-0">Changes to This Privacy Policy</h3>
                             <p>We may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated revision date.</p>
                         </section>
                     </div>
