@@ -254,53 +254,54 @@ const createOrderAndPay = async (req, res) => {
  * CAPTURE CREATED ORDER (AND UPDATE PAYMENT STATUS)
  */
 const captureOrderStripePayment = async (req, res) => {
-    const sig = req.headers['stripe-signature'];
-    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    // const sig = req.headers['stripe-signature'];
+    // const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-    let event;
+    // let event;
 
-    try {
-        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-    } catch (err) {
-        console.error('Webhook signature verification failed:', err.message);
-        return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
+    // try {
+    //     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    // } catch (err) {
+    //     console.error('Webhook signature verification failed:', err.message);
+    //     return res.status(400).send(`Webhook Error: ${err.message}`);
+    // }
 
-    // Handle the checkout.session.completed event
-    if (event.type === 'checkout.session.completed') {
-        const session = event.data.object;
+    // // Handle the checkout.session.completed event
+    // if (event.type === 'checkout.session.completed') {
+    //     const session = event.data.object;
 
-        const orderId = session.metadata?.order_id;
+    //     const orderId = session.metadata?.order_id;
 
-        if (!orderId) {
-            console.warn('No order ID found in session metadata:', session.id);
-            return res.status(400).send('Order ID not found in session metadata');
-        }
+    //     if (!orderId) {
+    //         console.warn('No order ID found in session metadata:', session.id);
+    //         return res.status(400).send('Order ID not found in session metadata');
+    //     }
 
-        console.log('webhook session', session);
-        console.log('webhook order id', orderId);
+    //     console.log('webhook session', session);
+    //     console.log('webhook order id', orderId);
 
-        try {
-            const updatedOrder = await Order.findByIdAndUpdate(orderId, {
-                payment_mode: 'stripe',
-                billing_status: 'paid-using-stripe'
-            }, { new: true });
+    //     try {
+    //         const updatedOrder = await Order.findByIdAndUpdate(orderId, {
+    //             payment_mode: 'stripe',
+    //             billing_status: 'paid-using-stripe'
+    //         }, { new: true });
 
-            if (!updatedOrder) {
-                console.warn('Order not found for webhook session:', session.id);
-                return res.status(404).send('Order not found');
-            }
+    //         if (!updatedOrder) {
+    //             console.warn('Order not found for webhook session:', session.id);
+    //             return res.status(404).send('Order not found');
+    //         }
 
-            console.log('✅ Order marked as paid:', updatedOrder._id);
-            res.status(200).send('Success');
-        } catch (error) {
-            console.error('Failed to update order from webhook:', error);
-            res.status(500).send('Internal server error');
-        }
-    } else {
-        // For other events (optional)
-        res.status(200).send('Event received');
-    }
+    //         console.log('✅ Order marked as paid:', updatedOrder._id);
+    //         res.status(200).send('Success');
+    //     } catch (error) {
+    //         console.error('Failed to update order from webhook:', error);
+    //         res.status(500).send('Internal server error');
+    //     }
+    // } else {
+    //     // For other events (optional)
+    //     res.status(200).send('Event received');
+    // }
+    console.log('Testing captureOrderStripePayment');
 }
 
 
